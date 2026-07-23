@@ -3,10 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- ===== TITLE ===== -->
     <title>This Person Is brand Shortlink</title>
+    
+    <!-- ============================================================ -->
+    <!-- OPEN GRAPH META TAGS (Facebook, WhatsApp, Twitter, LinkedIn) -->
+    <!-- ============================================================ -->
+    
+    <!-- Basic Meta Tags -->
+    <meta property="og:title" content="This Person Is brand Shortlink - Unlimited URL Shortener" />
+    <meta property="og:description" content="Create unlimited short links with real-time click tracking. Login with Telegram and start shortening your URLs today! 🚀" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="<%= typeof BASE_URL !== 'undefined' ? BASE_URL : 'https://thispersonisbrandshortner.click' %>" />
+    <meta property="og:image" content="<%= typeof BASE_URL !== 'undefined' ? BASE_URL : 'https://thispersonisbrandshortner.click' %>/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="This Person Is brand Shortlink" />
+    <meta property="og:locale" content="en_US" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="This Person Is brand Shortlink - Unlimited URL Shortener" />
+    <meta name="twitter:description" content="Create unlimited short links with real-time click tracking. Login with Telegram and start shortening your URLs today! 🚀" />
+    <meta name="twitter:image" content="<%= typeof BASE_URL !== 'undefined' ? BASE_URL : 'https://thispersonisbrandshortner.click' %>/og-image.png" />
+    
+    <!-- Additional Meta Tags -->
+    <meta name="description" content="Create unlimited short links with real-time click tracking. Login with Telegram and start shortening your URLs today!" />
+    <meta name="keywords" content="URL shortener, short links, link tracker, Telegram login, unlimited links" />
+    <meta name="author" content="This Person Is brand" />
+    <link rel="canonical" href="<%= typeof BASE_URL !== 'undefined' ? BASE_URL : 'https://thispersonisbrandshortner.click' %>" />
     
     <!-- ===== FAVICON ===== -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔗</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔗</text></svg>">
     
     <!-- ===== GOOGLE FONTS ===== -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
@@ -817,7 +847,7 @@
         }
 
         /* ============================================================ */
-        /* SHORT LINK DISPLAY - SCANNING ANIMATION */
+        /* SHORT LINK DISPLAY */
         /* ============================================================ */
         .short-link-display {
             background: rgba(0, 212, 255, 0.05);
@@ -1382,7 +1412,6 @@
 
                 <% if (typeof links !== 'undefined' && links && links.length > 0) { %>
                     <% links.forEach(function(link) { 
-                        // Store the URL in a variable to ensure it's available
                         const linkUrl = link.shortUrl || '';
                         const linkId = link.id || link._id || '';
                         const linkCode = link.shortCode || '';
@@ -1398,7 +1427,7 @@
                                     </a>
                                     <div class="link-original">→ <%= linkOriginal %></div>
                                 </div>
-                                <!-- ===== COPY BUTTON - FIXED with data attribute ===== -->
+                                <!-- Copy Button -->
                                 <button class="btn btn-secondary btn-sm copy-link-btn" 
                                         data-url="<%= linkUrl %>"
                                         style="flex-shrink: 0; cursor: pointer;">
@@ -1571,85 +1600,58 @@
         })();
 
         // ============================================================
-        // COPY TO CLIPBOARD - FIXED VERSION
+        // COPY TO CLIPBOARD
         // ============================================================
         function copyToClipboard(text) {
-            // Clean the text
             const cleanText = String(text).trim();
             
             console.log('📋 Copying:', cleanText);
-            console.log('📋 Length:', cleanText.length);
             
             if (!cleanText || cleanText === '') {
                 showToast('❌ Error: Nothing to copy');
-                console.error('❌ Empty text to copy');
                 return;
             }
             
-            // Method 1: Modern clipboard API
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(cleanText).then(() => {
                     showToast('✅ Link copied to clipboard!');
-                    console.log('✅ Copied successfully via clipboard API');
-                }).catch((err) => {
-                    console.error('❌ Clipboard API failed:', err);
+                }).catch(() => {
                     fallbackCopy(cleanText);
                 });
             } else {
-                // Method 2: Fallback
                 fallbackCopy(cleanText);
             }
         }
 
-        // Fallback copy method
         function fallbackCopy(text) {
             try {
-                // Create a temporary textarea
                 const textarea = document.createElement('textarea');
                 textarea.value = text;
                 textarea.style.position = 'fixed';
                 textarea.style.opacity = '0';
-                textarea.style.pointerEvents = 'none';
                 textarea.style.width = '1px';
                 textarea.style.height = '1px';
-                textarea.style.top = '0';
-                textarea.style.left = '0';
                 document.body.appendChild(textarea);
-                
-                // Select and copy
                 textarea.select();
-                textarea.setSelectionRange(0, 99999);
-                
                 const success = document.execCommand('copy');
                 document.body.removeChild(textarea);
-                
                 if (success) {
                     showToast('✅ Link copied to clipboard!');
-                    console.log('✅ Copied successfully via fallback');
                 } else {
                     showToast('❌ Failed to copy. Please copy manually.');
-                    console.error('❌ Fallback copy failed');
                 }
             } catch (err) {
-                console.error('❌ Copy error:', err);
                 showToast('❌ Failed to copy. Please copy manually.');
             }
         }
 
-        // ============================================================
-        // TOAST NOTIFICATION
-        // ============================================================
         function showToast(message) {
-            // Remove existing toast
-            const existingToast = document.querySelector('.custom-toast');
-            if (existingToast) {
-                existingToast.remove();
-            }
+            const existing = document.querySelector('.custom-toast');
+            if (existing) existing.remove();
             
             const toast = document.createElement('div');
             toast.className = 'custom-toast';
             toast.textContent = message;
-            
             Object.assign(toast.style, {
                 position: 'fixed',
                 bottom: '30px',
@@ -1661,54 +1663,33 @@
                 padding: '1rem 2rem',
                 borderRadius: '14px',
                 border: '1px solid rgba(255,255,255,0.08)',
-                boxShadow: '0 20px 40px -12px rgba(0,0,0,0.8), 0 0 30px rgba(108,99,255,0.15)',
+                boxShadow: '0 20px 40px -12px rgba(0,0,0,0.8)',
                 zIndex: '9999',
                 fontFamily: 'Inter, sans-serif',
                 fontWeight: '500',
                 fontSize: '0.95rem',
                 maxWidth: '90%',
                 textAlign: 'center',
-                animation: 'fadeIn 0.4s ease',
-                transition: 'opacity 0.4s ease'
+                animation: 'fadeIn 0.4s ease'
             });
-            
             document.body.appendChild(toast);
-            
             setTimeout(() => {
                 toast.style.opacity = '0';
-                setTimeout(() => {
-                    if (toast.parentNode) {
-                        toast.remove();
-                    }
-                }, 400);
+                toast.style.transition = 'opacity 0.4s';
+                setTimeout(() => toast.remove(), 400);
             }, 3000);
         }
 
         // ============================================================
-        // EVENT LISTENERS FOR COPY BUTTONS
+        // COPY BUTTON EVENT LISTENERS
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
-            // Find all copy buttons
-            const copyButtons = document.querySelectorAll('.copy-link-btn');
-            console.log('🔍 Found', copyButtons.length, 'copy buttons');
-            
-            copyButtons.forEach(function(btn, index) {
-                const url = btn.getAttribute('data-url');
-                console.log(`🔗 Button ${index}:`, url);
-                
-                // Remove any existing click listeners
-                btn.removeEventListener('click', btn._copyHandler);
-                
-                // Add new click listener
-                btn._copyHandler = function(e) {
+            document.querySelectorAll('.copy-link-btn').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    e.stopPropagation();
-                    const linkUrl = this.getAttribute('data-url');
-                    console.log('🖱️ Button clicked, URL:', linkUrl);
-                    copyToClipboard(linkUrl);
-                };
-                
-                btn.addEventListener('click', btn._copyHandler);
+                    const url = this.getAttribute('data-url');
+                    copyToClipboard(url);
+                });
             });
         });
 
@@ -1719,12 +1700,10 @@
             try {
                 const response = await fetch('/api/online-users');
                 const data = await response.json();
-
                 const countEl = document.getElementById('liveUserCount');
                 if (countEl) {
                     countEl.textContent = (data.count || 0) + ' Online';
                 }
-
                 const listEl = document.getElementById('userList');
                 if (listEl && data.users) {
                     if (data.users.length > 0) {
@@ -1739,21 +1718,19 @@
         }, 10000);
 
         // ============================================================
-        // PROCESSING ANIMATION ON FORM SUBMIT
+        // FORM SUBMIT ANIMATION
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('shortenForm');
             const btn = document.getElementById('shortenBtn');
-            
             if (form && btn) {
                 form.addEventListener('submit', function() {
-                    const originalText = btn.innerHTML;
+                    const original = btn.innerHTML;
                     btn.innerHTML = '🔮 Processing...';
                     btn.disabled = true;
                     btn.style.opacity = '0.7';
-                    
                     setTimeout(() => {
-                        btn.innerHTML = originalText;
+                        btn.innerHTML = original;
                         btn.disabled = false;
                         btn.style.opacity = '1';
                     }, 3000);
