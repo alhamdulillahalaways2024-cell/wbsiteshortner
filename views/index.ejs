@@ -8,38 +8,35 @@
     <title>This Person Is brand Shortlink</title>
     
     <!-- ============================================================ -->
-    <!-- OPEN GRAPH META TAGS (Facebook, WhatsApp, Twitter, LinkedIn) -->
+    <!-- OPEN GRAPH META TAGS -->
     <!-- ============================================================ -->
-    
-    <!-- Basic Meta Tags -->
     <meta property="og:title" content="This Person Is brand Shortlink - Unlimited URL Shortener" />
     <meta property="og:description" content="Create unlimited short links with real-time click tracking. Login with Telegram and start shortening your URLs today! 🚀" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="<%= typeof BASE_URL !== 'undefined' ? BASE_URL : 'https://thispersonisbrandshortner.click' %>" />
-    <meta property="og:image" content="<%= typeof BASE_URL !== 'undefined' ? BASE_URL : 'https://thispersonisbrandshortner.click' %>/og-image.png" />
+    <meta property="og:image" content="https://img.icons8.com/fluency/96/000000/link.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:site_name" content="This Person Is brand Shortlink" />
     <meta property="og:locale" content="en_US" />
     
-    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="This Person Is brand Shortlink - Unlimited URL Shortener" />
     <meta name="twitter:description" content="Create unlimited short links with real-time click tracking. Login with Telegram and start shortening your URLs today! 🚀" />
-    <meta name="twitter:image" content="<%= typeof BASE_URL !== 'undefined' ? BASE_URL : 'https://thispersonisbrandshortner.click' %>/og-image.png" />
+    <meta name="twitter:image" content="https://img.icons8.com/fluency/96/000000/link.png" />
     
-    <!-- Additional Meta Tags -->
     <meta name="description" content="Create unlimited short links with real-time click tracking. Login with Telegram and start shortening your URLs today!" />
     <meta name="keywords" content="URL shortener, short links, link tracker, Telegram login, unlimited links" />
-    <meta name="author" content="This Person Is brand" />
     <link rel="canonical" href="<%= typeof BASE_URL !== 'undefined' ? BASE_URL : 'https://thispersonisbrandshortner.click' %>" />
     
     <!-- ===== FAVICON ===== -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔗</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔗</text></svg>">
     
     <!-- ===== GOOGLE FONTS ===== -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- ===== CHART.JS FOR ANALYTICS ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         /* ============================================================ */
@@ -53,7 +50,6 @@
             --accent: #00D4FF;
             --accent-glow: rgba(0, 212, 255, 0.3);
             --dark: #0A0A0F;
-            --dark-card: rgba(255, 255, 255, 0.04);
             --glass: rgba(255, 255, 255, 0.06);
             --glass-border: rgba(255, 255, 255, 0.08);
             --text: #FFFFFF;
@@ -62,9 +58,9 @@
             --success: #00FF88;
             --danger: #FF4466;
             --warning: #FFB800;
-            --neon-blue: #00D4FF;
-            --neon-purple: #9B59FF;
-            --neon-pink: #FF6584;
+            --chart-blue: #00D4FF;
+            --chart-purple: #9B59FF;
+            --chart-pink: #FF6584;
         }
 
         * {
@@ -97,7 +93,6 @@
             pointer-events: none;
         }
 
-        /* ===== NEON GLOW BACKGROUND ===== */
         body::before {
             content: '';
             position: fixed;
@@ -119,7 +114,6 @@
             100% { opacity: 1; transform: scale(1.1) rotate(3deg); }
         }
 
-        /* ===== SCROLLBAR ===== */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -192,13 +186,11 @@
             flex-wrap: wrap;
         }
 
-        /* ===== LOGO ===== */
         .logo-wrapper {
             display: flex;
             align-items: center;
             gap: 0.8rem;
             text-decoration: none;
-            position: relative;
         }
 
         .logo-icon {
@@ -260,7 +252,6 @@
             -webkit-text-fill-color: var(--text-muted);
         }
 
-        /* ===== NAV LINKS ===== */
         .nav-links {
             display: flex;
             gap: 1.2rem;
@@ -362,16 +353,6 @@
         .btn-danger:hover {
             transform: translateY(-2px) scale(1.02);
             box-shadow: 0 8px 40px rgba(255, 68, 102, 0.5);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, var(--success), #00CC66);
-            color: var(--dark);
-            box-shadow: 0 4px 25px rgba(0, 255, 136, 0.3);
-        }
-
-        .btn-success:hover {
-            transform: translateY(-2px) scale(1.02);
         }
 
         .btn-warning {
@@ -541,6 +522,72 @@
         }
 
         /* ============================================================ */
+        /* ANALYTICS SECTION */
+        /* ============================================================ */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .analytics-grid .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .analytics-grid .chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .analytics-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .analytics-stats .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1.2rem;
+            background: var(--glass);
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s;
+        }
+
+        .analytics-stats .stat-item:hover {
+            border-color: var(--primary);
+        }
+
+        .analytics-stats .stat-item .label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .analytics-stats .stat-item .value {
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .analytics-stats .stat-item .value.danger {
+            background: linear-gradient(135deg, var(--danger), #FF4466);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .analytics-stats .stat-item .value.success {
+            background: linear-gradient(135deg, var(--success), #00CC66);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ============================================================ */
         /* LINK CARDS */
         /* ============================================================ */
         .link-card {
@@ -658,11 +705,6 @@
             border-color: var(--primary);
             outline: none;
             box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
-        }
-
-        .link-card .link-actions .edit-form .edit-actions {
-            display: flex;
-            gap: 0.4rem;
         }
 
         /* ============================================================ */
@@ -1036,6 +1078,9 @@
             .brand-center h1 {
                 font-size: 2.4rem;
             }
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 768px) {
@@ -1108,6 +1153,14 @@
             .logo-text .brand {
                 font-size: 1rem;
             }
+
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .analytics-grid .chart-container {
+                height: 250px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1153,10 +1206,6 @@
         .fade-in {
             animation: fadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
-
-        .fade-in-delay-1 { animation-delay: 0.1s; }
-        .fade-in-delay-2 { animation-delay: 0.2s; }
-        .fade-in-delay-3 { animation-delay: 0.3s; }
     </style>
 </head>
 <body>
@@ -1267,13 +1316,11 @@
         <!-- PAGE: HOME -->
         <!-- ========================================================== -->
         <% if (page === 'home') { %>
-            <!-- Brand Header -->
             <div class="brand-center fade-in">
                 <h1>This Person Is brand Shortlink</h1>
                 <p>✦ Smart URL Shortener with Real-time Analytics ✦</p>
             </div>
 
-            <!-- Main Shorten Form -->
             <div class="glass-card fade-in" style="max-width: 800px; margin: 0 auto;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
                     <h1 style="font-size: 2rem; font-weight: 800;">
@@ -1316,7 +1363,6 @@
                 <% } %>
             </div>
 
-            <!-- Live Users -->
             <div class="glass-card fade-in" style="margin-top: 2rem;">
                 <h3 style="font-weight: 700;">👥 Live Users</h3>
                 <p style="color: var(--text-muted); margin-bottom: 0.5rem;">
@@ -1336,7 +1382,6 @@
                 </div>
             </div>
 
-            <!-- Features -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
                 <div class="glass-card" style="text-align: center;">
                     <div style="font-size: 3rem; margin-bottom: 0.5rem;">♾️</div>
@@ -1349,9 +1394,9 @@
                     <p style="color: var(--text-muted); font-size: 0.9rem;">Change destination URL anytime, all short links update automatically</p>
                 </div>
                 <div class="glass-card" style="text-align: center;">
-                    <div style="font-size: 3rem; margin-bottom: 0.5rem;">👀</div>
-                    <h3 style="font-weight: 700;">Click Tracking</h3>
-                    <p style="color: var(--text-muted); font-size: 0.9rem;">Monitor how many times your links are clicked in real-time</p>
+                    <div style="font-size: 3rem; margin-bottom: 0.5rem;">📊</div>
+                    <h3 style="font-weight: 700;">Advanced Analytics</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Track clicks, devices, countries and more with detailed charts</p>
                 </div>
             </div>
         <% } %>
@@ -1391,6 +1436,57 @@
                     </div>
                 </div>
 
+                <!-- ========================================================== -->
+                <!-- ANALYTICS SECTION (NEW) -->
+                <!-- ========================================================== -->
+                <div class="glass-card" style="margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 1rem; font-weight: 700;">📈 Link Analytics</h3>
+                    
+                    <div class="analytics-grid">
+                        <!-- Chart -->
+                        <div class="chart-container">
+                            <canvas id="analyticsChart"></canvas>
+                        </div>
+                        
+                        <!-- Stats -->
+                        <div class="analytics-stats">
+                            <div class="stat-item">
+                                <span class="label">📊 Total Clicks</span>
+                                <span class="value"><%= typeof totalClicks !== 'undefined' ? totalClicks : 0 %></span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="label">📅 Today's Clicks</span>
+                                <span class="value success"><%= typeof todayClicks !== 'undefined' ? todayClicks : 0 %></span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="label">📈 This Week</span>
+                                <span class="value"><%= typeof weekClicks !== 'undefined' ? weekClicks : 0 %></span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="label">🚀 Most Clicked Link</span>
+                                <span class="value"><%= typeof topLink !== 'undefined' && topLink ? topLink.clicks : 0 %> clicks</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="label">🤖 Bot Clicks (Blocked)</span>
+                                <span class="value danger"><%= typeof botClicks !== 'undefined' ? botClicks : 0 %></span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="label">🟢 Real Clicks</span>
+                                <span class="value success"><%= typeof realClicks !== 'undefined' ? realClicks : 0 %></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Click Rate Info -->
+                    <div style="margin-top: 1rem; padding: 1rem; background: var(--glass); border-radius: 12px; border: 1px solid var(--glass-border);">
+                        <p style="color: var(--text-muted); font-size: 0.85rem;">
+                            📊 <strong style="color: var(--accent);"><%= typeof clickRate !== 'undefined' ? clickRate : 0 %>%</strong> 
+                            of your clicks are from real users. 
+                            <%= typeof botClicks !== 'undefined' && botClicks > 0 ? `🤖 ${botClicks} bot clicks were blocked automatically.` : '🎉 No bot clicks detected!' %>
+                        </p>
+                    </div>
+                </div>
+
                 <!-- Quick Create Form -->
                 <div class="glass-card" style="margin-bottom: 2rem;">
                     <h3 style="margin-bottom: 0.5rem; font-weight: 700;">🔗 Create New Short Link</h3>
@@ -1419,7 +1515,7 @@
                         const linkClicks = link.clicks || 0;
                         const linkCreated = link.createdAt || '';
                     %>
-                        <div class="link-card" data-link-url="<%= linkUrl %>">
+                        <div class="link-card">
                             <div class="link-top">
                                 <div>
                                     <a href="/<%= linkCode %>" target="_blank" class="link-url">
@@ -1427,7 +1523,6 @@
                                     </a>
                                     <div class="link-original">→ <%= linkOriginal %></div>
                                 </div>
-                                <!-- Copy Button -->
                                 <button class="btn btn-secondary btn-sm copy-link-btn" 
                                         data-url="<%= linkUrl %>"
                                         style="flex-shrink: 0; cursor: pointer;">
@@ -1440,14 +1535,12 @@
                                 <span>🆔 <%= linkCode %></span>
                             </div>
                             <div class="link-actions">
-                                <!-- Edit/Update Form -->
                                 <form action="/update-link/<%= linkId %>" method="POST" class="edit-form">
                                     <input type="url" name="newUrl" placeholder="Enter new URL" required>
                                     <div class="edit-actions">
                                         <button type="submit" class="btn btn-warning btn-sm">✏️ Update</button>
                                     </div>
                                 </form>
-                                <!-- Delete Button -->
                                 <div class="btn-group">
                                     <form action="/delete-link/<%= linkId %>" method="POST" style="display: inline;">
                                         <button type="submit" class="btn btn-danger btn-sm"
@@ -1472,7 +1565,6 @@
         <% } %>
 
     </div>
-    <!-- ===== END CONTAINER ===== -->
 
     <!-- ============================================================ -->
     <!-- FOOTER -->
@@ -1605,8 +1697,6 @@
         function copyToClipboard(text) {
             const cleanText = String(text).trim();
             
-            console.log('📋 Copying:', cleanText);
-            
             if (!cleanText || cleanText === '') {
                 showToast('❌ Error: Nothing to copy');
                 return;
@@ -1734,6 +1824,83 @@
                         btn.disabled = false;
                         btn.style.opacity = '1';
                     }, 3000);
+                });
+            }
+        });
+
+        // ============================================================
+        // ANALYTICS CHART
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('analyticsChart');
+            if (ctx) {
+                const chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'Clicks',
+                            data: [
+                                <%= typeof weekData !== 'undefined' && weekData ? weekData.join(',') : '0,0,0,0,0,0,0' %>
+                            ],
+                            borderColor: '#00D4FF',
+                            backgroundColor: 'rgba(0, 212, 255, 0.1)',
+                            borderWidth: 3,
+                            pointBackgroundColor: '#6C63FF',
+                            pointBorderColor: '#00D4FF',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#B0B0C8',
+                                    font: {
+                                        family: 'Inter',
+                                        size: 12
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    color: 'rgba(255,255,255,0.05)'
+                                },
+                                ticks: {
+                                    color: '#B0B0C8',
+                                    font: {
+                                        family: 'Inter',
+                                        size: 11
+                                    }
+                                }
+                            },
+                            y: {
+                                grid: {
+                                    color: 'rgba(255,255,255,0.05)'
+                                },
+                                ticks: {
+                                    color: '#B0B0C8',
+                                    font: {
+                                        family: 'Inter',
+                                        size: 11
+                                    },
+                                    stepSize: 1
+                                },
+                                beginAtZero: true
+                            }
+                        },
+                        animation: {
+                            duration: 2000,
+                            easing: 'easeInOutQuart'
+                        }
+                    }
                 });
             }
         });
