@@ -1,4 +1,4 @@
-// server.js - With Country Detection
+// server.js - With City Detection
 const express = require('express');
 const session = require('express-session');
 const sqlite3 = require('sqlite3').verbose();
@@ -63,7 +63,6 @@ db.serialize(() => {
         FOREIGN KEY(userId) REFERENCES users(id)
     )`);
 
-    // ===== CLICK LOGS WITH COUNTRY =====
     db.run(`CREATE TABLE IF NOT EXISTS click_logs (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         linkId INTEGER,
@@ -153,15 +152,13 @@ async function validateTelegramId(telegramId, username) {
     }
 }
 
-// ============ GET COUNTRY FROM IP ============
-async function getCountryFromIP(ip) {
-    // Skip for localhost
+// ============ GET COUNTRY & CITY FROM IP ============
+async function getLocationFromIP(ip) {
     if (ip === '::1' || ip === '127.0.0.1' || ip === 'localhost') {
         return { country: 'Localhost', countryCode: 'LOCAL', city: 'Local' };
     }
 
     try {
-        // Using ip-api.com (free, no API key needed)
         const response = await axios.get(`http://ip-api.com/json/${ip}?fields=status,message,country,countryCode,city,lat,lon`, {
             timeout: 3000
         });
@@ -175,7 +172,6 @@ async function getCountryFromIP(ip) {
         }
         return { country: 'Unknown', countryCode: 'XX', city: 'Unknown' };
     } catch (error) {
-        console.log('⚠️ IP Geolocation failed:', error.message);
         return { country: 'Unknown', countryCode: 'XX', city: 'Unknown' };
     }
 }
@@ -362,7 +358,7 @@ app.post('/logout', (req, res) => {
 });
 
 // ============================================================
-// DASHBOARD WITH ANALYTICS & COUNTRY DATA
+// DASHBOARD WITH ANALYTICS & LOCATION DATA
 // ============================================================
 app.get('/dashboard', (req, res) => {
     if (!req.session.user) {
@@ -402,94 +398,107 @@ app.get('/dashboard', (req, res) => {
                     LIMIT 10`,
                 [req.session.user.id], (err, countryStats) => {
                     
-                    // ===== Get Today's Clicks =====
-                    db.get(`SELECT COUNT(*) as count FROM click_logs 
+                    // ===== Get City Stats =====
+                    db.all(`SELECT 
+                                city,
+                                COUNT(*) as count 
+                            FROM click_logs 
                             WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
-                            AND timestamp >= datetime('now', '-1 day')
-                            AND isBot = 0`, 
-                        [req.session.user.id], (err, todayResult) => {
-                            const todayClicks = todayResult ? todayResult.count : 0;
-
-                            // ===== Get Week's Clicks =====
+                            AND isBot = 0
+                            AND city IS NOT NULL
+                            AND city != ''
+                            GROUP BY city 
+                            ORDER BY count DESC 
+                            LIMIT 10`,
+                        [req.session.user.id], (err, cityStats) => {
+                            
+                            // ===== Get Today's Clicks =====
                             db.get(`SELECT COUNT(*) as count FROM click_logs 
                                     WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
-                                    AND timestamp >= datetime('now', '-7 days')
+                                    AND timestamp >= datetime('now', '-1 day')
                                     AND isBot = 0`, 
-                                [req.session.user.id], (err, weekResult) => {
-                                    const weekClicks = weekResult ? weekResult.count : 0;
+                                [req.session.user.id], (err, todayResult) => {
+                                    const todayClicks = todayResult ? todayResult.count : 0;
 
-                                    // ===== Get Bot Clicks =====
+                                    // ===== Get Week's Clicks =====
                                     db.get(`SELECT COUNT(*) as count FROM click_logs 
                                             WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
-                                            AND isBot = 1`, 
-                                        [req.session.user.id], (err, botResult) => {
-                                            const botClicks = botResult ? botResult.count : 0;
+                                            AND timestamp >= datetime('now', '-7 days')
+                                            AND isBot = 0`, 
+                                        [req.session.user.id], (err, weekResult) => {
+                                            const weekClicks = weekResult ? weekResult.count : 0;
 
-                                            // ===== Get Real Clicks =====
+                                            // ===== Get Bot Clicks =====
                                             db.get(`SELECT COUNT(*) as count FROM click_logs 
                                                     WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
-                                                    AND isBot = 0`, 
-                                                [req.session.user.id], (err, realResult) => {
-                                                    const realClicks = realResult ? realResult.count : 0;
+                                                    AND isBot = 1`, 
+                                                [req.session.user.id], (err, botResult) => {
+                                                    const botClicks = botResult ? botResult.count : 0;
 
-                                                    // ===== Get Top Link =====
-                                                    db.get(`SELECT shortCode, clicks FROM links 
-                                                            WHERE userId = ? 
-                                                            ORDER BY clicks DESC LIMIT 1`, 
-                                                        [req.session.user.id], (err, topLink) => {
-                                                            
-                                                            // ===== Calculate Click Rate =====
-                                                            const total = realClicks + botClicks;
-                                                            const clickRate = total > 0 ? Math.round((realClicks / total) * 100) : 100;
+                                                    // ===== Get Real Clicks =====
+                                                    db.get(`SELECT COUNT(*) as count FROM click_logs 
+                                                            WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
+                                                            AND isBot = 0`, 
+                                                        [req.session.user.id], (err, realResult) => {
+                                                            const realClicks = realResult ? realResult.count : 0;
 
-                                                            // ===== Get Weekly Data =====
-                                                            const weekDays = [];
-                                                            for (let i = 6; i >= 0; i--) {
-                                                                const date = new Date();
-                                                                date.setDate(date.getDate() - i);
-                                                                const dateStr = date.toISOString().split('T')[0];
-                                                                weekDays.push(dateStr);
-                                                            }
+                                                            // ===== Get Top Link =====
+                                                            db.get(`SELECT shortCode, clicks FROM links 
+                                                                    WHERE userId = ? 
+                                                                    ORDER BY clicks DESC LIMIT 1`, 
+                                                                [req.session.user.id], (err, topLink) => {
+                                                                    
+                                                                    const total = realClicks + botClicks;
+                                                                    const clickRate = total > 0 ? Math.round((realClicks / total) * 100) : 100;
 
-                                                            const weekDataPromises = weekDays.map((date) => {
-                                                                return new Promise((resolve) => {
-                                                                    db.get(`SELECT COUNT(*) as count FROM click_logs 
-                                                                            WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
-                                                                            AND date(timestamp) = ?
-                                                                            AND isBot = 0`,
-                                                                        [req.session.user.id, date],
-                                                                        (err, result) => {
-                                                                            resolve(result ? result.count : 0);
+                                                                    // ===== Get Weekly Data =====
+                                                                    const weekDays = [];
+                                                                    for (let i = 6; i >= 0; i--) {
+                                                                        const date = new Date();
+                                                                        date.setDate(date.getDate() - i);
+                                                                        const dateStr = date.toISOString().split('T')[0];
+                                                                        weekDays.push(dateStr);
+                                                                    }
+
+                                                                    const weekDataPromises = weekDays.map((date) => {
+                                                                        return new Promise((resolve) => {
+                                                                            db.get(`SELECT COUNT(*) as count FROM click_logs 
+                                                                                    WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
+                                                                                    AND date(timestamp) = ?
+                                                                                    AND isBot = 0`,
+                                                                                [req.session.user.id, date],
+                                                                                (err, result) => {
+                                                                                    resolve(result ? result.count : 0);
+                                                                                });
                                                                         });
-                                                                });
-                                                            });
+                                                                    });
 
-                                                            Promise.all(weekDataPromises).then((weekData) => {
-                                                                getOnlineUsers((count, users) => {
-                                                                    res.render('index', {
-                                                                        page: 'dashboard',
-                                                                        user: req.session.user,
-                                                                        links: linksWithUrl,
-                                                                        totalClicks: totalClicks,
-                                                                        onlineUsers: count,
-                                                                        onlineUserList: users,
-                                                                        error: null,
-                                                                        success: null,
-                                                                        info: null,
-                                                                        shortUrl: null,
-                                                                        // Analytics data
-                                                                        todayClicks: todayClicks,
-                                                                        weekClicks: weekClicks,
-                                                                        botClicks: botClicks,
-                                                                        realClicks: realClicks,
-                                                                        clickRate: clickRate,
-                                                                        topLink: topLink,
-                                                                        weekData: weekData,
-                                                                        // Country data
-                                                                        countryStats: countryStats || []
+                                                                    Promise.all(weekDataPromises).then((weekData) => {
+                                                                        getOnlineUsers((count, users) => {
+                                                                            res.render('index', {
+                                                                                page: 'dashboard',
+                                                                                user: req.session.user,
+                                                                                links: linksWithUrl,
+                                                                                totalClicks: totalClicks,
+                                                                                onlineUsers: count,
+                                                                                onlineUserList: users,
+                                                                                error: null,
+                                                                                success: null,
+                                                                                info: null,
+                                                                                shortUrl: null,
+                                                                                todayClicks: todayClicks,
+                                                                                weekClicks: weekClicks,
+                                                                                botClicks: botClicks,
+                                                                                realClicks: realClicks,
+                                                                                clickRate: clickRate,
+                                                                                topLink: topLink,
+                                                                                weekData: weekData,
+                                                                                countryStats: countryStats || [],
+                                                                                cityStats: cityStats || []
+                                                                            });
+                                                                        });
                                                                     });
                                                                 });
-                                                            });
                                                         });
                                                 });
                                         });
@@ -537,7 +546,7 @@ app.post('/shorten', (req, res) => {
 });
 
 // ============================================================
-// REDIRECT WITH BOT DETECTION + COUNTRY TRACKING
+// REDIRECT WITH BOT DETECTION + LOCATION TRACKING
 // ============================================================
 app.get('/:shortCode', async (req, res) => {
     const { shortCode } = req.params;
@@ -596,8 +605,8 @@ app.get('/:shortCode', async (req, res) => {
             return res.status(404).send('Link not found');
         }
 
-        // ===== Get Country from IP =====
-        getCountryFromIP(ip).then((geoData) => {
+        // ===== Get Location from IP =====
+        getLocationFromIP(ip).then((geoData) => {
             if (botDetected) {
                 db.run('INSERT INTO click_logs (linkId, ip, userAgent, referer, country, countryCode, city, isBot) VALUES (?, ?, ?, ?, ?, ?, ?, 1)',
                     [link.id, ip, userAgent, referer, geoData.country, geoData.countryCode, geoData.city]);
@@ -685,7 +694,7 @@ app.get('/api/online-users', (req, res) => {
     });
 });
 
-// API - Click stats with country
+// API - Click stats
 app.get('/api/click-stats', (req, res) => {
     if (!req.session.user) {
         return res.status(401).json({ error: 'Unauthorized' });
@@ -709,8 +718,8 @@ app.get('/api/click-stats', (req, res) => {
         });
 });
 
-// API - Country stats
-app.get('/api/country-stats', (req, res) => {
+// API - Location stats
+app.get('/api/location-stats', (req, res) => {
     if (!req.session.user) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -718,19 +727,19 @@ app.get('/api/country-stats', (req, res) => {
     db.all(`SELECT 
         country,
         countryCode,
-        COUNT(*) as count,
-        ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM click_logs WHERE linkId IN (SELECT id FROM links WHERE userId = ?) AND isBot = 0), 1) as percentage
+        city,
+        COUNT(*) as count
         FROM click_logs 
         WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
         AND isBot = 0
-        GROUP BY countryCode 
+        GROUP BY countryCode, city
         ORDER BY count DESC 
-        LIMIT 20`,
-        [req.session.user.id, req.session.user.id], (err, results) => {
+        LIMIT 50`,
+        [req.session.user.id], (err, results) => {
             if (err) {
                 return res.json({ error: err.message });
             }
-            res.json({ countries: results });
+            res.json({ locations: results });
         });
 });
 
@@ -748,6 +757,6 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`📱 Telegram Validation: ${TELEGRAM_BOT_TOKEN ? '✅ Enabled' : '❌ Disabled'}`);
     console.log(`🤖 Bot Protection: ✅ Enabled`);
     console.log(`📊 Analytics: ✅ Enabled`);
-    console.log(`🌍 Country Detection: ✅ Enabled`);
+    console.log(`🌍 Location Detection: ✅ Enabled (Country + City)`);
     console.log(`✅ Ready to use!`);
 });
