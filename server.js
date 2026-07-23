@@ -1,4 +1,4 @@
-// server.js - Complete Version with Indexes for Performance
+// server.js - With OG Tags Support
 const express = require('express');
 const session = require('express-session');
 const sqlite3 = require('sqlite3').verbose();
@@ -10,7 +10,7 @@ const axios = require('axios');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ===== BASE_URL - IMPORTANT: No trailing slash =====
+// ===== BASE_URL =====
 const BASE_URL = (process.env.BASE_URL || 'http://localhost:3000').replace(/\/+$/, '');
 console.log(`🔗 BASE_URL: ${BASE_URL}`);
 
@@ -26,7 +26,6 @@ console.log(`🔓 SKIP_VALIDATION: ${SKIP_VALIDATION ? '✅ Yes (testing mode)' 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Ensure views directory exists
 const viewsDir = path.join(__dirname, 'views');
 if (!fs.existsSync(viewsDir)) {
     fs.mkdirSync(viewsDir, { recursive: true });
@@ -41,9 +40,8 @@ const db = new sqlite3.Database('./database.db', (err) => {
     }
 });
 
-// ============ CREATE TABLES WITH INDEXES ============
+// Create tables with indexes
 db.serialize(() => {
-    // ===== USERS TABLE =====
     db.run(`CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         telegramId TEXT UNIQUE,
@@ -54,7 +52,6 @@ db.serialize(() => {
         isValidated INTEGER DEFAULT 0
     )`);
 
-    // ===== LINKS TABLE =====
     db.run(`CREATE TABLE IF NOT EXISTS links (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         shortCode TEXT UNIQUE,
@@ -66,23 +63,25 @@ db.serialize(() => {
         FOREIGN KEY(userId) REFERENCES users(id)
     )`);
 
-    // ============================================================
-    // INDEXES FOR BETTER PERFORMANCE (যখন অনেক ডেটা হবে)
-    // ============================================================
-    
-    // Users table indexes
+    db.run(`CREATE TABLE IF NOT EXISTS click_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        linkId INTEGER,
+        ip TEXT,
+        userAgent TEXT,
+        referer TEXT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        isBot INTEGER DEFAULT 0,
+        FOREIGN KEY(linkId) REFERENCES links(id)
+    )`);
+
+    // Indexes
     db.run(`CREATE INDEX IF NOT EXISTS idx_users_telegramId ON users(telegramId)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_users_isOnline ON users(isOnline)`);
-    db.run(`CREATE INDEX IF NOT EXISTS idx_users_createdAt ON users(createdAt)`);
-    
-    // Links table indexes
     db.run(`CREATE INDEX IF NOT EXISTS idx_links_userId ON links(userId)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_links_shortCode ON links(shortCode)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_links_createdAt ON links(createdAt)`);
-    db.run(`CREATE INDEX IF NOT EXISTS idx_links_clicks ON links(clicks)`);
-    
-    // Composite indexes for common queries
     db.run(`CREATE INDEX IF NOT EXISTS idx_links_user_created ON links(userId, createdAt)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_click_logs_linkId ON click_logs(linkId)`);
     
     console.log('✅ Database tables and indexes created successfully');
 });
@@ -103,7 +102,20 @@ app.use(session({
     }
 }));
 
-// ============ TELEGRAM VALIDATION FUNCTION ============
+// ============ MAKE BASE_URL AVAILABLE IN ALL TEMPLATES ============
+app.use((req, res, next) => {
+    res.locals.BASE_URL = BASE_URL;
+    res.locals.user = req.session.user || null;
+    res.locals.page = req.path === '/' ? 'home' : req.path.slice(1);
+    
+    getOnlineUsers((count, users) => {
+        res.locals.onlineUsers = count;
+        res.locals.onlineUserList = users;
+        next();
+    });
+});
+
+// ============ TELEGRAM VALIDATION ============
 async function validateTelegramId(telegramId, username) {
     if (SKIP_VALIDATION) {
         console.log('⚠️ Validation skipped (testing mode)');
@@ -140,6 +152,66 @@ async function validateTelegramId(telegramId, username) {
     }
 }
 
+// ============ BOT DETECTION ============
+function isBot(userAgent, ip, req) {
+    const botPatterns = [
+        /bot/i, /crawl/i, /spider/i, /scrape/i, /headless/i,
+        /puppeteer/i, /selenium/i, /phantom/i, /curl/i, /wget/i,
+        /python/i, /java/i, /go-http/i, /node-fetch/i, /axios/i,
+        /postman/i, /insomnia/i, /httpie/i, /lighthouse/i,
+        /googlebot/i, /bingbot/i, /slurp/i, /duckduckbot/i,
+        /baiduspider/i, /yandexbot/i, /facebookexternalhit/i,
+        /facebot/i, /twitterbot/i, /telegrambot/i, /whatsapp/i,
+        /slackbot/i, /discordbot/i, /applebot/i, /datadog/i,
+        /newrelic/i, /pingdom/i, /uptime/i, /monitor/i, /healthcheck/i
+    ];
+
+    if (userAgent) {
+        for (let pattern of botPatterns) {
+            if (pattern.test(userAgent)) {
+                console.log('🤖 Bot detected (User-Agent):', userAgent);
+                return true;
+            }
+        }
+    }
+
+    if (userAgent && (userAgent.includes('Headless') || userAgent.includes('HeadlessChrome'))) {
+        console.log('🤖 Headless browser detected');
+        return true;
+    }
+
+    return false;
+}
+
+// ============ RATE LIMITING ============
+const clickLimits = {};
+
+function checkRateLimit(ip, linkId) {
+    const key = `${ip}-${linkId}`;
+    const now = Date.now();
+    const windowMs = 60000;
+    
+    if (!clickLimits[key]) {
+        clickLimits[key] = { count: 1, firstClick: now };
+        return true;
+    }
+
+    const data = clickLimits[key];
+    
+    if (now - data.firstClick > windowMs) {
+        clickLimits[key] = { count: 1, firstClick: now };
+        return true;
+    }
+
+    if (data.count >= 5) {
+        console.log('🚫 Rate limit exceeded for IP:', ip);
+        return false;
+    }
+
+    data.count++;
+    return true;
+}
+
 // ============ Helper Functions ============
 function getOnlineUsers(callback) {
     db.all('SELECT name FROM users WHERE isOnline = 1', (err, users) => {
@@ -151,18 +223,6 @@ function getOnlineUsers(callback) {
 function generateShortCode() {
     return crypto.randomBytes(4).toString('hex');
 }
-
-// ============ Middleware for templates ============
-app.use((req, res, next) => {
-    res.locals.user = req.session.user || null;
-    res.locals.page = req.path === '/' ? 'home' : req.path.slice(1);
-    
-    getOnlineUsers((count, users) => {
-        res.locals.onlineUsers = count;
-        res.locals.onlineUserList = users;
-        next();
-    });
-});
 
 // ============ Routes ============
 
@@ -190,11 +250,8 @@ app.get('/login', (req, res) => {
     });
 });
 
-// Login with Telegram Validation
 app.post('/login', async (req, res) => {
     const { telegramId, username } = req.body;
-    
-    console.log('📱 Login attempt:', { telegramId, username });
     
     if (!telegramId || !username) {
         return res.render('index', {
@@ -205,7 +262,6 @@ app.post('/login', async (req, res) => {
         });
     }
 
-    // Clean telegramId
     const cleanTelegramId = telegramId.trim().replace(/[^0-9]/g, '');
     
     if (!cleanTelegramId) {
@@ -217,29 +273,22 @@ app.post('/login', async (req, res) => {
         });
     }
 
-    // Validate Telegram ID
-    console.log('🔍 Validating Telegram ID:', cleanTelegramId);
     const validation = await validateTelegramId(cleanTelegramId, username);
     
     if (!validation.valid) {
-        console.log('❌ Validation failed:', validation.error);
         return res.render('index', {
             page: 'login',
-            error: validation.error || '❌ Invalid Telegram ID. Please check and try again.',
+            error: validation.error || '❌ Invalid Telegram ID.',
             success: null,
             info: null
         });
     }
 
-    console.log('✅ Telegram ID validated successfully!');
-
-    // Check if user exists in database
     db.get('SELECT * FROM users WHERE telegramId = ?', [cleanTelegramId], (err, user) => {
         if (err) {
-            console.error('❌ Database error:', err);
             return res.render('index', { 
                 page: 'login', 
-                error: 'Database error. Please try again.',
+                error: 'Database error.',
                 success: null,
                 info: null
             });
@@ -251,47 +300,29 @@ app.post('/login', async (req, res) => {
             db.run('UPDATE users SET name = ?, lastSeen = CURRENT_TIMESTAMP, isOnline = 1, isValidated = 1 WHERE id = ?', 
                 [finalName, user.id], (err) => {
                     if (err) {
-                        console.error('❌ Update error:', err);
                         return res.render('index', { 
                             page: 'login', 
-                            error: 'Update failed. Please try again.',
+                            error: 'Update failed.',
                             success: null,
                             info: null
                         });
                     }
-                    req.session.user = { 
-                        id: user.id, 
-                        name: finalName,
-                        telegramId: cleanTelegramId
-                    };
-                    req.session.save((err) => {
-                        if (err) console.error('Session save error:', err);
-                        console.log('✅ User logged in:', finalName);
-                        res.redirect('/dashboard');
-                    });
+                    req.session.user = { id: user.id, name: finalName, telegramId: cleanTelegramId };
+                    req.session.save(() => res.redirect('/dashboard'));
                 });
         } else {
             db.run('INSERT INTO users (telegramId, name, isOnline, isValidated) VALUES (?, ?, 1, 1)',
                 [cleanTelegramId, finalName], function(err) {
                     if (err) {
-                        console.error('❌ Registration error:', err);
                         return res.render('index', { 
                             page: 'login', 
-                            error: 'Registration failed. Please try again.',
+                            error: 'Registration failed.',
                             success: null,
                             info: null
                         });
                     }
-                    req.session.user = { 
-                        id: this.lastID, 
-                        name: finalName,
-                        telegramId: cleanTelegramId
-                    };
-                    req.session.save((err) => {
-                        if (err) console.error('Session save error:', err);
-                        console.log('✅ New validated user registered:', finalName);
-                        res.redirect('/dashboard');
-                    });
+                    req.session.user = { id: this.lastID, name: finalName, telegramId: cleanTelegramId };
+                    req.session.save(() => res.redirect('/dashboard'));
                 });
         }
     });
@@ -302,37 +333,26 @@ app.post('/logout', (req, res) => {
     if (req.session.user) {
         db.run('UPDATE users SET isOnline = 0 WHERE id = ?', [req.session.user.id]);
     }
-    req.session.destroy((err) => {
-        if (err) console.error('Session destroy error:', err);
-        res.redirect('/');
-    });
+    req.session.destroy(() => res.redirect('/'));
 });
 
 // Dashboard
 app.get('/dashboard', (req, res) => {
-    console.log('📊 Dashboard access, user:', req.session.user);
-    
     if (!req.session.user) {
-        console.log('❌ No user in session, redirecting to login');
         return res.redirect('/login');
     }
 
     db.run('UPDATE users SET isOnline = 1, lastSeen = CURRENT_TIMESTAMP WHERE id = ?', 
         [req.session.user.id]);
 
-    // ===== OPTIMIZED QUERY with indexes =====
     db.all('SELECT * FROM links WHERE userId = ? ORDER BY createdAt DESC', 
         [req.session.user.id], (err, links) => {
             if (err) {
-                console.error('❌ Links fetch error:', err);
                 return res.redirect('/');
             }
 
-            console.log(`📊 Found ${links.length} links for user`);
-
             const totalClicks = links.reduce((sum, link) => sum + link.clicks, 0);
             
-            // Create proper URL without double slash
             const linksWithUrl = links.map(link => ({
                 id: link.id,
                 shortCode: link.shortCode,
@@ -341,8 +361,6 @@ app.get('/dashboard', (req, res) => {
                 createdAt: link.createdAt,
                 shortUrl: `${BASE_URL}/${link.shortCode}`
             }));
-
-            console.log('🔗 First link URL:', linksWithUrl.length > 0 ? linksWithUrl[0].shortUrl : 'No links');
 
             getOnlineUsers((count, users) => {
                 res.render('index', {
@@ -363,51 +381,26 @@ app.get('/dashboard', (req, res) => {
 
 // Shorten Link
 app.post('/shorten', (req, res) => {
-    console.log('🔗 Shorten request, user:', req.session.user);
-    
     if (!req.session.user) {
-        console.log('❌ No user in session');
         return res.redirect('/login');
     }
 
     const { originalUrl, customSlug } = req.body;
     
     if (!originalUrl) {
-        const errorMsg = 'Please provide a URL';
-        if (req.headers.referer && req.headers.referer.includes('/dashboard')) {
-            return res.redirect('/dashboard?error=' + encodeURIComponent(errorMsg));
-        }
-        return res.render('index', { 
-            page: 'home', 
-            error: errorMsg,
-            success: null,
-            info: null,
-            shortUrl: null
-        });
+        return res.redirect('/dashboard?error=Please provide a URL');
     }
 
     let shortCode = customSlug || generateShortCode();
 
-    // ===== OPTIMIZED QUERY with index on shortCode =====
     db.get('SELECT * FROM links WHERE shortCode = ?', [shortCode], (err, existing) => {
         if (err) {
-            console.error('❌ Database error:', err);
             return res.redirect('/dashboard?error=Database error');
         }
 
         if (existing) {
             if (customSlug) {
-                const errorMsg = `"${customSlug}" is already taken`;
-                if (req.headers.referer && req.headers.referer.includes('/dashboard')) {
-                    return res.redirect('/dashboard?error=' + encodeURIComponent(errorMsg));
-                }
-                return res.render('index', { 
-                    page: 'home', 
-                    error: errorMsg,
-                    success: null,
-                    info: null,
-                    shortUrl: null
-                });
+                return res.redirect('/dashboard?error=' + encodeURIComponent(`"${customSlug}" is already taken`));
             }
             shortCode = generateShortCode();
         }
@@ -415,35 +408,104 @@ app.post('/shorten', (req, res) => {
         db.run('INSERT INTO links (shortCode, originalUrl, userId) VALUES (?, ?, ?)',
             [shortCode, originalUrl, req.session.user.id], function(err) {
                 if (err) {
-                    console.error('❌ Insert error:', err);
                     return res.redirect('/dashboard?error=Failed to create link');
                 }
 
                 const shortUrl = `${BASE_URL}/${shortCode}`;
-                console.log('✅ Link created:', shortUrl);
-                
                 res.redirect('/dashboard?success=' + encodeURIComponent('Link created successfully!'));
             });
     });
 });
 
-// Redirect to original URL
+// ============================================================
+// REDIRECT WITH BOT DETECTION + OG TAGS FOR SOCIAL MEDIA
+// ============================================================
 app.get('/:shortCode', (req, res) => {
     const { shortCode } = req.params;
     
-    const routes = ['login', 'dashboard', 'logout', 'shorten', 'update-link', 'delete-link', 'api', 'signup'];
+    const routes = ['login', 'dashboard', 'logout', 'shorten', 'update-link', 'delete-link', 'api', 'signup', 'favicon.ico'];
     if (routes.includes(shortCode)) {
         return res.redirect('/');
     }
 
-    // ===== OPTIMIZED QUERY with index on shortCode =====
+    const userAgent = req.headers['user-agent'] || '';
+    const ip = req.ip || req.connection.remoteAddress || 'unknown';
+    const referer = req.headers['referer'] || '';
+
+    // ===== CHECK IF IT'S FACEBOOK CRAWLER =====
+    const isFacebookCrawler = userAgent.includes('facebookexternalhit') || 
+                              userAgent.includes('Facebot') ||
+                              userAgent.includes('Twitterbot') ||
+                              userAgent.includes('WhatsApp') ||
+                              userAgent.includes('TelegramBot');
+
+    // ===== IF SOCIAL MEDIA CRAWLER - SHOW OG TAGS =====
+    if (isFacebookCrawler) {
+        console.log('📱 Social Media Crawler detected:', userAgent);
+        // Get link info from database
+        db.get('SELECT * FROM links WHERE shortCode = ?', [shortCode], (err, link) => {
+            if (err || !link) {
+                return res.status(404).send('Link not found');
+            }
+            
+            // Show a simple HTML page with OG tags for crawlers
+            return res.send(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>${link.shortCode} - This Person Is brand Shortlink</title>
+                    <meta property="og:title" content="This Person Is brand Shortlink" />
+                    <meta property="og:description" content="Short link: ${BASE_URL}/${link.shortCode} → ${link.originalUrl}" />
+                    <meta property="og:type" content="website" />
+                    <meta property="og:url" content="${BASE_URL}/${link.shortCode}" />
+                    <meta property="og:image" content="https://img.icons8.com/fluency/96/000000/link.png" />
+                    <meta name="twitter:card" content="summary_large_image" />
+                    <meta name="twitter:title" content="This Person Is brand Shortlink" />
+                    <meta name="twitter:description" content="Short link: ${BASE_URL}/${link.shortCode}" />
+                    <meta http-equiv="refresh" content="0; url=${link.originalUrl}" />
+                </head>
+                <body>
+                    <p>Redirecting to <a href="${link.originalUrl}">${link.originalUrl}</a></p>
+                </body>
+                </html>
+            `);
+        });
+        return;
+    }
+
+    // ===== NORMAL USER / BOT CHECK =====
+    const botDetected = isBot(userAgent, ip, req);
+    
     db.get('SELECT * FROM links WHERE shortCode = ?', [shortCode], (err, link) => {
         if (err || !link) {
             return res.status(404).send('Link not found');
         }
 
-        db.run('UPDATE links SET clicks = clicks + 1 WHERE id = ?', [link.id]);
-        res.redirect(link.originalUrl);
+        if (botDetected) {
+            console.log('🤖 Bot click detected - not counting');
+            db.run('INSERT INTO click_logs (linkId, ip, userAgent, referer, isBot) VALUES (?, ?, ?, ?, 1)',
+                [link.id, ip, userAgent, referer]);
+            return res.redirect(link.originalUrl);
+        }
+
+        if (!checkRateLimit(ip, link.id)) {
+            console.log('🚫 Rate limit exceeded for:', ip);
+            return res.redirect(link.originalUrl);
+        }
+
+        // Count the click
+        db.run('UPDATE links SET clicks = clicks + 1 WHERE id = ?', [link.id], (err) => {
+            if (err) {
+                console.error('❌ Click count error:', err);
+            }
+            
+            db.run('INSERT INTO click_logs (linkId, ip, userAgent, referer, isBot) VALUES (?, ?, ?, ?, 0)',
+                [link.id, ip, userAgent, referer]);
+
+            console.log('✅ Valid click counted');
+            res.redirect(link.originalUrl);
+        });
     });
 });
 
@@ -462,7 +524,6 @@ app.post('/update-link/:id', (req, res) => {
     db.run('UPDATE links SET originalUrl = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ? AND userId = ?',
         [newUrl, req.params.id, req.session.user.id], (err) => {
             if (err) {
-                console.error('❌ Update error:', err);
                 return res.redirect('/dashboard?error=Update failed');
             }
             res.redirect('/dashboard?success=Link updated successfully!');
@@ -478,7 +539,6 @@ app.post('/delete-link/:id', (req, res) => {
     db.run('DELETE FROM links WHERE id = ? AND userId = ?', 
         [req.params.id, req.session.user.id], (err) => {
             if (err) {
-                console.error('❌ Delete error:', err);
                 return res.redirect('/dashboard?error=Delete failed');
             }
             res.redirect('/dashboard?success=Link deleted successfully!');
@@ -495,25 +555,33 @@ app.get('/api/online-users', (req, res) => {
     });
 });
 
-// ============ DATABASE STATS ROUTE (Optional - for monitoring) ============
-app.get('/api/stats', (req, res) => {
-    db.get('SELECT COUNT(*) as totalUsers FROM users', (err, userCount) => {
-        db.get('SELECT COUNT(*) as totalLinks FROM links', (err, linkCount) => {
-            db.get('SELECT COUNT(*) as onlineUsers FROM users WHERE isOnline = 1', (err, onlineCount) => {
-                res.json({
-                    totalUsers: userCount ? userCount.totalUsers : 0,
-                    totalLinks: linkCount ? linkCount.totalLinks : 0,
-                    onlineUsers: onlineCount ? onlineCount.onlineUsers : 0
-                });
-            });
+// API - Click stats
+app.get('/api/click-stats', (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    db.all(`SELECT 
+        l.shortCode,
+        l.clicks,
+        COUNT(cl.id) as totalClicks,
+        SUM(CASE WHEN cl.isBot = 1 THEN 1 ELSE 0 END) as botClicks,
+        SUM(CASE WHEN cl.isBot = 0 THEN 1 ELSE 0 END) as realClicks
+        FROM links l
+        LEFT JOIN click_logs cl ON l.id = cl.linkId
+        WHERE l.userId = ?
+        GROUP BY l.id`, 
+        [req.session.user.id], (err, results) => {
+            if (err) {
+                return res.json({ error: err.message });
+            }
+            res.json({ stats: results });
         });
-    });
 });
 
 // ============ Error Handler ============
 app.use((err, req, res, next) => {
     console.error('❌ Server Error:', err.message);
-    console.error('Stack:', err.stack);
     res.status(500).send('Something went wrong! Check server logs.');
 });
 
@@ -523,7 +591,7 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`🔗 BASE_URL: ${BASE_URL}`);
     console.log(`📦 Database: SQLite (with indexes)`);
     console.log(`📱 Telegram Validation: ${TELEGRAM_BOT_TOKEN ? '✅ Enabled' : '❌ Disabled'}`);
-    console.log(`🔓 Testing Mode: ${SKIP_VALIDATION ? '✅ ON (any ID works)' : '❌ OFF'}`);
+    console.log(`🤖 Bot Protection: ✅ Enabled`);
+    console.log(`📱 Social Media Sharing: ✅ Enabled (OG Tags)`);
     console.log(`✅ Ready to use!`);
-    console.log(`📊 API Stats: ${BASE_URL}/api/stats`);
 });
