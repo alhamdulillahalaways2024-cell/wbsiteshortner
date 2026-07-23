@@ -1,4 +1,4 @@
-// server.js - With OG Tags Support
+// server.js - With Country Detection
 const express = require('express');
 const session = require('express-session');
 const sqlite3 = require('sqlite3').verbose();
@@ -63,12 +63,16 @@ db.serialize(() => {
         FOREIGN KEY(userId) REFERENCES users(id)
     )`);
 
+    // ===== CLICK LOGS WITH COUNTRY =====
     db.run(`CREATE TABLE IF NOT EXISTS click_logs (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         linkId INTEGER,
         ip TEXT,
         userAgent TEXT,
         referer TEXT,
+        country TEXT,
+        countryCode TEXT,
+        city TEXT,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
         isBot INTEGER DEFAULT 0,
         FOREIGN KEY(linkId) REFERENCES links(id)
@@ -82,6 +86,8 @@ db.serialize(() => {
     db.run(`CREATE INDEX IF NOT EXISTS idx_links_createdAt ON links(createdAt)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_links_user_created ON links(userId, createdAt)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_click_logs_linkId ON click_logs(linkId)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_click_logs_timestamp ON click_logs(timestamp)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_click_logs_country ON click_logs(countryCode)`);
     
     console.log('✅ Database tables and indexes created successfully');
 });
@@ -102,7 +108,7 @@ app.use(session({
     }
 }));
 
-// ============ MAKE BASE_URL AVAILABLE IN ALL TEMPLATES ============
+// ============ MAKE BASE_URL AVAILABLE ============
 app.use((req, res, next) => {
     res.locals.BASE_URL = BASE_URL;
     res.locals.user = req.session.user || null;
@@ -118,17 +124,14 @@ app.use((req, res, next) => {
 // ============ TELEGRAM VALIDATION ============
 async function validateTelegramId(telegramId, username) {
     if (SKIP_VALIDATION) {
-        console.log('⚠️ Validation skipped (testing mode)');
         return { valid: true, name: username };
     }
 
     if (!TELEGRAM_BOT_TOKEN) {
-        console.log('⚠️ No bot token, skipping validation');
         return { valid: true, name: username };
     }
 
     try {
-        console.log(`🔍 Checking Telegram ID: ${telegramId}`);
         const response = await axios.get(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getChat`, {
             params: { chat_id: telegramId },
             timeout: 5000
@@ -136,7 +139,6 @@ async function validateTelegramId(telegramId, username) {
 
         if (response.data && response.data.ok) {
             const user = response.data.result;
-            console.log('✅ Telegram user found:', user.first_name);
             return { 
                 valid: true, 
                 name: user.first_name + (user.last_name ? ' ' + user.last_name : '')
@@ -144,11 +146,37 @@ async function validateTelegramId(telegramId, username) {
         }
         return { valid: false, error: 'Invalid Telegram ID' };
     } catch (error) {
-        console.log('❌ Telegram API error:', error.message);
         return { 
             valid: false, 
             error: 'Invalid Telegram ID. Make sure you entered the correct ID.' 
         };
+    }
+}
+
+// ============ GET COUNTRY FROM IP ============
+async function getCountryFromIP(ip) {
+    // Skip for localhost
+    if (ip === '::1' || ip === '127.0.0.1' || ip === 'localhost') {
+        return { country: 'Localhost', countryCode: 'LOCAL', city: 'Local' };
+    }
+
+    try {
+        // Using ip-api.com (free, no API key needed)
+        const response = await axios.get(`http://ip-api.com/json/${ip}?fields=status,message,country,countryCode,city,lat,lon`, {
+            timeout: 3000
+        });
+
+        if (response.data && response.data.status === 'success') {
+            return {
+                country: response.data.country || 'Unknown',
+                countryCode: response.data.countryCode || 'XX',
+                city: response.data.city || 'Unknown'
+            };
+        }
+        return { country: 'Unknown', countryCode: 'XX', city: 'Unknown' };
+    } catch (error) {
+        console.log('⚠️ IP Geolocation failed:', error.message);
+        return { country: 'Unknown', countryCode: 'XX', city: 'Unknown' };
     }
 }
 
@@ -169,14 +197,12 @@ function isBot(userAgent, ip, req) {
     if (userAgent) {
         for (let pattern of botPatterns) {
             if (pattern.test(userAgent)) {
-                console.log('🤖 Bot detected (User-Agent):', userAgent);
                 return true;
             }
         }
     }
 
     if (userAgent && (userAgent.includes('Headless') || userAgent.includes('HeadlessChrome'))) {
-        console.log('🤖 Headless browser detected');
         return true;
     }
 
@@ -204,7 +230,6 @@ function checkRateLimit(ip, linkId) {
     }
 
     if (data.count >= 5) {
-        console.log('🚫 Rate limit exceeded for IP:', ip);
         return false;
     }
 
@@ -336,7 +361,9 @@ app.post('/logout', (req, res) => {
     req.session.destroy(() => res.redirect('/'));
 });
 
-// Dashboard
+// ============================================================
+// DASHBOARD WITH ANALYTICS & COUNTRY DATA
+// ============================================================
 app.get('/dashboard', (req, res) => {
     if (!req.session.user) {
         return res.redirect('/login');
@@ -362,20 +389,113 @@ app.get('/dashboard', (req, res) => {
                 shortUrl: `${BASE_URL}/${link.shortCode}`
             }));
 
-            getOnlineUsers((count, users) => {
-                res.render('index', {
-                    page: 'dashboard',
-                    user: req.session.user,
-                    links: linksWithUrl,
-                    totalClicks: totalClicks,
-                    onlineUsers: count,
-                    onlineUserList: users,
-                    error: null,
-                    success: null,
-                    info: null,
-                    shortUrl: null
+            // ===== Get Country Stats =====
+            db.all(`SELECT 
+                        country,
+                        countryCode,
+                        COUNT(*) as count 
+                    FROM click_logs 
+                    WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
+                    AND isBot = 0
+                    GROUP BY countryCode 
+                    ORDER BY count DESC 
+                    LIMIT 10`,
+                [req.session.user.id], (err, countryStats) => {
+                    
+                    // ===== Get Today's Clicks =====
+                    db.get(`SELECT COUNT(*) as count FROM click_logs 
+                            WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
+                            AND timestamp >= datetime('now', '-1 day')
+                            AND isBot = 0`, 
+                        [req.session.user.id], (err, todayResult) => {
+                            const todayClicks = todayResult ? todayResult.count : 0;
+
+                            // ===== Get Week's Clicks =====
+                            db.get(`SELECT COUNT(*) as count FROM click_logs 
+                                    WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
+                                    AND timestamp >= datetime('now', '-7 days')
+                                    AND isBot = 0`, 
+                                [req.session.user.id], (err, weekResult) => {
+                                    const weekClicks = weekResult ? weekResult.count : 0;
+
+                                    // ===== Get Bot Clicks =====
+                                    db.get(`SELECT COUNT(*) as count FROM click_logs 
+                                            WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
+                                            AND isBot = 1`, 
+                                        [req.session.user.id], (err, botResult) => {
+                                            const botClicks = botResult ? botResult.count : 0;
+
+                                            // ===== Get Real Clicks =====
+                                            db.get(`SELECT COUNT(*) as count FROM click_logs 
+                                                    WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
+                                                    AND isBot = 0`, 
+                                                [req.session.user.id], (err, realResult) => {
+                                                    const realClicks = realResult ? realResult.count : 0;
+
+                                                    // ===== Get Top Link =====
+                                                    db.get(`SELECT shortCode, clicks FROM links 
+                                                            WHERE userId = ? 
+                                                            ORDER BY clicks DESC LIMIT 1`, 
+                                                        [req.session.user.id], (err, topLink) => {
+                                                            
+                                                            // ===== Calculate Click Rate =====
+                                                            const total = realClicks + botClicks;
+                                                            const clickRate = total > 0 ? Math.round((realClicks / total) * 100) : 100;
+
+                                                            // ===== Get Weekly Data =====
+                                                            const weekDays = [];
+                                                            for (let i = 6; i >= 0; i--) {
+                                                                const date = new Date();
+                                                                date.setDate(date.getDate() - i);
+                                                                const dateStr = date.toISOString().split('T')[0];
+                                                                weekDays.push(dateStr);
+                                                            }
+
+                                                            const weekDataPromises = weekDays.map((date) => {
+                                                                return new Promise((resolve) => {
+                                                                    db.get(`SELECT COUNT(*) as count FROM click_logs 
+                                                                            WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
+                                                                            AND date(timestamp) = ?
+                                                                            AND isBot = 0`,
+                                                                        [req.session.user.id, date],
+                                                                        (err, result) => {
+                                                                            resolve(result ? result.count : 0);
+                                                                        });
+                                                                });
+                                                            });
+
+                                                            Promise.all(weekDataPromises).then((weekData) => {
+                                                                getOnlineUsers((count, users) => {
+                                                                    res.render('index', {
+                                                                        page: 'dashboard',
+                                                                        user: req.session.user,
+                                                                        links: linksWithUrl,
+                                                                        totalClicks: totalClicks,
+                                                                        onlineUsers: count,
+                                                                        onlineUserList: users,
+                                                                        error: null,
+                                                                        success: null,
+                                                                        info: null,
+                                                                        shortUrl: null,
+                                                                        // Analytics data
+                                                                        todayClicks: todayClicks,
+                                                                        weekClicks: weekClicks,
+                                                                        botClicks: botClicks,
+                                                                        realClicks: realClicks,
+                                                                        clickRate: clickRate,
+                                                                        topLink: topLink,
+                                                                        weekData: weekData,
+                                                                        // Country data
+                                                                        countryStats: countryStats || []
+                                                                    });
+                                                                });
+                                                            });
+                                                        });
+                                                });
+                                        });
+                                });
+                        });
                 });
-            });
         });
 });
 
@@ -411,16 +531,15 @@ app.post('/shorten', (req, res) => {
                     return res.redirect('/dashboard?error=Failed to create link');
                 }
 
-                const shortUrl = `${BASE_URL}/${shortCode}`;
                 res.redirect('/dashboard?success=' + encodeURIComponent('Link created successfully!'));
             });
     });
 });
 
 // ============================================================
-// REDIRECT WITH BOT DETECTION + OG TAGS FOR SOCIAL MEDIA
+// REDIRECT WITH BOT DETECTION + COUNTRY TRACKING
 // ============================================================
-app.get('/:shortCode', (req, res) => {
+app.get('/:shortCode', async (req, res) => {
     const { shortCode } = req.params;
     
     const routes = ['login', 'dashboard', 'logout', 'shorten', 'update-link', 'delete-link', 'api', 'signup', 'favicon.ico'];
@@ -432,23 +551,19 @@ app.get('/:shortCode', (req, res) => {
     const ip = req.ip || req.connection.remoteAddress || 'unknown';
     const referer = req.headers['referer'] || '';
 
-    // ===== CHECK IF IT'S FACEBOOK CRAWLER =====
-    const isFacebookCrawler = userAgent.includes('facebookexternalhit') || 
-                              userAgent.includes('Facebot') ||
-                              userAgent.includes('Twitterbot') ||
-                              userAgent.includes('WhatsApp') ||
-                              userAgent.includes('TelegramBot');
+    // Check if it's a social media crawler
+    const isSocialCrawler = userAgent.includes('facebookexternalhit') || 
+                            userAgent.includes('Facebot') ||
+                            userAgent.includes('Twitterbot') ||
+                            userAgent.includes('WhatsApp') ||
+                            userAgent.includes('TelegramBot');
 
-    // ===== IF SOCIAL MEDIA CRAWLER - SHOW OG TAGS =====
-    if (isFacebookCrawler) {
-        console.log('📱 Social Media Crawler detected:', userAgent);
-        // Get link info from database
+    if (isSocialCrawler) {
         db.get('SELECT * FROM links WHERE shortCode = ?', [shortCode], (err, link) => {
             if (err || !link) {
                 return res.status(404).send('Link not found');
             }
             
-            // Show a simple HTML page with OG tags for crawlers
             return res.send(`
                 <!DOCTYPE html>
                 <html>
@@ -474,7 +589,6 @@ app.get('/:shortCode', (req, res) => {
         return;
     }
 
-    // ===== NORMAL USER / BOT CHECK =====
     const botDetected = isBot(userAgent, ip, req);
     
     db.get('SELECT * FROM links WHERE shortCode = ?', [shortCode], (err, link) => {
@@ -482,29 +596,45 @@ app.get('/:shortCode', (req, res) => {
             return res.status(404).send('Link not found');
         }
 
-        if (botDetected) {
-            console.log('🤖 Bot click detected - not counting');
-            db.run('INSERT INTO click_logs (linkId, ip, userAgent, referer, isBot) VALUES (?, ?, ?, ?, 1)',
-                [link.id, ip, userAgent, referer]);
-            return res.redirect(link.originalUrl);
-        }
-
-        if (!checkRateLimit(ip, link.id)) {
-            console.log('🚫 Rate limit exceeded for:', ip);
-            return res.redirect(link.originalUrl);
-        }
-
-        // Count the click
-        db.run('UPDATE links SET clicks = clicks + 1 WHERE id = ?', [link.id], (err) => {
-            if (err) {
-                console.error('❌ Click count error:', err);
+        // ===== Get Country from IP =====
+        getCountryFromIP(ip).then((geoData) => {
+            if (botDetected) {
+                db.run('INSERT INTO click_logs (linkId, ip, userAgent, referer, country, countryCode, city, isBot) VALUES (?, ?, ?, ?, ?, ?, ?, 1)',
+                    [link.id, ip, userAgent, referer, geoData.country, geoData.countryCode, geoData.city]);
+                return res.redirect(link.originalUrl);
             }
-            
-            db.run('INSERT INTO click_logs (linkId, ip, userAgent, referer, isBot) VALUES (?, ?, ?, ?, 0)',
-                [link.id, ip, userAgent, referer]);
 
-            console.log('✅ Valid click counted');
-            res.redirect(link.originalUrl);
+            if (!checkRateLimit(ip, link.id)) {
+                return res.redirect(link.originalUrl);
+            }
+
+            db.run('UPDATE links SET clicks = clicks + 1 WHERE id = ?', [link.id], (err) => {
+                if (err) {
+                    console.error('❌ Click count error:', err);
+                }
+                
+                db.run('INSERT INTO click_logs (linkId, ip, userAgent, referer, country, countryCode, city, isBot) VALUES (?, ?, ?, ?, ?, ?, ?, 0)',
+                    [link.id, ip, userAgent, referer, geoData.country, geoData.countryCode, geoData.city]);
+
+                res.redirect(link.originalUrl);
+            });
+        }).catch(() => {
+            // Fallback if geo lookup fails
+            if (botDetected) {
+                db.run('INSERT INTO click_logs (linkId, ip, userAgent, referer, country, countryCode, isBot) VALUES (?, ?, ?, ?, ?, ?, 1)',
+                    [link.id, ip, userAgent, referer, 'Unknown', 'XX']);
+                return res.redirect(link.originalUrl);
+            }
+
+            if (!checkRateLimit(ip, link.id)) {
+                return res.redirect(link.originalUrl);
+            }
+
+            db.run('UPDATE links SET clicks = clicks + 1 WHERE id = ?', [link.id], (err) => {
+                db.run('INSERT INTO click_logs (linkId, ip, userAgent, referer, country, countryCode, isBot) VALUES (?, ?, ?, ?, ?, ?, 0)',
+                    [link.id, ip, userAgent, referer, 'Unknown', 'XX']);
+                res.redirect(link.originalUrl);
+            });
         });
     });
 });
@@ -555,7 +685,7 @@ app.get('/api/online-users', (req, res) => {
     });
 });
 
-// API - Click stats
+// API - Click stats with country
 app.get('/api/click-stats', (req, res) => {
     if (!req.session.user) {
         return res.status(401).json({ error: 'Unauthorized' });
@@ -579,6 +709,31 @@ app.get('/api/click-stats', (req, res) => {
         });
 });
 
+// API - Country stats
+app.get('/api/country-stats', (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    db.all(`SELECT 
+        country,
+        countryCode,
+        COUNT(*) as count,
+        ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM click_logs WHERE linkId IN (SELECT id FROM links WHERE userId = ?) AND isBot = 0), 1) as percentage
+        FROM click_logs 
+        WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
+        AND isBot = 0
+        GROUP BY countryCode 
+        ORDER BY count DESC 
+        LIMIT 20`,
+        [req.session.user.id, req.session.user.id], (err, results) => {
+            if (err) {
+                return res.json({ error: err.message });
+            }
+            res.json({ countries: results });
+        });
+});
+
 // ============ Error Handler ============
 app.use((err, req, res, next) => {
     console.error('❌ Server Error:', err.message);
@@ -592,6 +747,7 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`📦 Database: SQLite (with indexes)`);
     console.log(`📱 Telegram Validation: ${TELEGRAM_BOT_TOKEN ? '✅ Enabled' : '❌ Disabled'}`);
     console.log(`🤖 Bot Protection: ✅ Enabled`);
-    console.log(`📱 Social Media Sharing: ✅ Enabled (OG Tags)`);
+    console.log(`📊 Analytics: ✅ Enabled`);
+    console.log(`🌍 Country Detection: ✅ Enabled`);
     console.log(`✅ Ready to use!`);
 });
