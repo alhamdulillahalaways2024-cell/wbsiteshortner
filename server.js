@@ -1,4 +1,4 @@
-// server.js - Complete Working Version with Premium Authentication
+// server.js - Complete Working Version with All Fixes
 const express = require('express');
 const session = require('express-session');
 const sqlite3 = require('sqlite3').verbose();
@@ -10,7 +10,7 @@ const QRCode = require('qrcode');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const BASE_URL = (process.env.BASE_URL || 'http://localhost:3000').replace(/\/+$/, '');
+const BASE_URL = (process.env.BASE_URL || 'https://thispersonisbrandshortner.click').replace(/\/+$/, '');
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
 const SKIP_VALIDATION = process.env.SKIP_VALIDATION === 'true' || !TELEGRAM_BOT_TOKEN;
 
@@ -144,10 +144,9 @@ const PRE_ADDED_DOMAINS = [
 ];
 
 // ============================================================
-// CREATE TABLES WITH UPDATED USER SCHEMA
+// CREATE TABLES
 // ============================================================
 db.serialize(function() {
-    // ===== UPDATED USERS TABLE =====
     db.run(`CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         telegram_id TEXT UNIQUE,
@@ -236,7 +235,7 @@ app.use(function(req, res, next) {
     res.locals.page = req.path === '/' ? 'home' : req.path.slice(1);
     res.locals.countries = COUNTRIES;
     
-    db.all('SELECT name FROM users WHERE isOnline = 1', function(err, users) {
+    db.all('SELECT id, name FROM users WHERE isOnline = 1', function(err, users) {
         res.locals.onlineUsers = users ? users.length : 0;
         res.locals.onlineUserList = users || [];
         next();
@@ -249,9 +248,40 @@ function generateShortCode() {
 }
 
 function getOnlineUsers(callback) {
-    db.all('SELECT name FROM users WHERE isOnline = 1', function(err, users) {
+    db.all('SELECT id, name FROM users WHERE isOnline = 1', function(err, users) {
+        if (err) {
+            console.error('❌ Online users error:', err);
+            return callback(0, []);
+        }
         callback(users ? users.length : 0, users || []);
     });
+}
+
+// ============ GET LOCATION FROM IP ============
+async function getLocationFromIP(ip) {
+    // Skip for localhost
+    if (ip === '::1' || ip === '127.0.0.1' || ip === 'localhost' || ip === 'unknown') {
+        return { country: 'Localhost', countryCode: 'LOCAL', city: 'Local' };
+    }
+
+    try {
+        // Using ip-api.com for location detection
+        const response = await axios.get(`http://ip-api.com/json/${ip}?fields=status,country,countryCode,city,lat,lon`, {
+            timeout: 5000
+        });
+
+        if (response.data && response.data.status === 'success') {
+            return {
+                country: response.data.country || 'Unknown',
+                countryCode: response.data.countryCode || 'XX',
+                city: response.data.city || 'Unknown'
+            };
+        }
+        return { country: 'Unknown', countryCode: 'XX', city: 'Unknown' };
+    } catch (error) {
+        console.log('⚠️ IP Geolocation failed for IP:', ip, error.message);
+        return { country: 'Unknown', countryCode: 'XX', city: 'Unknown' };
+    }
 }
 
 // ============ Routes ============
@@ -280,9 +310,6 @@ app.get('/login', function(req, res) {
     });
 });
 
-// ============================================================
-// PREMIUM LOGIN WITH TELEGRAM
-// ============================================================
 app.post('/login', function(req, res) {
     var telegramId = req.body.telegramId;
     var username = req.body.username;
@@ -310,14 +337,12 @@ app.post('/login', function(req, res) {
         });
     }
 
-    // Check if user exists
     db.get('SELECT * FROM users WHERE telegram_id = ?', [cleanTelegramId], function(err, user) {
         if (err) {
             return res.render('index', { page: 'login', error: 'Database error.', success: null, info: null });
         }
 
         if (user) {
-            // Update existing user
             db.run(`UPDATE users SET 
                     username = ?, 
                     first_name = ?, 
@@ -334,7 +359,6 @@ app.post('/login', function(req, res) {
                         return res.render('index', { page: 'login', error: 'Update failed.', success: null, info: null });
                     }
                     
-                    // Get updated user data
                     db.get('SELECT * FROM users WHERE telegram_id = ?', [cleanTelegramId], function(err, updatedUser) {
                         if (err || !updatedUser) {
                             return res.render('index', { page: 'login', error: 'User not found.', success: null, info: null });
@@ -356,7 +380,6 @@ app.post('/login', function(req, res) {
                     });
                 });
         } else {
-            // Create new user
             db.run(`INSERT INTO users 
                     (telegram_id, username, first_name, last_name, display_name, email, isOnline, isValidated, last_login) 
                     VALUES (?, ?, ?, ?, ?, ?, 1, 1, CURRENT_TIMESTAMP)`,
@@ -364,7 +387,7 @@ app.post('/login', function(req, res) {
                 function(err) {
                     if (err) {
                         console.error('Registration error:', err);
-                        return res.render('index', { page: 'login', error: 'Registration failed: ' + err.message, success: null, info: null });
+                        return res.render('index', { page: 'login', error: 'Registration failed.', success: null, info: null });
                     }
                     
                     db.get('SELECT * FROM users WHERE telegram_id = ?', [cleanTelegramId], function(err, newUser) {
@@ -392,7 +415,7 @@ app.post('/login', function(req, res) {
 });
 
 // ============================================================
-// GET USER DATA FOR PROFILE
+// USER DATA API
 // ============================================================
 app.get('/api/user-data', function(req, res) {
     if (!req.session.user) {
@@ -404,7 +427,6 @@ app.get('/api/user-data', function(req, res) {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Calculate profile completion percentage
         var fields = ['email', 'first_name', 'last_name', 'display_name', 'profile_photo'];
         var filled = 0;
         fields.forEach(function(field) {
@@ -432,7 +454,7 @@ app.get('/api/user-data', function(req, res) {
 });
 
 // ============================================================
-// UPDATE USER PROFILE
+// UPDATE PROFILE
 // ============================================================
 app.post('/api/update-profile', function(req, res) {
     if (!req.session.user) {
@@ -441,7 +463,6 @@ app.post('/api/update-profile', function(req, res) {
 
     var { first_name, last_name, display_name, email, profile_photo } = req.body;
     
-    // Validate email if provided
     if (email && email !== '') {
         var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
@@ -449,7 +470,6 @@ app.post('/api/update-profile', function(req, res) {
         }
     }
 
-    // Clean up data
     first_name = first_name || req.session.user.first_name || '';
     last_name = last_name || req.session.user.last_name || '';
     display_name = display_name || first_name + ' ' + last_name;
@@ -468,7 +488,6 @@ app.post('/api/update-profile', function(req, res) {
                 return res.status(500).json({ error: 'Failed to update profile' });
             }
 
-            // Update session data
             db.get('SELECT * FROM users WHERE id = ?', [req.session.user.id], function(err, updatedUser) {
                 if (err || !updatedUser) {
                     return res.status(404).json({ error: 'User not found' });
@@ -494,46 +513,6 @@ app.post('/api/update-profile', function(req, res) {
         });
 });
 
-// ============================================================
-// UPDATE EMAIL
-// ============================================================
-app.post('/api/update-email', function(req, res) {
-    if (!req.session.user) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    var { email } = req.body;
-    
-    if (!email || email === '') {
-        return res.status(400).json({ error: 'Email is required' });
-    }
-
-    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        return res.status(400).json({ error: 'Please enter a valid email address' });
-    }
-
-    db.run('UPDATE users SET email = ? WHERE id = ?', [email, req.session.user.id], function(err) {
-        if (err) {
-            return res.status(500).json({ error: 'Failed to update email' });
-        }
-
-        db.get('SELECT * FROM users WHERE id = ?', [req.session.user.id], function(err, updatedUser) {
-            if (err || !updatedUser) {
-                return res.status(404).json({ error: 'User not found' });
-            }
-
-            req.session.user.email = updatedUser.email;
-
-            res.json({
-                success: true,
-                email: updatedUser.email,
-                message: 'Email updated successfully!'
-            });
-        });
-    });
-});
-
 // Logout
 app.post('/logout', function(req, res) {
     if (req.session.user) {
@@ -552,6 +531,7 @@ app.get('/dashboard', function(req, res) {
         return res.redirect('/login');
     }
 
+    // Update online status
     db.run('UPDATE users SET isOnline = 1, last_login = CURRENT_TIMESTAMP WHERE id = ?', [req.session.user.id]);
 
     db.get('SELECT * FROM users WHERE id = ?', [req.session.user.id], function(err, userData) {
@@ -580,7 +560,8 @@ app.get('/dashboard', function(req, res) {
                 if (links) {
                     for (var j = 0; j < links.length; j++) {
                         var link = links[j];
-                        var domain = link.domainName ? link.domainName : 'shortlink.click';
+                        // Use BASE_URL for default domain, or custom domain if set
+                        var domain = link.domainName ? link.domainName : BASE_URL.replace(/^https?:\/\//, '');
                         linksWithUrl.push({
                             id: link.id,
                             shortCode: link.shortCode,
@@ -600,34 +581,52 @@ app.get('/dashboard', function(req, res) {
                     [links ? links.length : 0, totalClicks, req.session.user.id]);
 
                 getOnlineUsers(function(count, users) {
-                    res.render('index', {
-                        page: 'dashboard',
-                        user: req.session.user,
-                        userData: userData,
-                        links: linksWithUrl,
-                        totalClicks: totalClicks,
-                        onlineUsers: count,
-                        onlineUserList: users,
-                        domains: domains || [],
-                        countries: COUNTRIES,
-                        error: null,
-                        success: null,
-                        info: null,
-                        shortUrl: null,
-                        todayClicks: 0,
-                        weekClicks: 0,
-                        monthClicks: 0,
-                        botClicks: 0,
-                        realClicks: 0,
-                        clickRate: 100,
-                        topLink: null,
-                        weekData: [0,0,0,0,0,0,0],
-                        countryStats: [],
-                        cityStats: [],
-                        deviceStats: [],
-                        browserStats: [],
-                        osStats: []
-                    });
+                    // Get country stats from click_logs
+                    db.all(`SELECT 
+                                country,
+                                countryCode,
+                                COUNT(*) as count 
+                            FROM click_logs 
+                            WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
+                            AND isBot = 0
+                            AND country IS NOT NULL
+                            AND country != ''
+                            GROUP BY countryCode 
+                            ORDER BY count DESC 
+                            LIMIT 20`,
+                        [req.session.user.id], function(err, countryStats) {
+                            
+                            if (err) countryStats = [];
+
+                            res.render('index', {
+                                page: 'dashboard',
+                                user: req.session.user,
+                                userData: userData,
+                                links: linksWithUrl,
+                                totalClicks: totalClicks,
+                                onlineUsers: count,
+                                onlineUserList: users,
+                                domains: domains || [],
+                                countries: COUNTRIES,
+                                error: null,
+                                success: null,
+                                info: null,
+                                shortUrl: null,
+                                todayClicks: 0,
+                                weekClicks: 0,
+                                monthClicks: 0,
+                                botClicks: 0,
+                                realClicks: 0,
+                                clickRate: 100,
+                                topLink: null,
+                                weekData: [0,0,0,0,0,0,0],
+                                countryStats: countryStats || [],
+                                cityStats: [],
+                                deviceStats: [],
+                                browserStats: [],
+                                osStats: []
+                            });
+                        });
                 });
             });
         });
@@ -697,14 +696,14 @@ app.post('/shorten', function(req, res) {
 });
 
 // ============================================================
-// REDIRECT
+// REDIRECT - FIXED: Works with all domains
 // ============================================================
-app.get('/:shortCode', function(req, res) {
+app.get('/:shortCode', async function(req, res) {
     var shortCode = req.params.shortCode;
     
     var routes = ['login', 'dashboard', 'logout', 'shorten', 'update-link', 'delete-link', 
                   'api', 'signup', 'favicon.ico', 'qr', 'save-link', 'unsave-link', 
-                  'add-tag', 'remove-tag', 'admin', 'check-password'];
+                  'add-tag', 'remove-tag', 'admin', 'check-password', 'og-image.png'];
     
     if (routes.indexOf(shortCode) !== -1) {
         return res.redirect('/');
@@ -715,6 +714,7 @@ app.get('/:shortCode', function(req, res) {
     var referer = req.headers['referer'] || '';
     var host = req.get('host') || '';
 
+    // Get link with domain info
     db.get(`SELECT l.*, d.domain as domainName 
             FROM links l 
             LEFT JOIN domains d ON l.domainId = d.id 
@@ -731,25 +731,47 @@ app.get('/:shortCode', function(req, res) {
             return res.status(410).send('This link has expired');
         }
 
+        // ===== DOMAIN CHECK - FIXED =====
+        // If link has a custom domain, check if request came from that domain
         if (link.domainName) {
             var requestDomain = host.toLowerCase();
             var linkDomain = link.domainName.toLowerCase();
+            // If domain doesn't match, redirect to the correct domain
             if (requestDomain !== linkDomain) {
                 return res.redirect('https://' + linkDomain + '/' + shortCode);
             }
         }
 
+        // ===== COUNT CLICK WITH LOCATION =====
         db.run('UPDATE links SET clicks = clicks + 1 WHERE id = ?', [link.id], function(err) {
             if (err) {
                 console.error('❌ Click count error:', err);
             }
             
-            db.run(`INSERT INTO click_logs 
-                    (linkId, ip, userAgent, referer, isBot) 
-                    VALUES (?, ?, ?, ?, 0)`,
-                [link.id, ip, userAgent, referer]);
-            
-            res.redirect(link.originalUrl);
+            // Get location from IP
+            getLocationFromIP(ip).then(function(geoData) {
+                // Insert click log with country data
+                db.run(`INSERT INTO click_logs 
+                        (linkId, ip, userAgent, referer, country, countryCode, city, isBot) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, 0)`,
+                    [link.id, ip, userAgent, referer, geoData.country, geoData.countryCode, geoData.city],
+                    function(err) {
+                        if (err) {
+                            console.error('❌ Click log error:', err);
+                        }
+                        res.redirect(link.originalUrl);
+                    });
+            }).catch(function(error) {
+                console.error('❌ Location error:', error);
+                // Fallback - insert without location
+                db.run(`INSERT INTO click_logs 
+                        (linkId, ip, userAgent, referer, isBot) 
+                        VALUES (?, ?, ?, ?, 0)`,
+                    [link.id, ip, userAgent, referer],
+                    function(err) {
+                        res.redirect(link.originalUrl);
+                    });
+            });
         });
     });
 });
@@ -851,6 +873,9 @@ app.get('/qr/:shortCode', function(req, res) {
 
 app.get('/api/online-users', function(req, res) {
     db.all('SELECT name FROM users WHERE isOnline = 1', function(err, users) {
+        if (err) {
+            return res.json({ count: 0, users: [] });
+        }
         res.json({
             count: users ? users.length : 0,
             users: users || []
