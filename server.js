@@ -257,7 +257,7 @@ function getOnlineUsers(callback) {
     });
 }
 
-// ============ GET LOCATION FROM IP ============
+// ============ GET LOCATION FROM IP - FIXED ============
 async function getLocationFromIP(ip) {
     // Skip for localhost
     if (ip === '::1' || ip === '127.0.0.1' || ip === 'localhost' || ip === 'unknown') {
@@ -265,9 +265,12 @@ async function getLocationFromIP(ip) {
     }
 
     try {
-        // Using ip-api.com for location detection
+        // Using ip-api.com for location detection with proper headers
         const response = await axios.get(`http://ip-api.com/json/${ip}?fields=status,country,countryCode,city,lat,lon`, {
-            timeout: 5000
+            timeout: 8000,
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (compatible; Shortlink/1.0)'
+            }
         });
 
         if (response.data && response.data.status === 'success') {
@@ -280,6 +283,21 @@ async function getLocationFromIP(ip) {
         return { country: 'Unknown', countryCode: 'XX', city: 'Unknown' };
     } catch (error) {
         console.log('⚠️ IP Geolocation failed for IP:', ip, error.message);
+        // Try fallback API
+        try {
+            const fallbackResponse = await axios.get(`https://ipapi.co/${ip}/json/`, {
+                timeout: 5000
+            });
+            if (fallbackResponse.data && fallbackResponse.data.country_name) {
+                return {
+                    country: fallbackResponse.data.country_name || 'Unknown',
+                    countryCode: fallbackResponse.data.country_code || 'XX',
+                    city: fallbackResponse.data.city || 'Unknown'
+                };
+            }
+        } catch (fallbackError) {
+            console.log('⚠️ Fallback IP Geolocation also failed');
+        }
         return { country: 'Unknown', countryCode: 'XX', city: 'Unknown' };
     }
 }
@@ -696,7 +714,7 @@ app.post('/shorten', function(req, res) {
 });
 
 // ============================================================
-// REDIRECT - FIXED: Works with all domains
+// REDIRECT - FIXED: Works with all domains + Country Detection
 // ============================================================
 app.get('/:shortCode', async function(req, res) {
     var shortCode = req.params.shortCode;
@@ -748,8 +766,9 @@ app.get('/:shortCode', async function(req, res) {
                 console.error('❌ Click count error:', err);
             }
             
-            // Get location from IP
+            // Get location from IP - FIXED
             getLocationFromIP(ip).then(function(geoData) {
+                console.log('📍 Location detected:', geoData);
                 // Insert click log with country data
                 db.run(`INSERT INTO click_logs 
                         (linkId, ip, userAgent, referer, country, countryCode, city, isBot) 
