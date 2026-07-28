@@ -336,6 +336,10 @@ app.post('/login', function(req, res) {
                     
                     // Get updated user data
                     db.get('SELECT * FROM users WHERE telegram_id = ?', [cleanTelegramId], function(err, updatedUser) {
+                        if (err || !updatedUser) {
+                            return res.render('index', { page: 'login', error: 'User not found.', success: null, info: null });
+                        }
+                        
                         req.session.user = { 
                             id: updatedUser.id, 
                             telegram_id: updatedUser.telegram_id,
@@ -360,10 +364,14 @@ app.post('/login', function(req, res) {
                 function(err) {
                     if (err) {
                         console.error('Registration error:', err);
-                        return res.render('index', { page: 'login', error: 'Registration failed.', success: null, info: null });
+                        return res.render('index', { page: 'login', error: 'Registration failed: ' + err.message, success: null, info: null });
                     }
                     
                     db.get('SELECT * FROM users WHERE telegram_id = ?', [cleanTelegramId], function(err, newUser) {
+                        if (err || !newUser) {
+                            return res.render('index', { page: 'login', error: 'User creation failed.', success: null, info: null });
+                        }
+                        
                         req.session.user = { 
                             id: newUser.id, 
                             telegram_id: newUser.telegram_id,
