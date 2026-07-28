@@ -1,4 +1,4 @@
-// server.js - Complete with Timezone, Country Detection & Bot Protection
+// server.js - Complete Cyberpunk URL Shortener
 const express = require('express');
 const session = require('express-session');
 const sqlite3 = require('sqlite3').verbose();
@@ -16,6 +16,26 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
 const SKIP_VALIDATION = process.env.SKIP_VALIDATION === 'true' || !TELEGRAM_BOT_TOKEN;
 
 console.log('🔗 BASE_URL:', BASE_URL);
+console.log('📦 TELEGRAM_BOT_TOKEN:', TELEGRAM_BOT_TOKEN ? '✅ Set' : '❌ Not Set');
+console.log('🔓 SKIP_VALIDATION:', SKIP_VALIDATION ? '✅ Yes' : '❌ No');
+
+// ============ Setup ============
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+const viewsDir = path.join(__dirname, 'views');
+if (!fs.existsSync(viewsDir)) {
+    fs.mkdirSync(viewsDir, { recursive: true });
+}
+
+// ============ SQLite Database ============
+const db = new sqlite3.Database('./database.db', (err) => {
+    if (err) {
+        console.error('❌ Database error:', err.message);
+    } else {
+        console.log('✅ SQLite database connected');
+    }
+});
 
 // ============ TIMEZONES ============
 const TIMEZONES = {
@@ -173,6 +193,7 @@ const COUNTRIES = {
 // CREATE TABLES
 // ============================================================
 db.serialize(function() {
+    // Users table
     db.run(`CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         telegram_id TEXT UNIQUE,
@@ -192,6 +213,7 @@ db.serialize(function() {
         timezone TEXT DEFAULT 'Asia/Dhaka'
     )`);
 
+    // Links table
     db.run(`CREATE TABLE IF NOT EXISTS links (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         shortCode TEXT UNIQUE,
@@ -208,6 +230,7 @@ db.serialize(function() {
         FOREIGN KEY(userId) REFERENCES users(id)
     )`);
 
+    // Click logs table
     db.run(`CREATE TABLE IF NOT EXISTS click_logs (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         linkId INTEGER,
@@ -253,12 +276,15 @@ app.use(function(req, res, next) {
             res.locals.onlineUsers = 0;
             res.locals.onlineUserList = [];
         } else {
-            const formattedUsers = (users || []).map(function(u) {
-                return {
-                    id: u.id,
-                    name: u.display_name || u.username || 'User'
-                };
-            });
+            var formattedUsers = [];
+            if (users) {
+                for (var i = 0; i < users.length; i++) {
+                    formattedUsers.push({
+                        id: users[i].id,
+                        name: users[i].display_name || users[i].username || 'User'
+                    });
+                }
+            }
             res.locals.onlineUsers = formattedUsers.length;
             res.locals.onlineUserList = formattedUsers;
         }
@@ -276,12 +302,15 @@ function getOnlineUsers(callback) {
         if (err) {
             return callback(0, []);
         }
-        const formattedUsers = (users || []).map(function(u) {
-            return {
-                id: u.id,
-                name: u.display_name || u.username || 'User'
-            };
-        });
+        var formattedUsers = [];
+        if (users) {
+            for (var i = 0; i < users.length; i++) {
+                formattedUsers.push({
+                    id: users[i].id,
+                    name: users[i].display_name || users[i].username || 'User'
+                });
+            }
+        }
         callback(formattedUsers.length, formattedUsers);
     });
 }
@@ -293,7 +322,7 @@ async function getLocationFromIP(ip) {
     }
 
     try {
-        const response = await axios.get(`http://ip-api.com/json/${ip}?fields=status,country,countryCode,city,lat,lon`, {
+        var response = await axios.get('http://ip-api.com/json/' + ip + '?fields=status,country,countryCode,city,lat,lon', {
             timeout: 8000
         });
 
@@ -307,7 +336,7 @@ async function getLocationFromIP(ip) {
         return { country: 'Unknown', countryCode: 'XX', city: 'Unknown' };
     } catch (error) {
         try {
-            const fallbackResponse = await axios.get(`https://ipapi.co/${ip}/json/`, {
+            var fallbackResponse = await axios.get('https://ipapi.co/' + ip + '/json/', {
                 timeout: 5000
             });
             if (fallbackResponse.data && fallbackResponse.data.country_name) {
@@ -324,7 +353,7 @@ async function getLocationFromIP(ip) {
 
 // ============ BOT DETECTION ============
 function isBot(userAgent, ip) {
-    const botPatterns = [
+    var botPatterns = [
         /bot/i, /crawl/i, /spider/i, /scrape/i, /headless/i,
         /puppeteer/i, /selenium/i, /phantom/i, /curl/i, /wget/i,
         /python/i, /java/i, /go-http/i, /node-fetch/i, /axios/i,
@@ -338,8 +367,8 @@ function isBot(userAgent, ip) {
     ];
 
     if (userAgent) {
-        for (let pattern of botPatterns) {
-            if (pattern.test(userAgent)) {
+        for (var i = 0; i < botPatterns.length; i++) {
+            if (botPatterns[i].test(userAgent)) {
                 return true;
             }
         }
@@ -354,7 +383,7 @@ function isBot(userAgent, ip) {
 
 // ============ DETECT DEVICE ============
 function detectDeviceInfo(userAgent) {
-    const info = { device: 'Desktop', browser: 'Unknown', os: 'Unknown' };
+    var info = { device: 'Desktop', browser: 'Unknown', os: 'Unknown' };
     if (!userAgent) return info;
 
     if (userAgent.includes('Mobile') || userAgent.includes('Android') || userAgent.includes('iPhone')) {
@@ -438,17 +467,7 @@ app.post('/login', function(req, res) {
         }
 
         if (user) {
-            db.run(`UPDATE users SET 
-                    username = ?, 
-                    first_name = ?, 
-                    last_name = ?, 
-                    display_name = ?,
-                    email = COALESCE(?, email),
-                    timezone = ?,
-                    last_login = CURRENT_TIMESTAMP, 
-                    isOnline = 1, 
-                    isValidated = 1 
-                    WHERE telegram_id = ?`,
+            db.run('UPDATE users SET username = ?, first_name = ?, last_name = ?, display_name = ?, email = COALESCE(?, email), timezone = ?, last_login = CURRENT_TIMESTAMP, isOnline = 1, isValidated = 1 WHERE telegram_id = ?',
                 [username, firstName, lastName, firstName + ' ' + lastName, email, timezone, cleanTelegramId], 
                 function(err) {
                     if (err) {
@@ -477,9 +496,7 @@ app.post('/login', function(req, res) {
                     });
                 });
         } else {
-            db.run(`INSERT INTO users 
-                    (telegram_id, username, first_name, last_name, display_name, email, timezone, isOnline, isValidated, last_login) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, 1, 1, CURRENT_TIMESTAMP)`,
+            db.run('INSERT INTO users (telegram_id, username, first_name, last_name, display_name, email, timezone, isOnline, isValidated, last_login) VALUES (?, ?, ?, ?, ?, ?, ?, 1, 1, CURRENT_TIMESTAMP)',
                 [cleanTelegramId, username, firstName, lastName, firstName + ' ' + lastName, email, timezone], 
                 function(err) {
                     if (err) {
@@ -520,7 +537,7 @@ app.post('/api/update-timezone', function(req, res) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    var { timezone } = req.body;
+    var timezone = req.body.timezone;
     if (!timezone) {
         return res.status(400).json({ error: 'Timezone is required' });
     }
@@ -561,9 +578,9 @@ app.get('/api/user-data', function(req, res) {
 
         var fields = ['email', 'first_name', 'last_name', 'display_name', 'profile_photo'];
         var filled = 0;
-        fields.forEach(function(field) {
-            if (user[field] && user[field] !== '') filled++;
-        });
+        for (var i = 0; i < fields.length; i++) {
+            if (user[fields[i]] && user[fields[i]] !== '') filled++;
+        }
         var completion = Math.round((filled / fields.length) * 100);
 
         res.json({
@@ -594,7 +611,11 @@ app.post('/api/update-profile', function(req, res) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    var { first_name, last_name, display_name, email, profile_photo } = req.body;
+    var first_name = req.body.first_name;
+    var last_name = req.body.last_name;
+    var display_name = req.body.display_name;
+    var email = req.body.email;
+    var profile_photo = req.body.profile_photo;
     
     if (email && email !== '') {
         var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -607,13 +628,7 @@ app.post('/api/update-profile', function(req, res) {
     last_name = last_name || req.session.user.last_name || '';
     display_name = display_name || first_name + ' ' + last_name;
     
-    db.run(`UPDATE users SET 
-            first_name = ?, 
-            last_name = ?, 
-            display_name = ?, 
-            email = ?,
-            profile_photo = COALESCE(?, profile_photo)
-            WHERE id = ?`,
+    db.run('UPDATE users SET first_name = ?, last_name = ?, display_name = ?, email = ?, profile_photo = COALESCE(?, profile_photo) WHERE id = ?',
         [first_name, last_name, display_name, email || null, profile_photo || null, req.session.user.id],
         function(err) {
             if (err) {
@@ -672,7 +687,7 @@ app.get('/dashboard', function(req, res) {
     db.get('SELECT * FROM users WHERE id = ?', [req.session.user.id], function(err, userData) {
         if (err) userData = {};
 
-        db.all(`SELECT * FROM links WHERE userId = ? ORDER BY createdAt DESC`, [req.session.user.id], function(err, links) {
+        db.all('SELECT * FROM links WHERE userId = ? ORDER BY createdAt DESC', [req.session.user.id], function(err, links) {
             if (err) {
                 return res.redirect('/');
             }
@@ -707,18 +722,7 @@ app.get('/dashboard', function(req, res) {
                 [links ? links.length : 0, totalClicks, req.session.user.id]);
 
             getOnlineUsers(function(count, users) {
-                db.all(`SELECT 
-                            country,
-                            countryCode,
-                            COUNT(*) as count 
-                        FROM click_logs 
-                        WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
-                        AND isBot = 0
-                        AND country IS NOT NULL
-                        AND country != ''
-                        GROUP BY countryCode 
-                        ORDER BY count DESC 
-                        LIMIT 20`,
+                db.all('SELECT country, countryCode, COUNT(*) as count FROM click_logs WHERE linkId IN (SELECT id FROM links WHERE userId = ?) AND isBot = 0 AND country IS NOT NULL AND country != "" GROUP BY countryCode ORDER BY count DESC LIMIT 20',
                     [req.session.user.id], function(err, countryStats) {
                         
                         if (err) countryStats = [];
@@ -803,9 +807,7 @@ app.post('/shorten', function(req, res) {
 
         var hashedPassword = password ? crypto.createHash('sha256').update(password).digest('hex') : null;
         
-        db.run(`INSERT INTO links 
-                (shortCode, originalUrl, userId, title, description, password, expiresAt) 
-                VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        db.run('INSERT INTO links (shortCode, originalUrl, userId, title, description, password, expiresAt) VALUES (?, ?, ?, ?, ?, ?, ?)',
             [shortCode, originalUrl, req.session.user.id, 
              title || null, description || null, hashedPassword, expiresAt], 
             function(err) {
@@ -818,7 +820,7 @@ app.post('/shorten', function(req, res) {
 });
 
 // ============================================================
-// REDIRECT - with Bot Protection & Country Detection
+// REDIRECT
 // ============================================================
 app.get('/:shortCode', async function(req, res) {
     var shortCode = req.params.shortCode;
@@ -834,7 +836,6 @@ app.get('/:shortCode', async function(req, res) {
     var userAgent = req.headers['user-agent'] || '';
     var ip = req.ip || req.connection.remoteAddress || 'unknown';
     var referer = req.headers['referer'] || '';
-    var host = req.get('host') || '';
 
     db.get('SELECT * FROM links WHERE shortCode = ?', [shortCode], function(err, link) {
         if (err || !link) {
@@ -850,22 +851,18 @@ app.get('/:shortCode', async function(req, res) {
         }
 
         // ===== BOT DETECTION =====
-        const botDetected = isBot(userAgent, ip);
+        var botDetected = isBot(userAgent, ip);
 
         // ===== DEVICE DETECTION =====
-        const deviceInfo = detectDeviceInfo(userAgent);
+        var deviceInfo = detectDeviceInfo(userAgent);
 
-        // ===== COUNT CLICK =====
         db.run('UPDATE links SET clicks = clicks + 1 WHERE id = ?', [link.id], function(err) {
             if (err) {
                 console.error('❌ Click count error:', err);
             }
             
-            // ===== GET LOCATION =====
             getLocationFromIP(ip).then(function(geoData) {
-                db.run(`INSERT INTO click_logs 
-                        (linkId, ip, userAgent, referer, country, countryCode, city, device, browser, os, isBot) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                db.run('INSERT INTO click_logs (linkId, ip, userAgent, referer, country, countryCode, city, device, browser, os, isBot) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                     [link.id, ip, userAgent, referer, geoData.country, geoData.countryCode, 
                      geoData.city, deviceInfo.device, deviceInfo.browser, deviceInfo.os, botDetected ? 1 : 0],
                     function(err) {
@@ -875,9 +872,7 @@ app.get('/:shortCode', async function(req, res) {
                         res.redirect(link.originalUrl);
                     });
             }).catch(function(error) {
-                db.run(`INSERT INTO click_logs 
-                        (linkId, ip, userAgent, referer, device, browser, os, isBot) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                db.run('INSERT INTO click_logs (linkId, ip, userAgent, referer, device, browser, os, isBot) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
                     [link.id, ip, userAgent, referer, deviceInfo.device, deviceInfo.browser, deviceInfo.os, botDetected ? 1 : 0],
                     function(err) {
                         res.redirect(link.originalUrl);
@@ -965,7 +960,7 @@ app.get('/qr/:shortCode', function(req, res) {
             QRCode.toDataURL(url, {
                 width: 300,
                 margin: 2,
-                color: { dark: '#6C63FF', light: '#FFFFFF' }
+                color: { dark: '#00F0FF', light: '#FFFFFF' }
             }, function(err, qrImage) {
                 if (err) {
                     return res.status(500).json({ error: 'QR generation failed' });
@@ -987,11 +982,14 @@ app.get('/api/online-users', function(req, res) {
         if (err) {
             return res.json({ count: 0, users: [] });
         }
-        const formattedUsers = (users || []).map(function(u) {
-            return {
-                name: u.display_name || u.username || 'User'
-            };
-        });
+        var formattedUsers = [];
+        if (users) {
+            for (var i = 0; i < users.length; i++) {
+                formattedUsers.push({
+                    name: users[i].display_name || users[i].username || 'User'
+                });
+            }
+        }
         res.json({
             count: formattedUsers.length,
             users: formattedUsers
@@ -1017,5 +1015,6 @@ app.use(function(err, req, res, next) {
 app.listen(PORT, '0.0.0.0', function() {
     console.log('🚀 Server running on port ' + PORT);
     console.log('🔗 BASE_URL: ' + BASE_URL);
+    console.log('⚡ Cyberpunk Mode: ON');
     console.log('✅ Ready to use!');
 });
