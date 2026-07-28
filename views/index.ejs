@@ -463,7 +463,7 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2.5rem;
         }
@@ -502,7 +502,7 @@
         }
 
         .stat-card .number {
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             font-weight: 900;
             background: linear-gradient(135deg, var(--primary), var(--accent));
             -webkit-background-clip: text;
@@ -514,7 +514,7 @@
         .stat-card .label {
             color: var(--text-muted);
             margin-top: 0.3rem;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 500;
             letter-spacing: 0.5px;
             position: relative;
@@ -528,12 +528,12 @@
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 1.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         .analytics-grid .chart-container {
             position: relative;
-            height: 280px;
+            height: 250px;
         }
 
         .analytics-grid .chart-container canvas {
@@ -544,14 +544,14 @@
         .analytics-stats {
             display: flex;
             flex-direction: column;
-            gap: 0.6rem;
+            gap: 0.5rem;
         }
 
         .analytics-stats .stat-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.6rem 1rem;
+            padding: 0.5rem 0.8rem;
             background: var(--glass);
             border-radius: 10px;
             border: 1px solid var(--glass-border);
@@ -564,12 +564,12 @@
 
         .analytics-stats .stat-item .label {
             color: var(--text-muted);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         .analytics-stats .stat-item .value {
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.9rem;
             background: linear-gradient(135deg, var(--primary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -588,22 +588,28 @@
         }
 
         /* ============================================================ */
-        /* COUNTRY STATS */
+        /* COUNTRY & DEVICE STATS */
         /* ============================================================ */
+        .stats-grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
         .country-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 0.8rem;
-            margin-top: 1rem;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
         }
 
         .country-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.6rem 1rem;
+            padding: 0.4rem 0.8rem;
             background: var(--glass);
-            border-radius: 10px;
+            border-radius: 8px;
             border: 1px solid var(--glass-border);
             transition: all 0.3s;
         }
@@ -616,24 +622,24 @@
         .country-item .country-name {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
             color: var(--text);
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
 
         .country-item .country-flag {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
         }
 
         .country-item .country-clicks {
             color: var(--accent);
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
 
         .country-item .country-bar {
-            width: 60px;
-            height: 4px;
+            width: 40px;
+            height: 3px;
             background: var(--glass-border);
             border-radius: 4px;
             overflow: hidden;
@@ -646,6 +652,18 @@
             transition: width 1s ease;
         }
 
+        .device-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.2rem 0.6rem;
+            background: var(--glass);
+            border-radius: 50px;
+            border: 1px solid var(--glass-border);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
         /* ============================================================ */
         /* LINK CARDS */
         /* ============================================================ */
@@ -654,7 +672,7 @@
             backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
             border-radius: 18px;
-            padding: 1.8rem;
+            padding: 1.5rem;
             margin-bottom: 1rem;
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             position: relative;
@@ -693,7 +711,7 @@
             text-decoration: none;
             font-weight: 600;
             word-break: break-all;
-            font-size: 1.1rem;
+            font-size: 1rem;
             transition: color 0.3s;
             position: relative;
             z-index: 1;
@@ -703,30 +721,59 @@
             color: var(--primary);
         }
 
+        .link-card .link-title {
+            color: var(--text);
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-top: 0.2rem;
+        }
+
         .link-card .link-original {
             color: var(--text-muted);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             word-break: break-all;
-            margin-top: 0.3rem;
+            margin-top: 0.2rem;
             position: relative;
             z-index: 1;
         }
 
         .link-card .link-meta {
             display: flex;
-            gap: 1.5rem;
-            margin-top: 0.8rem;
-            font-size: 0.8rem;
+            gap: 1rem;
+            margin-top: 0.6rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
             flex-wrap: wrap;
             position: relative;
             z-index: 1;
         }
 
+        .link-card .link-meta .badge {
+            padding: 0.1rem 0.5rem;
+            border-radius: 50px;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+
+        .link-card .link-meta .badge-active {
+            background: rgba(0, 255, 136, 0.15);
+            color: var(--success);
+        }
+
+        .link-card .link-meta .badge-inactive {
+            background: rgba(255, 68, 102, 0.15);
+            color: var(--danger);
+        }
+
+        .link-card .link-meta .badge-expired {
+            background: rgba(255, 184, 0, 0.15);
+            color: var(--warning);
+        }
+
         .link-card .link-actions {
             display: flex;
-            gap: 0.6rem;
-            margin-top: 1rem;
+            gap: 0.5rem;
+            margin-top: 0.8rem;
             flex-wrap: wrap;
             position: relative;
             z-index: 1;
@@ -734,29 +781,30 @@
 
         .link-card .link-actions .btn-group {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.4rem;
             flex-wrap: wrap;
             align-items: center;
         }
 
         .link-card .link-actions .edit-form {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.4rem;
             flex-wrap: wrap;
             align-items: center;
             flex: 1;
-            min-width: 200px;
+            min-width: 180px;
         }
 
         .link-card .link-actions .edit-form input[type="url"] {
             background: rgba(255,255,255,0.04);
             border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            padding: 0.3rem 0.6rem;
             color: var(--text);
-            min-width: 200px;
+            min-width: 150px;
             flex: 1;
             font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
             transition: all 0.3s;
         }
 
@@ -1026,17 +1074,18 @@
 
         .shorten-form-inline .form-group {
             flex: 1;
-            min-width: 150px;
+            min-width: 140px;
             margin-bottom: 0;
         }
 
         .shorten-form-inline .form-group .form-control {
             padding: 0.7rem 1rem;
+            font-size: 0.9rem;
         }
 
         .shorten-form-inline .btn {
             padding: 0.7rem 1.8rem;
-            min-width: 120px;
+            min-width: 100px;
         }
 
         /* ============================================================ */
@@ -1140,8 +1189,11 @@
             .analytics-grid {
                 grid-template-columns: 1fr;
             }
+            .stats-grid-2col {
+                grid-template-columns: 1fr;
+            }
             .country-grid {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                grid-template-columns: 1fr;
             }
         }
 
@@ -1221,11 +1273,15 @@
             }
 
             .analytics-grid .chart-container {
-                height: 220px;
+                height: 200px;
+            }
+
+            .stats-grid-2col {
+                grid-template-columns: 1fr;
             }
 
             .country-grid {
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: 1fr;
             }
         }
 
@@ -1259,10 +1315,6 @@
                 padding: 0.4rem 1rem;
                 font-size: 0.8rem;
             }
-
-            .country-grid {
-                grid-template-columns: 1fr;
-            }
         }
 
         /* ============================================================ */
@@ -1276,6 +1328,10 @@
         .fade-in {
             animation: fadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
+
+        .fade-in-delay-1 { animation-delay: 0.1s; }
+        .fade-in-delay-2 { animation-delay: 0.2s; }
+        .fade-in-delay-3 { animation-delay: 0.3s; }
     </style>
 </head>
 <body>
@@ -1366,6 +1422,11 @@
                             <input type="text" class="form-control" id="username" name="username"
                                    placeholder="Enter your full name" required>
                         </div>
+                        <div class="form-group">
+                            <label for="email">Email (Optional)</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                   placeholder="your@email.com">
+                        </div>
                         <button type="submit" class="btn btn-telegram btn-glow" style="width: 100%; padding: 0.9rem;">
                             🔑 Login with Telegram
                         </button>
@@ -1414,6 +1475,29 @@
                             <input type="text" class="form-control" id="customSlug" name="customSlug"
                                    placeholder="my-link">
                         </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label for="title">Title (Optional)</label>
+                                <input type="text" class="form-control" id="title" name="title"
+                                       placeholder="Link title">
+                            </div>
+                            <div class="form-group">
+                                <label for="expiresIn">Expires (Optional)</label>
+                                <select class="form-control" id="expiresIn" name="expiresIn">
+                                    <option value="">Never</option>
+                                    <option value="1d">1 Day</option>
+                                    <option value="7d">7 Days</option>
+                                    <option value="30d">30 Days</option>
+                                    <option value="90d">90 Days</option>
+                                    <option value="365d">1 Year</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password Protection (Optional)</label>
+                            <input type="password" class="form-control" id="password" name="password"
+                                   placeholder="Set a password for this link">
+                        </div>
                         <button type="submit" class="btn btn-primary btn-glow" style="width: 100%; padding: 0.9rem;" id="shortenBtn">
                             🚀 Create Short Link
                         </button>
@@ -1433,6 +1517,41 @@
                 <% } %>
             </div>
 
+            <!-- Features -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+                <div class="glass-card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">♾️</div>
+                    <h3 style="font-weight: 700; font-size: 1rem;">Unlimited Links</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Create as many as you want!</p>
+                </div>
+                <div class="glass-card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔄</div>
+                    <h3 style="font-weight: 700; font-size: 1rem;">Updateable</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Change URL anytime</p>
+                </div>
+                <div class="glass-card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📊</div>
+                    <h3 style="font-weight: 700; font-size: 1rem;">Analytics</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Track every click</p>
+                </div>
+                <div class="glass-card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔒</div>
+                    <h3 style="font-weight: 700; font-size: 1rem;">Password Protect</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Secure your links</p>
+                </div>
+                <div class="glass-card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📱</div>
+                    <h3 style="font-weight: 700; font-size: 1rem;">QR Code</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Download QR for any link</p>
+                </div>
+                <div class="glass-card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🌐</div>
+                    <h3 style="font-weight: 700; font-size: 1rem;">Custom Domains</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Branded short links</p>
+                </div>
+            </div>
+
+            <!-- Live Users -->
             <div class="glass-card fade-in" style="margin-top: 2rem;">
                 <h3 style="font-weight: 700;">👥 Live Users</h3>
                 <p style="color: var(--text-muted); margin-bottom: 0.5rem;">
@@ -1449,24 +1568,6 @@
                     <% } else { %>
                         <span style="color: var(--text-muted);">No users online</span>
                     <% } %>
-                </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
-                <div class="glass-card" style="text-align: center;">
-                    <div style="font-size: 3rem; margin-bottom: 0.5rem;">♾️</div>
-                    <h3 style="font-weight: 700;">Unlimited Links</h3>
-                    <p style="color: var(--text-muted); font-size: 0.9rem;">Create as many short links as you want, no limits!</p>
-                </div>
-                <div class="glass-card" style="text-align: center;">
-                    <div style="font-size: 3rem; margin-bottom: 0.5rem;">🔄</div>
-                    <h3 style="font-weight: 700;">Updateable Links</h3>
-                    <p style="color: var(--text-muted); font-size: 0.9rem;">Change destination URL anytime, all short links update automatically</p>
-                </div>
-                <div class="glass-card" style="text-align: center;">
-                    <div style="font-size: 3rem; margin-bottom: 0.5rem;">📊</div>
-                    <h3 style="font-weight: 700;">Advanced Analytics</h3>
-                    <p style="color: var(--text-muted); font-size: 0.9rem;">Track clicks, countries, cities and more with detailed charts</p>
                 </div>
             </div>
         <% } %>
@@ -1506,6 +1607,25 @@
                     </div>
                 </div>
 
+                <!-- ===== DOMAINS SECTION ===== -->
+                <div class="glass-card" style="margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 0.5rem; font-weight: 700;">🌐 Available Domains</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+                        Choose a domain for your short links
+                    </p>
+                    
+                    <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+                        <% if (typeof domains !== 'undefined' && domains && domains.length > 0) { %>
+                            <% domains.forEach(function(domain) { %>
+                                <span style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1rem; background: var(--glass); border-radius: 50px; border: 1px solid var(--glass-border);">
+                                    🌐 <span style="color: var(--accent);"><%= domain.domain %></span>
+                                    <span style="color: var(--text-muted); font-size: 0.7rem;"><%= domain.description || '' %></span>
+                                </span>
+                            <% }); %>
+                        <% } %>
+                    </div>
+                </div>
+
                 <!-- ========================================================== -->
                 <!-- ANALYTICS SECTION -->
                 <!-- ========================================================== -->
@@ -1513,19 +1633,17 @@
                     <h3 style="margin-bottom: 1rem; font-weight: 700;">📈 Link Analytics</h3>
                     
                     <div class="analytics-grid">
-                        <!-- Chart -->
                         <div class="chart-container">
                             <canvas id="analyticsChart"></canvas>
                         </div>
                         
-                        <!-- Stats -->
                         <div class="analytics-stats">
                             <div class="stat-item">
                                 <span class="label">📊 Total Clicks</span>
                                 <span class="value"><%= typeof totalClicks !== 'undefined' ? totalClicks : 0 %></span>
                             </div>
                             <div class="stat-item">
-                                <span class="label">📅 Today's Clicks</span>
+                                <span class="label">📅 Today</span>
                                 <span class="value success"><%= typeof todayClicks !== 'undefined' ? todayClicks : 0 %></span>
                             </div>
                             <div class="stat-item">
@@ -1533,71 +1651,51 @@
                                 <span class="value"><%= typeof weekClicks !== 'undefined' ? weekClicks : 0 %></span>
                             </div>
                             <div class="stat-item">
-                                <span class="label">🚀 Most Clicked Link</span>
-                                <span class="value"><%= typeof topLink !== 'undefined' && topLink ? topLink.clicks : 0 %> clicks</span>
+                                <span class="label">📊 This Month</span>
+                                <span class="value"><%= typeof monthClicks !== 'undefined' ? monthClicks : 0 %></span>
                             </div>
                             <div class="stat-item">
-                                <span class="label">🤖 Bot Clicks (Blocked)</span>
+                                <span class="label">🤖 Bot Clicks</span>
                                 <span class="value danger"><%= typeof botClicks !== 'undefined' ? botClicks : 0 %></span>
                             </div>
                             <div class="stat-item">
                                 <span class="label">🟢 Real Clicks</span>
                                 <span class="value success"><%= typeof realClicks !== 'undefined' ? realClicks : 0 %></span>
                             </div>
+                            <div class="stat-item">
+                                <span class="label">📊 Click Rate</span>
+                                <span class="value"><%= typeof clickRate !== 'undefined' ? clickRate : 0 %>%</span>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <!-- Click Rate Info -->
-                    <div style="margin-top: 1rem; padding: 1rem; background: var(--glass); border-radius: 12px; border: 1px solid var(--glass-border);">
-                        <p style="color: var(--text-muted); font-size: 0.85rem;">
-                            📊 <strong style="color: var(--accent);"><%= typeof clickRate !== 'undefined' ? clickRate : 0 %>%</strong> 
-                            of your clicks are from real users. 
-                            <%= typeof botClicks !== 'undefined' && botClicks > 0 ? `🤖 ${botClicks} bot clicks were blocked automatically.` : '🎉 No bot clicks detected!' %>
-                        </p>
                     </div>
                 </div>
 
-                <!-- ========================================================== -->
-                <!-- COUNTRY & CITY STATS SECTION -->
-                <!-- ========================================================== -->
+                <!-- ===== LOCATION + DEVICE STATS ===== -->
                 <div class="glass-card" style="margin-bottom: 2rem;">
-                    <h3 style="margin-bottom: 0.5rem; font-weight: 700;">🌍 Location Analytics</h3>
+                    <h3 style="margin-bottom: 0.5rem; font-weight: 700;">🌍 Visitor Analytics</h3>
                     <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
-                        See which countries and cities your clicks are coming from
+                        See where your visitors are coming from and what devices they use
                     </p>
                     
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="stats-grid-2col">
                         <!-- Countries -->
                         <div>
-                            <h4 style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.8rem;">🏳️ Top Countries</h4>
+                            <h4 style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.5rem;">🏳️ Top Countries</h4>
                             <div class="country-grid">
                                 <% if (typeof countryStats !== 'undefined' && countryStats && countryStats.length > 0) { %>
                                     <% const maxCount = countryStats[0] ? countryStats[0].count : 1; %>
                                     <% countryStats.forEach(function(country) { 
                                         const percentage = Math.round((country.count / maxCount) * 100);
+                                        const countryInfo = typeof countries !== 'undefined' && countries[country.countryCode] ? countries[country.countryCode] : null;
+                                        const flag = countryInfo ? countryInfo.flag : '🌍';
+                                        const name = countryInfo ? countryInfo.name : (country.country || 'Unknown');
                                     %>
                                         <div class="country-item">
                                             <span class="country-name">
-                                                <span class="country-flag">
-                                                    <%= country.countryCode === 'BD' ? '🇧🇩' : 
-                                                       country.countryCode === 'US' ? '🇺🇸' : 
-                                                       country.countryCode === 'GB' ? '🇬🇧' : 
-                                                       country.countryCode === 'IN' ? '🇮🇳' : 
-                                                       country.countryCode === 'CA' ? '🇨🇦' : 
-                                                       country.countryCode === 'AU' ? '🇦🇺' : 
-                                                       country.countryCode === 'DE' ? '🇩🇪' : 
-                                                       country.countryCode === 'FR' ? '🇫🇷' : 
-                                                       country.countryCode === 'JP' ? '🇯🇵' : 
-                                                       country.countryCode === 'CN' ? '🇨🇳' : 
-                                                       country.countryCode === 'RU' ? '🇷🇺' : 
-                                                       country.countryCode === 'BR' ? '🇧🇷' : 
-                                                       country.countryCode === 'NG' ? '🇳🇬' : 
-                                                       country.countryCode === 'PK' ? '🇵🇰' : 
-                                                       country.countryCode === 'EG' ? '🇪🇬' : '🌍' %>
-                                                </span>
-                                                <span><%= country.country || 'Unknown' %></span>
+                                                <span class="country-flag"><%= flag %></span>
+                                                <span><%= name %></span>
                                             </span>
-                                            <span style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <span style="display: flex; align-items: center; gap: 0.3rem;">
                                                 <span class="country-clicks"><%= country.count %></span>
                                                 <div class="country-bar">
                                                     <div class="bar-fill" style="width: <%= percentage %>%;"></div>
@@ -1606,38 +1704,33 @@
                                         </div>
                                     <% }); %>
                                 <% } else { %>
-                                    <p style="color: var(--text-muted); grid-column: 1 / -1; text-align: center; padding: 1rem;">
-                                        🌍 No location data yet. Start sharing your links!
+                                    <p style="color: var(--text-muted); grid-column: 1 / -1; text-align: center; padding: 0.5rem; font-size: 0.85rem;">
+                                        No country data yet
                                     </p>
                                 <% } %>
                             </div>
                         </div>
                         
-                        <!-- City Stats -->
+                        <!-- Devices -->
                         <div>
-                            <h4 style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.8rem;">📍 Top Cities</h4>
-                            <div class="country-grid">
-                                <% if (typeof cityStats !== 'undefined' && cityStats && cityStats.length > 0) { %>
-                                    <% const maxCityCount = cityStats[0] ? cityStats[0].count : 1; %>
-                                    <% cityStats.forEach(function(city) { 
-                                        const percentage = Math.round((city.count / maxCityCount) * 100);
-                                    %>
-                                        <div class="country-item">
-                                            <span class="country-name">
-                                                <span style="font-size: 1.3rem;">📍</span>
-                                                <span><%= city.city || 'Unknown' %></span>
+                            <h4 style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.5rem;">📱 Devices & Browsers</h4>
+                            <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                                <% if (typeof deviceStats !== 'undefined' && deviceStats && deviceStats.length > 0) { %>
+                                    <% deviceStats.forEach(function(device) { %>
+                                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0.6rem; background: var(--glass); border-radius: 6px; border: 1px solid var(--glass-border);">
+                                            <span class="device-tag">
+                                                <%= device.device === 'Mobile' ? '📱' : device.device === 'Tablet' ? '📲' : '💻' %>
+                                                <%= device.device || 'Unknown' %>
+                                                <span style="color: var(--text-muted); font-size: 0.65rem;">
+                                                    (<%= device.browser || 'Unknown' %> / <%= device.os || 'Unknown' %>)
+                                                </span>
                                             </span>
-                                            <span style="display: flex; align-items: center; gap: 0.5rem;">
-                                                <span class="country-clicks"><%= city.count %></span>
-                                                <div class="country-bar">
-                                                    <div class="bar-fill" style="width: <%= percentage %>%;"></div>
-                                                </div>
-                                            </span>
+                                            <span style="color: var(--accent); font-weight: 600; font-size: 0.8rem;"><%= device.count %></span>
                                         </div>
                                     <% }); %>
                                 <% } else { %>
-                                    <p style="color: var(--text-muted); grid-column: 1 / -1; text-align: center; padding: 1rem;">
-                                        📍 No city data yet. Start sharing your links!
+                                    <p style="color: var(--text-muted); text-align: center; padding: 0.5rem; font-size: 0.85rem;">
+                                        No device data yet
                                     </p>
                                 <% } %>
                             </div>
@@ -1645,7 +1738,7 @@
                     </div>
                 </div>
 
-                <!-- Quick Create Form -->
+                <!-- ===== CREATE LINK FORM ===== -->
                 <div class="glass-card" style="margin-bottom: 2rem;">
                     <h3 style="margin-bottom: 0.5rem; font-weight: 700;">🔗 Create New Short Link</h3>
                     <form action="/shorten" method="POST" class="shorten-form-inline">
@@ -1657,11 +1750,30 @@
                             <input type="text" class="form-control" name="customSlug"
                                    placeholder="Custom slug (optional)">
                         </div>
+                        <div class="form-group" style="min-width: 150px;">
+                            <select class="form-control" name="domainId" style="padding: 0.7rem 1rem;">
+                                <option value="">🔗 Default</option>
+                                <% if (typeof domains !== 'undefined' && domains) { %>
+                                    <% domains.forEach(function(domain) { %>
+                                        <option value="<%= domain.id %>">🌐 <%= domain.domain %></option>
+                                    <% }); %>
+                                <% } %>
+                            </select>
+                        </div>
+                        <div class="form-group" style="min-width: 120px;">
+                            <select class="form-control" name="expiresIn" style="padding: 0.7rem 1rem;">
+                                <option value="">Never</option>
+                                <option value="1d">1 Day</option>
+                                <option value="7d">7 Days</option>
+                                <option value="30d">30 Days</option>
+                                <option value="90d">90 Days</option>
+                            </select>
+                        </div>
                         <button type="submit" class="btn btn-primary">🚀 Shorten</button>
                     </form>
                 </div>
 
-                <!-- Links List -->
+                <!-- ===== LINKS LIST ===== -->
                 <h2 style="margin-bottom: 1.5rem; font-weight: 700;">My Short Links</h2>
 
                 <% if (typeof links !== 'undefined' && links && links.length > 0) { %>
@@ -1672,6 +1784,9 @@
                         const linkOriginal = link.originalUrl || '';
                         const linkClicks = link.clicks || 0;
                         const linkCreated = link.createdAt || '';
+                        const linkTitle = link.title || '';
+                        const isExpired = link.isExpired || false;
+                        const isActive = link.isActive !== undefined ? link.isActive : true;
                     %>
                         <div class="link-card">
                             <div class="link-top">
@@ -1679,18 +1794,35 @@
                                     <a href="/<%= linkCode %>" target="_blank" class="link-url">
                                         🔗 <%= linkUrl %>
                                     </a>
+                                    <% if (linkTitle) { %>
+                                        <div class="link-title"><%= linkTitle %></div>
+                                    <% } %>
                                     <div class="link-original">→ <%= linkOriginal %></div>
                                 </div>
-                                <button class="btn btn-secondary btn-sm copy-link-btn" 
-                                        data-url="<%= linkUrl %>"
-                                        style="flex-shrink: 0; cursor: pointer;">
-                                    📋 Copy
-                                </button>
+                                <div style="display: flex; gap: 0.3rem; flex-wrap: wrap;">
+                                    <button class="btn btn-secondary btn-sm copy-link-btn" 
+                                            data-url="<%= linkUrl %>"
+                                            style="flex-shrink: 0; cursor: pointer;">
+                                        📋 Copy
+                                    </button>
+                                    <button class="btn btn-secondary btn-sm" 
+                                            onclick="generateQR('<%= linkCode %>')"
+                                            style="flex-shrink: 0; cursor: pointer;">
+                                        📱 QR
+                                    </button>
+                                </div>
                             </div>
                             <div class="link-meta">
                                 <span>👁️ <%= linkClicks %> clicks</span>
                                 <span>📅 <%= linkCreated %></span>
                                 <span>🆔 <%= linkCode %></span>
+                                <% if (isExpired) { %>
+                                    <span class="badge badge-expired">⏰ Expired</span>
+                                <% } else if (!isActive) { %>
+                                    <span class="badge badge-inactive">⛔ Inactive</span>
+                                <% } else { %>
+                                    <span class="badge badge-active">✅ Active</span>
+                                <% } %>
                             </div>
                             <div class="link-actions">
                                 <form action="/update-link/<%= linkId %>" method="POST" class="edit-form">
@@ -1700,6 +1832,12 @@
                                     </div>
                                 </form>
                                 <div class="btn-group">
+                                    <form action="/toggle-link/<%= linkId %>" method="POST" style="display: inline;">
+                                        <button type="submit" class="btn btn-secondary btn-sm"
+                                                onclick="return confirm('Toggle this link?')">
+                                            <%= isActive ? '⏸️' : '▶️' %>
+                                        </button>
+                                    </form>
                                     <form action="/delete-link/<%= linkId %>" method="POST" style="display: inline;">
                                         <button type="submit" class="btn btn-danger btn-sm"
                                                 onclick="return confirm('Are you sure you want to delete this link?')">
@@ -1926,6 +2064,35 @@
                 toast.style.transition = 'opacity 0.4s';
                 setTimeout(() => toast.remove(), 400);
             }, 3000);
+        }
+
+        // ============================================================
+        // QR CODE GENERATOR
+        // ============================================================
+        async function generateQR(shortCode) {
+            try {
+                const response = await fetch(`/qr/${shortCode}`);
+                const data = await response.json();
+                
+                if (data.qr) {
+                    // Open QR in new window
+                    const win = window.open('', '_blank');
+                    win.document.write(`
+                        <html>
+                        <head><title>QR Code</title></head>
+                        <body style="background:#0A0A0F;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;font-family:Arial;flex-direction:column;">
+                            <div style="background:white;padding:20px;border-radius:12px;">
+                                <img src="${data.qr}" style="max-width:300px;width:100%;">
+                            </div>
+                            <p style="color:#B0B0C8;margin-top:20px;font-size:14px;">Scan to visit: ${data.url}</p>
+                            <button onclick="window.close()" style="margin-top:10px;padding:8px 20px;background:#6C63FF;border:none;border-radius:8px;color:white;cursor:pointer;">Close</button>
+                        </body>
+                        </html>
+                    `);
+                }
+            } catch (error) {
+                showToast('❌ Failed to generate QR code');
+            }
         }
 
         // ============================================================
