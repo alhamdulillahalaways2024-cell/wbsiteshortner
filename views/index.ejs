@@ -126,6 +126,64 @@
         }
 
         /* ============================================================ */
+        /* DROPDOWN / SELECT FIX - White text visibility */
+        /* ============================================================ */
+        select.form-control {
+            color: #FFFFFF !important;
+            background: rgba(255, 255, 255, 0.06) !important;
+            border: 1px solid var(--glass-border) !important;
+            border-radius: 12px !important;
+            padding: 0.7rem 1rem !important;
+            font-size: 0.9rem !important;
+            font-family: 'Inter', sans-serif !important;
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            width: 100%;
+        }
+
+        select.form-control {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236C63FF' d='M6 8L1 3h10z'/%3E%3C/svg%3E") !important;
+            background-repeat: no-repeat !important;
+            background-position: right 12px center !important;
+            padding-right: 36px !important;
+        }
+
+        select.form-control option {
+            background: #1A1A2E !important;
+            color: #FFFFFF !important;
+            padding: 10px 12px !important;
+            font-size: 0.9rem !important;
+        }
+
+        select.form-control option:checked {
+            background: #6C63FF !important;
+            color: #FFFFFF !important;
+        }
+
+        select.form-control option:hover {
+            background: rgba(108, 99, 255, 0.3) !important;
+            color: #FFFFFF !important;
+        }
+
+        select.form-control:focus {
+            border-color: #6C63FF !important;
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15) !important;
+            outline: none !important;
+        }
+
+        select.form-control:-moz-focusring {
+            color: transparent !important;
+            text-shadow: 0 0 0 #FFFFFF !important;
+        }
+
+        select.form-control::-ms-expand {
+            display: none !important;
+        }
+
+        /* ============================================================ */
         /* GLASSMORPHISM CARDS */
         /* ============================================================ */
         .glass-card {
@@ -1738,7 +1796,9 @@
                     </div>
                 </div>
 
-                <!-- ===== CREATE LINK FORM ===== -->
+                <!-- ========================================================== -->
+                <!-- CREATE LINK FORM - FIXED DROPDOWN -->
+                <!-- ========================================================== -->
                 <div class="glass-card" style="margin-bottom: 2rem;">
                     <h3 style="margin-bottom: 0.5rem; font-weight: 700;">🔗 Create New Short Link</h3>
                     <form action="/shorten" method="POST" class="shorten-form-inline">
@@ -1750,25 +1810,30 @@
                             <input type="text" class="form-control" name="customSlug"
                                    placeholder="Custom slug (optional)">
                         </div>
-                        <div class="form-group" style="min-width: 150px;">
-                            <select class="form-control" name="domainId" style="padding: 0.7rem 1rem;">
-                                <option value="">🔗 Default</option>
+                        
+                        <!-- ===== DOMAIN SELECT - FIXED ===== -->
+                        <div class="form-group" style="min-width: 160px;">
+                            <select class="form-control" name="domainId" style="padding: 0.7rem 1rem; color: #FFFFFF !important; background: rgba(255,255,255,0.05) !important;">
+                                <option value="" style="background: #1A1A2E; color: #FFFFFF;">🔗 Default</option>
                                 <% if (typeof domains !== 'undefined' && domains) { %>
                                     <% domains.forEach(function(domain) { %>
-                                        <option value="<%= domain.id %>">🌐 <%= domain.domain %></option>
+                                        <option value="<%= domain.id %>" style="background: #1A1A2E; color: #FFFFFF;">🌐 <%= domain.domain %></option>
                                     <% }); %>
                                 <% } %>
                             </select>
                         </div>
+                        
+                        <!-- ===== EXPIRY SELECT - FIXED ===== -->
                         <div class="form-group" style="min-width: 120px;">
-                            <select class="form-control" name="expiresIn" style="padding: 0.7rem 1rem;">
-                                <option value="">Never</option>
-                                <option value="1d">1 Day</option>
-                                <option value="7d">7 Days</option>
-                                <option value="30d">30 Days</option>
-                                <option value="90d">90 Days</option>
+                            <select class="form-control" name="expiresIn" style="padding: 0.7rem 1rem; color: #FFFFFF !important; background: rgba(255,255,255,0.05) !important;">
+                                <option value="" style="background: #1A1A2E; color: #FFFFFF;">Never</option>
+                                <option value="1d" style="background: #1A1A2E; color: #FFFFFF;">1 Day</option>
+                                <option value="7d" style="background: #1A1A2E; color: #FFFFFF;">7 Days</option>
+                                <option value="30d" style="background: #1A1A2E; color: #FFFFFF;">30 Days</option>
+                                <option value="90d" style="background: #1A1A2E; color: #FFFFFF;">90 Days</option>
                             </select>
                         </div>
+                        
                         <button type="submit" class="btn btn-primary">🚀 Shorten</button>
                     </form>
                 </div>
@@ -2075,7 +2140,6 @@
                 const data = await response.json();
                 
                 if (data.qr) {
-                    // Open QR in new window
                     const win = window.open('', '_blank');
                     win.document.write(`
                         <html>
