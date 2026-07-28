@@ -1,4 +1,4 @@
-// server.js - Only Main Domain
+// server.js - Complete Working Version with Online Users Fix
 const express = require('express');
 const session = require('express-session');
 const sqlite3 = require('sqlite3').verbose();
@@ -15,6 +15,8 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
 const SKIP_VALIDATION = process.env.SKIP_VALIDATION === 'true' || !TELEGRAM_BOT_TOKEN;
 
 console.log('🔗 BASE_URL:', BASE_URL);
+console.log('📦 TELEGRAM_BOT_TOKEN:', TELEGRAM_BOT_TOKEN ? '✅ Set' : '❌ Not Set');
+console.log('🔓 SKIP_VALIDATION:', SKIP_VALIDATION ? '✅ Yes' : '❌ No');
 
 // ============ Setup ============
 app.set('view engine', 'ejs');
@@ -34,7 +36,7 @@ const db = new sqlite3.Database('./database.db', (err) => {
     }
 });
 
-// ============ COUNTRIES WITH FLAGS ============
+// ============ ALL COUNTRIES WITH FLAGS ============
 const COUNTRIES = {
     'BD': { name: 'Bangladesh', flag: '🇧🇩' },
     'US': { name: 'United States', flag: '🇺🇸' },
@@ -208,9 +210,23 @@ app.use(function(req, res, next) {
     res.locals.page = req.path === '/' ? 'home' : req.path.slice(1);
     res.locals.countries = COUNTRIES;
     
-    db.all('SELECT id, name FROM users WHERE isOnline = 1', function(err, users) {
-        res.locals.onlineUsers = users ? users.length : 0;
-        res.locals.onlineUserList = users || [];
+    // ===== FIX: Get online users with correct data =====
+    db.all('SELECT id, name, display_name, username FROM users WHERE isOnline = 1', function(err, users) {
+        if (err) {
+            console.error('❌ Online users error:', err);
+            res.locals.onlineUsers = 0;
+            res.locals.onlineUserList = [];
+        } else {
+            // Format user names for display
+            const formattedUsers = (users || []).map(function(u) {
+                return {
+                    id: u.id,
+                    name: u.display_name || u.name || u.username || 'User'
+                };
+            });
+            res.locals.onlineUsers = formattedUsers.length;
+            res.locals.onlineUserList = formattedUsers;
+        }
         next();
     });
 });
@@ -221,11 +237,18 @@ function generateShortCode() {
 }
 
 function getOnlineUsers(callback) {
-    db.all('SELECT id, name FROM users WHERE isOnline = 1', function(err, users) {
+    db.all('SELECT id, name, display_name, username FROM users WHERE isOnline = 1', function(err, users) {
         if (err) {
+            console.error('❌ Online users error:', err);
             return callback(0, []);
         }
-        callback(users ? users.length : 0, users || []);
+        const formattedUsers = (users || []).map(function(u) {
+            return {
+                id: u.id,
+                name: u.display_name || u.name || u.username || 'User'
+            };
+        });
+        callback(formattedUsers.length, formattedUsers);
     });
 }
 
@@ -324,6 +347,7 @@ app.post('/login', function(req, res) {
         }
 
         if (user) {
+            // ===== FIX: Set isOnline = 1 when user logs in =====
             db.run(`UPDATE users SET 
                     username = ?, 
                     first_name = ?, 
@@ -361,12 +385,14 @@ app.post('/login', function(req, res) {
                     });
                 });
         } else {
+            // ===== FIX: Set isOnline = 1 when new user registers =====
             db.run(`INSERT INTO users 
                     (telegram_id, username, first_name, last_name, display_name, email, isOnline, isValidated, last_login) 
                     VALUES (?, ?, ?, ?, ?, ?, 1, 1, CURRENT_TIMESTAMP)`,
                 [cleanTelegramId, username, firstName, lastName, firstName + ' ' + lastName, email], 
                 function(err) {
                     if (err) {
+                        console.error('Registration error:', err);
                         return res.render('index', { page: 'login', error: 'Registration failed.', success: null, info: null });
                     }
                     
@@ -493,10 +519,16 @@ app.post('/api/update-profile', function(req, res) {
         });
 });
 
-// Logout
+// ============================================================
+// LOGOUT - FIX: Set isOnline = 0
+// ============================================================
 app.post('/logout', function(req, res) {
     if (req.session.user) {
-        db.run('UPDATE users SET isOnline = 0 WHERE id = ?', [req.session.user.id]);
+        db.run('UPDATE users SET isOnline = 0 WHERE id = ?', [req.session.user.id], function(err) {
+            if (err) {
+                console.error('❌ Logout error:', err);
+            }
+        });
     }
     req.session.destroy(function() {
         res.redirect('/');
@@ -504,13 +536,14 @@ app.post('/logout', function(req, res) {
 });
 
 // ============================================================
-// DASHBOARD
+// DASHBOARD - FIX: Update online status
 // ============================================================
 app.get('/dashboard', function(req, res) {
     if (!req.session.user) {
         return res.redirect('/login');
     }
 
+    // ===== FIX: Update online status when user visits dashboard =====
     db.run('UPDATE users SET isOnline = 1, last_login = CURRENT_TIMESTAMP WHERE id = ?', [req.session.user.id]);
 
     db.get('SELECT * FROM users WHERE id = ?', [req.session.user.id], function(err, userData) {
@@ -550,6 +583,7 @@ app.get('/dashboard', function(req, res) {
             db.run('UPDATE users SET totalLinks = ?, totalClicks = ? WHERE id = ?', 
                 [links ? links.length : 0, totalClicks, req.session.user.id]);
 
+            // ===== FIX: Get online users count =====
             getOnlineUsers(function(count, users) {
                 db.all(`SELECT 
                             country,
@@ -661,7 +695,7 @@ app.post('/shorten', function(req, res) {
 });
 
 // ============================================================
-// REDIRECT - Only Main Domain
+// REDIRECT
 // ============================================================
 app.get('/:shortCode', async function(req, res) {
     var shortCode = req.params.shortCode;
@@ -816,13 +850,18 @@ app.get('/qr/:shortCode', function(req, res) {
 // ============================================================
 
 app.get('/api/online-users', function(req, res) {
-    db.all('SELECT name FROM users WHERE isOnline = 1', function(err, users) {
+    db.all('SELECT id, name, display_name, username FROM users WHERE isOnline = 1', function(err, users) {
         if (err) {
             return res.json({ count: 0, users: [] });
         }
+        const formattedUsers = (users || []).map(function(u) {
+            return {
+                name: u.display_name || u.name || u.username || 'User'
+            };
+        });
         res.json({
-            count: users ? users.length : 0,
-            users: users || []
+            count: formattedUsers.length,
+            users: formattedUsers
         });
     });
 });
