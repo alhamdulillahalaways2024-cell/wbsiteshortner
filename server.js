@@ -1,4 +1,4 @@
-// server.js - Complete Working Version with All Fixes
+// server.js - Only Main Domain
 const express = require('express');
 const session = require('express-session');
 const sqlite3 = require('sqlite3').verbose();
@@ -15,8 +15,6 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
 const SKIP_VALIDATION = process.env.SKIP_VALIDATION === 'true' || !TELEGRAM_BOT_TOKEN;
 
 console.log('🔗 BASE_URL:', BASE_URL);
-console.log('📦 TELEGRAM_BOT_TOKEN:', TELEGRAM_BOT_TOKEN ? '✅ Set' : '❌ Not Set');
-console.log('🔓 SKIP_VALIDATION:', SKIP_VALIDATION ? '✅ Yes' : '❌ No');
 
 // ============ Setup ============
 app.set('view engine', 'ejs');
@@ -36,7 +34,7 @@ const db = new sqlite3.Database('./database.db', (err) => {
     }
 });
 
-// ============ ALL COUNTRIES WITH FLAGS ============
+// ============ COUNTRIES WITH FLAGS ============
 const COUNTRIES = {
     'BD': { name: 'Bangladesh', flag: '🇧🇩' },
     'US': { name: 'United States', flag: '🇺🇸' },
@@ -133,16 +131,6 @@ const COUNTRIES = {
     'XX': { name: 'Unknown', flag: '🌍' }
 };
 
-// ============ PRE-ADDED DOMAINS ============
-const PRE_ADDED_DOMAINS = [
-    { domain: 'shortlink.click', description: 'Default' },
-    { domain: 'linkhub.click', description: 'Hub' },
-    { domain: 'urlcut.click', description: 'Cutter' },
-    { domain: 'tinyurl.click', description: 'Tiny' },
-    { domain: 'fastlink.click', description: 'Fast' },
-    { domain: 'easylink.click', description: 'Easy' }
-];
-
 // ============================================================
 // CREATE TABLES
 // ============================================================
@@ -165,20 +153,11 @@ db.serialize(function() {
         totalClicks INTEGER DEFAULT 0
     )`);
 
-    db.run(`CREATE TABLE IF NOT EXISTS domains (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        domain TEXT UNIQUE,
-        description TEXT,
-        isActive INTEGER DEFAULT 1,
-        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
-    )`);
-
     db.run(`CREATE TABLE IF NOT EXISTS links (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         shortCode TEXT UNIQUE,
         originalUrl TEXT,
         userId INTEGER,
-        domainId INTEGER,
         title TEXT,
         description TEXT,
         clicks INTEGER DEFAULT 0,
@@ -187,8 +166,7 @@ db.serialize(function() {
         password TEXT,
         createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
         updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY(userId) REFERENCES users(id),
-        FOREIGN KEY(domainId) REFERENCES domains(id)
+        FOREIGN KEY(userId) REFERENCES users(id)
     )`);
 
     db.run(`CREATE TABLE IF NOT EXISTS click_logs (
@@ -207,11 +185,6 @@ db.serialize(function() {
         isBot INTEGER DEFAULT 0,
         FOREIGN KEY(linkId) REFERENCES links(id)
     )`);
-
-    // Insert pre-added domains
-    PRE_ADDED_DOMAINS.forEach(function(d) {
-        db.run(`INSERT OR IGNORE INTO domains (domain, description) VALUES (?, ?)`, [d.domain, d.description]);
-    });
     
     console.log('✅ Database tables created successfully');
 });
@@ -250,27 +223,21 @@ function generateShortCode() {
 function getOnlineUsers(callback) {
     db.all('SELECT id, name FROM users WHERE isOnline = 1', function(err, users) {
         if (err) {
-            console.error('❌ Online users error:', err);
             return callback(0, []);
         }
         callback(users ? users.length : 0, users || []);
     });
 }
 
-// ============ GET LOCATION FROM IP - FIXED ============
+// ============ GET LOCATION FROM IP ============
 async function getLocationFromIP(ip) {
-    // Skip for localhost
     if (ip === '::1' || ip === '127.0.0.1' || ip === 'localhost' || ip === 'unknown') {
         return { country: 'Localhost', countryCode: 'LOCAL', city: 'Local' };
     }
 
     try {
-        // Using ip-api.com for location detection with proper headers
         const response = await axios.get(`http://ip-api.com/json/${ip}?fields=status,country,countryCode,city,lat,lon`, {
-            timeout: 8000,
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (compatible; Shortlink/1.0)'
-            }
+            timeout: 8000
         });
 
         if (response.data && response.data.status === 'success') {
@@ -282,8 +249,6 @@ async function getLocationFromIP(ip) {
         }
         return { country: 'Unknown', countryCode: 'XX', city: 'Unknown' };
     } catch (error) {
-        console.log('⚠️ IP Geolocation failed for IP:', ip, error.message);
-        // Try fallback API
         try {
             const fallbackResponse = await axios.get(`https://ipapi.co/${ip}/json/`, {
                 timeout: 5000
@@ -295,9 +260,7 @@ async function getLocationFromIP(ip) {
                     city: fallbackResponse.data.city || 'Unknown'
                 };
             }
-        } catch (fallbackError) {
-            console.log('⚠️ Fallback IP Geolocation also failed');
-        }
+        } catch (fallbackError) {}
         return { country: 'Unknown', countryCode: 'XX', city: 'Unknown' };
     }
 }
@@ -404,7 +367,6 @@ app.post('/login', function(req, res) {
                 [cleanTelegramId, username, firstName, lastName, firstName + ' ' + lastName, email], 
                 function(err) {
                     if (err) {
-                        console.error('Registration error:', err);
                         return res.render('index', { page: 'login', error: 'Registration failed.', success: null, info: null });
                     }
                     
@@ -549,103 +511,90 @@ app.get('/dashboard', function(req, res) {
         return res.redirect('/login');
     }
 
-    // Update online status
     db.run('UPDATE users SET isOnline = 1, last_login = CURRENT_TIMESTAMP WHERE id = ?', [req.session.user.id]);
 
     db.get('SELECT * FROM users WHERE id = ?', [req.session.user.id], function(err, userData) {
         if (err) userData = {};
 
-        db.all('SELECT * FROM domains WHERE isActive = 1 ORDER BY domain', function(err, domains) {
-            if (err) domains = [];
+        db.all(`SELECT * FROM links WHERE userId = ? ORDER BY createdAt DESC`, [req.session.user.id], function(err, links) {
+            if (err) {
+                return res.redirect('/');
+            }
 
-            db.all(`SELECT l.*, d.domain as domainName 
-                    FROM links l 
-                    LEFT JOIN domains d ON l.domainId = d.id 
-                    WHERE l.userId = ? 
-                    ORDER BY l.createdAt DESC`, [req.session.user.id], function(err, links) {
-                if (err) {
-                    return res.redirect('/');
+            var totalClicks = 0;
+            if (links) {
+                for (var i = 0; i < links.length; i++) {
+                    totalClicks = totalClicks + (links[i].clicks || 0);
                 }
+            }
+            
+            var linksWithUrl = [];
+            if (links) {
+                for (var j = 0; j < links.length; j++) {
+                    var link = links[j];
+                    linksWithUrl.push({
+                        id: link.id,
+                        shortCode: link.shortCode,
+                        originalUrl: link.originalUrl,
+                        clicks: link.clicks || 0,
+                        createdAt: link.createdAt,
+                        title: link.title || '',
+                        description: link.description || '',
+                        isActive: link.isActive,
+                        isExpired: link.expiresAt ? new Date(link.expiresAt) < new Date() : false,
+                        shortUrl: BASE_URL + '/' + link.shortCode
+                    });
+                }
+            }
 
-                var totalClicks = 0;
-                if (links) {
-                    for (var i = 0; i < links.length; i++) {
-                        totalClicks = totalClicks + (links[i].clicks || 0);
-                    }
-                }
-                
-                var linksWithUrl = [];
-                if (links) {
-                    for (var j = 0; j < links.length; j++) {
-                        var link = links[j];
-                        // Use BASE_URL for default domain, or custom domain if set
-                        var domain = link.domainName ? link.domainName : BASE_URL.replace(/^https?:\/\//, '');
-                        linksWithUrl.push({
-                            id: link.id,
-                            shortCode: link.shortCode,
-                            originalUrl: link.originalUrl,
-                            clicks: link.clicks || 0,
-                            createdAt: link.createdAt,
-                            title: link.title || '',
-                            description: link.description || '',
-                            isActive: link.isActive,
-                            isExpired: link.expiresAt ? new Date(link.expiresAt) < new Date() : false,
-                            shortUrl: 'https://' + domain + '/' + link.shortCode
+            db.run('UPDATE users SET totalLinks = ?, totalClicks = ? WHERE id = ?', 
+                [links ? links.length : 0, totalClicks, req.session.user.id]);
+
+            getOnlineUsers(function(count, users) {
+                db.all(`SELECT 
+                            country,
+                            countryCode,
+                            COUNT(*) as count 
+                        FROM click_logs 
+                        WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
+                        AND isBot = 0
+                        AND country IS NOT NULL
+                        AND country != ''
+                        GROUP BY countryCode 
+                        ORDER BY count DESC 
+                        LIMIT 20`,
+                    [req.session.user.id], function(err, countryStats) {
+                        
+                        if (err) countryStats = [];
+
+                        res.render('index', {
+                            page: 'dashboard',
+                            user: req.session.user,
+                            userData: userData,
+                            links: linksWithUrl,
+                            totalClicks: totalClicks,
+                            onlineUsers: count,
+                            onlineUserList: users,
+                            countries: COUNTRIES,
+                            error: null,
+                            success: null,
+                            info: null,
+                            shortUrl: null,
+                            todayClicks: 0,
+                            weekClicks: 0,
+                            monthClicks: 0,
+                            botClicks: 0,
+                            realClicks: 0,
+                            clickRate: 100,
+                            topLink: null,
+                            weekData: [0,0,0,0,0,0,0],
+                            countryStats: countryStats || [],
+                            cityStats: [],
+                            deviceStats: [],
+                            browserStats: [],
+                            osStats: []
                         });
-                    }
-                }
-
-                db.run('UPDATE users SET totalLinks = ?, totalClicks = ? WHERE id = ?', 
-                    [links ? links.length : 0, totalClicks, req.session.user.id]);
-
-                getOnlineUsers(function(count, users) {
-                    // Get country stats from click_logs
-                    db.all(`SELECT 
-                                country,
-                                countryCode,
-                                COUNT(*) as count 
-                            FROM click_logs 
-                            WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
-                            AND isBot = 0
-                            AND country IS NOT NULL
-                            AND country != ''
-                            GROUP BY countryCode 
-                            ORDER BY count DESC 
-                            LIMIT 20`,
-                        [req.session.user.id], function(err, countryStats) {
-                            
-                            if (err) countryStats = [];
-
-                            res.render('index', {
-                                page: 'dashboard',
-                                user: req.session.user,
-                                userData: userData,
-                                links: linksWithUrl,
-                                totalClicks: totalClicks,
-                                onlineUsers: count,
-                                onlineUserList: users,
-                                domains: domains || [],
-                                countries: COUNTRIES,
-                                error: null,
-                                success: null,
-                                info: null,
-                                shortUrl: null,
-                                todayClicks: 0,
-                                weekClicks: 0,
-                                monthClicks: 0,
-                                botClicks: 0,
-                                realClicks: 0,
-                                clickRate: 100,
-                                topLink: null,
-                                weekData: [0,0,0,0,0,0,0],
-                                countryStats: countryStats || [],
-                                cityStats: [],
-                                deviceStats: [],
-                                browserStats: [],
-                                osStats: []
-                            });
-                        });
-                });
+                    });
             });
         });
     });
@@ -661,7 +610,6 @@ app.post('/shorten', function(req, res) {
 
     var originalUrl = req.body.originalUrl;
     var customSlug = req.body.customSlug;
-    var domainId = req.body.domainId;
     var title = req.body.title;
     var description = req.body.description;
     var password = req.body.password;
@@ -696,13 +644,12 @@ app.post('/shorten', function(req, res) {
             expiresAt = now.toISOString();
         }
 
-        var insertDomainId = domainId && domainId !== 'default' ? domainId : null;
         var hashedPassword = password ? crypto.createHash('sha256').update(password).digest('hex') : null;
         
         db.run(`INSERT INTO links 
-                (shortCode, originalUrl, userId, domainId, title, description, password, expiresAt) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [shortCode, originalUrl, req.session.user.id, insertDomainId, 
+                (shortCode, originalUrl, userId, title, description, password, expiresAt) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [shortCode, originalUrl, req.session.user.id, 
              title || null, description || null, hashedPassword, expiresAt], 
             function(err) {
                 if (err) {
@@ -714,7 +661,7 @@ app.post('/shorten', function(req, res) {
 });
 
 // ============================================================
-// REDIRECT - FIXED: Works with all domains + Country Detection
+// REDIRECT - Only Main Domain
 // ============================================================
 app.get('/:shortCode', async function(req, res) {
     var shortCode = req.params.shortCode;
@@ -730,13 +677,8 @@ app.get('/:shortCode', async function(req, res) {
     var userAgent = req.headers['user-agent'] || '';
     var ip = req.ip || req.connection.remoteAddress || 'unknown';
     var referer = req.headers['referer'] || '';
-    var host = req.get('host') || '';
 
-    // Get link with domain info
-    db.get(`SELECT l.*, d.domain as domainName 
-            FROM links l 
-            LEFT JOIN domains d ON l.domainId = d.id 
-            WHERE l.shortCode = ?`, [shortCode], function(err, link) {
+    db.get('SELECT * FROM links WHERE shortCode = ?', [shortCode], function(err, link) {
         if (err || !link) {
             return res.status(404).send('Link not found');
         }
@@ -749,27 +691,12 @@ app.get('/:shortCode', async function(req, res) {
             return res.status(410).send('This link has expired');
         }
 
-        // ===== DOMAIN CHECK - FIXED =====
-        // If link has a custom domain, check if request came from that domain
-        if (link.domainName) {
-            var requestDomain = host.toLowerCase();
-            var linkDomain = link.domainName.toLowerCase();
-            // If domain doesn't match, redirect to the correct domain
-            if (requestDomain !== linkDomain) {
-                return res.redirect('https://' + linkDomain + '/' + shortCode);
-            }
-        }
-
-        // ===== COUNT CLICK WITH LOCATION =====
         db.run('UPDATE links SET clicks = clicks + 1 WHERE id = ?', [link.id], function(err) {
             if (err) {
                 console.error('❌ Click count error:', err);
             }
             
-            // Get location from IP - FIXED
             getLocationFromIP(ip).then(function(geoData) {
-                console.log('📍 Location detected:', geoData);
-                // Insert click log with country data
                 db.run(`INSERT INTO click_logs 
                         (linkId, ip, userAgent, referer, country, countryCode, city, isBot) 
                         VALUES (?, ?, ?, ?, ?, ?, ?, 0)`,
@@ -781,8 +708,6 @@ app.get('/:shortCode', async function(req, res) {
                         res.redirect(link.originalUrl);
                     });
             }).catch(function(error) {
-                console.error('❌ Location error:', error);
-                // Fallback - insert without location
                 db.run(`INSERT INTO click_logs 
                         (linkId, ip, userAgent, referer, isBot) 
                         VALUES (?, ?, ?, ?, 0)`,
