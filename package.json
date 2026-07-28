@@ -1,7 +1,7 @@
 {
   "name": "shortlink-pro",
   "version": "1.0.0",
-  "description": "This Person Is brand Shortlink - Complete Digital Platform",
+  "description": "This Person Is brand Shortlink",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -13,7 +13,8 @@
     "sqlite3": "^5.1.6",
     "ejs": "^3.1.9",
     "axios": "^1.6.0",
-    "qrcode": "^1.5.3"
+    "qrcode": "^1.5.3",
+    "moment-timezone": "^0.5.43"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
