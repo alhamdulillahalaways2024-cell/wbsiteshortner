@@ -1,4 +1,4 @@
-// server.js - Complete Digital Platform with All Features (FIXED)
+// server.js - Complete Digital Platform with All Features (FIXED - NO SYNTAX ERROR)
 const express = require('express');
 const session = require('express-session');
 const sqlite3 = require('sqlite3').verbose();
