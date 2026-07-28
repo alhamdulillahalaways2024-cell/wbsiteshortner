@@ -1472,7 +1472,7 @@
         }
 
         /* ============================================================ */
-        /* SHORTEN FORM INLINE */
+        /* SHORTEN FORM INLINE - NO DOMAIN SELECT */
         /* ============================================================ */
         .shorten-form-inline {
             display: flex;
@@ -2211,25 +2211,6 @@
                     </div>
                 </div>
 
-                <!-- ===== DOMAINS SECTION ===== -->
-                <div class="glass-card" style="margin-bottom: 2rem;">
-                    <h3 style="margin-bottom: 0.5rem; font-weight: 700;">🌐 Available Domains</h3>
-                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
-                        Choose a domain for your short links
-                    </p>
-                    
-                    <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
-                        <% if (typeof domains !== 'undefined' && domains && domains.length > 0) { %>
-                            <% domains.forEach(function(domain) { %>
-                                <span style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1rem; background: var(--glass); border-radius: 50px; border: 1px solid var(--glass-border);">
-                                    🌐 <span style="color: var(--accent);"><%= domain.domain %></span>
-                                    <span style="color: var(--text-muted); font-size: 0.7rem;"><%= domain.description || '' %></span>
-                                </span>
-                            <% }); %>
-                        <% } %>
-                    </div>
-                </div>
-
                 <!-- ========================================================== -->
                 <!-- ANALYTICS SECTION -->
                 <!-- ========================================================== -->
@@ -2343,7 +2324,7 @@
                 </div>
 
                 <!-- ========================================================== -->
-                <!-- CREATE LINK FORM -->
+                <!-- CREATE LINK FORM - NO DOMAIN SELECT -->
                 <!-- ========================================================== -->
                 <div class="glass-card" style="margin-bottom: 2rem;">
                     <h3 style="margin-bottom: 0.5rem; font-weight: 700;">🔗 Create New Short Link</h3>
@@ -2356,18 +2337,6 @@
                             <input type="text" class="form-control" name="customSlug"
                                    placeholder="Custom slug (optional)">
                         </div>
-                        
-                        <div class="form-group" style="min-width: 160px;">
-                            <select class="form-control" name="domainId">
-                                <option value="">🔗 Default</option>
-                                <% if (typeof domains !== 'undefined' && domains) { %>
-                                    <% domains.forEach(function(domain) { %>
-                                        <option value="<%= domain.id %>">🌐 <%= domain.domain %></option>
-                                    <% }); %>
-                                <% } %>
-                            </select>
-                        </div>
-                        
                         <div class="form-group" style="min-width: 120px;">
                             <select class="form-control" name="expiresIn">
                                 <option value="">Never</option>
@@ -2377,7 +2346,6 @@
                                 <option value="90d">90 Days</option>
                             </select>
                         </div>
-                        
                         <button type="submit" class="btn btn-primary">🚀 Shorten</button>
                     </form>
                 </div>
