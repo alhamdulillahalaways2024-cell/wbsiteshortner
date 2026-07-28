@@ -2210,9 +2210,9 @@
 
         <!-- ===== ALERTS ===== -->
         <% 
-            const queryError = typeof error !== 'undefined' ? error : null;
-            const querySuccess = typeof success !== 'undefined' ? success : null;
-            const queryInfo = typeof info !== 'undefined' ? info : null;
+            var queryError = typeof error !== 'undefined' ? error : null;
+            var querySuccess = typeof success !== 'undefined' ? success : null;
+            var queryInfo = typeof info !== 'undefined' ? info : null;
         %>
         <% if (queryError) { %>
             <div class="alert alert-danger"><%= queryError %></div>
@@ -2546,7 +2546,7 @@
                 </div>
 
                 <!-- ========================================================== -->
-                <!-- TIMEZONE SELECTOR -->
+                <!-- TIMEZONE SELECTOR - FIXED -->
                 <!-- ========================================================== -->
                 <div class="glass-card neon-glow-purple" style="margin-bottom: 2rem;">
                     <h3 style="font-family: 'Orbitron', monospace; margin-bottom: 0.5rem; font-weight: 700;">🕐 Your Timezone</h3>
@@ -2627,12 +2627,12 @@
                             <h4 style="color: var(--text-muted); font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; margin-bottom: 0.5rem;">🏳️ Top Countries</h4>
                             <div class="country-grid">
                                 <% if (typeof countryStats !== 'undefined' && countryStats && countryStats.length > 0) { %>
-                                    <% const maxCount = countryStats[0] ? countryStats[0].count : 1; %>
+                                    <% var maxCount = countryStats[0] ? countryStats[0].count : 1; %>
                                     <% countryStats.forEach(function(country) { 
-                                        const percentage = Math.round((country.count / maxCount) * 100);
-                                        const countryInfo = typeof countries !== 'undefined' && countries[country.countryCode] ? countries[country.countryCode] : null;
-                                        const flag = countryInfo ? countryInfo.flag : '🌍';
-                                        const name = countryInfo ? countryInfo.name : (country.country || 'Unknown');
+                                        var percentage = Math.round((country.count / maxCount) * 100);
+                                        var countryInfo = typeof countries !== 'undefined' && countries[country.countryCode] ? countries[country.countryCode] : null;
+                                        var flag = countryInfo ? countryInfo.flag : '🌍';
+                                        var name = countryInfo ? countryInfo.name : (country.country || 'Unknown');
                                     %>
                                         <div class="country-item">
                                             <span class="country-name">
@@ -2730,15 +2730,15 @@
 
                 <% if (typeof links !== 'undefined' && links && links.length > 0) { %>
                     <% links.forEach(function(link) { 
-                        const linkUrl = link.shortUrl || '';
-                        const linkId = link.id || link._id || '';
-                        const linkCode = link.shortCode || '';
-                        const linkOriginal = link.originalUrl || '';
-                        const linkClicks = link.clicks || 0;
-                        const linkCreated = link.createdAt || '';
-                        const linkTitle = link.title || '';
-                        const isExpired = link.isExpired || false;
-                        const isActive = link.isActive !== undefined ? link.isActive : true;
+                        var linkUrl = link.shortUrl || '';
+                        var linkId = link.id || link._id || '';
+                        var linkCode = link.shortCode || '';
+                        var linkOriginal = link.originalUrl || '';
+                        var linkClicks = link.clicks || 0;
+                        var linkCreated = link.createdAt || '';
+                        var linkTitle = link.title || '';
+                        var isExpired = link.isExpired || false;
+                        var isActive = link.isActive !== undefined ? link.isActive : true;
                     %>
                         <div class="link-card">
                             <div class="link-top">
@@ -2839,11 +2839,12 @@
         // FLOATING PARTICLES
         // ============================================================
         (function() {
-            const canvas = document.getElementById('particles-canvas');
-            const ctx = canvas.getContext('2d');
-            let particles = [];
-            let mouseX = 0;
-            let mouseY = 0;
+            var canvas = document.getElementById('particles-canvas');
+            if (!canvas) return;
+            var ctx = canvas.getContext('2d');
+            var particles = [];
+            var mouseX = 0;
+            var mouseY = 0;
 
             function resizeCanvas() {
                 canvas.width = window.innerWidth;
@@ -2852,68 +2853,65 @@
             resizeCanvas();
             window.addEventListener('resize', resizeCanvas);
 
-            class Particle {
-                constructor() {
-                    this.x = Math.random() * canvas.width;
-                    this.y = Math.random() * canvas.height;
-                    this.size = Math.random() * 3 + 1;
-                    this.speedX = (Math.random() - 0.5) * 0.3;
-                    this.speedY = (Math.random() - 0.5) * 0.3;
-                    this.opacity = Math.random() * 0.5 + 0.1;
-                    const colors = ['rgba(0, 240, 255, ', 'rgba(155, 89, 255, ', 'rgba(255, 45, 117, '];
-                    this.color = colors[Math.floor(Math.random() * colors.length)] + this.opacity + ')';
-                }
-
-                update() {
-                    this.x += this.speedX;
-                    this.y += this.speedY;
-
-                    const dx = mouseX - this.x;
-                    const dy = mouseY - this.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 150) {
-                        const force = (150 - dist) / 150 * 0.02;
-                        this.x -= dx * force;
-                        this.y -= dy * force;
-                    }
-
-                    if (this.x > canvas.width) this.x = 0;
-                    if (this.x < 0) this.x = canvas.width;
-                    if (this.y > canvas.height) this.y = 0;
-                    if (this.y < 0) this.y = canvas.height;
-                }
-
-                draw() {
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fillStyle = this.color;
-                    ctx.fill();
-                    // Glow effect
-                    ctx.shadowBlur = 20;
-                    ctx.shadowColor = this.color;
-                    ctx.fill();
-                    ctx.shadowBlur = 0;
-                }
+            function Particle() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = (Math.random() - 0.5) * 0.3;
+                this.speedY = (Math.random() - 0.5) * 0.3;
+                this.opacity = Math.random() * 0.5 + 0.1;
+                var colors = ['rgba(0, 240, 255, ', 'rgba(155, 89, 255, ', 'rgba(255, 45, 117, '];
+                this.color = colors[Math.floor(Math.random() * colors.length)] + this.opacity + ')';
             }
 
+            Particle.prototype.update = function() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                var dx = mouseX - this.x;
+                var dy = mouseY - this.y;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 150) {
+                    var force = (150 - dist) / 150 * 0.02;
+                    this.x -= dx * force;
+                    this.y -= dy * force;
+                }
+
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            };
+
+            Particle.prototype.draw = function() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = this.color;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            };
+
             function initParticles() {
-                const count = Math.min(80, Math.floor((canvas.width * canvas.height) / 15000));
+                var count = Math.min(80, Math.floor((canvas.width * canvas.height) / 15000));
                 particles = [];
-                for (let i = 0; i < count; i++) {
+                for (var i = 0; i < count; i++) {
                     particles.push(new Particle());
                 }
             }
             initParticles();
 
             function drawConnections() {
-                for (let i = 0; i < particles.length; i++) {
-                    for (let j = i + 1; j < particles.length; j++) {
-                        const dx = particles[i].x - particles[j].x;
-                        const dy = particles[i].y - particles[j].y;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
+                for (var i = 0; i < particles.length; i++) {
+                    for (var j = i + 1; j < particles.length; j++) {
+                        var dx = particles[i].x - particles[j].x;
+                        var dy = particles[i].y - particles[j].y;
+                        var dist = Math.sqrt(dx * dx + dy * dy);
                         if (dist < 120) {
                             ctx.beginPath();
-                            const opacity = 0.06 * (1 - dist / 120);
+                            var opacity = 0.06 * (1 - dist / 120);
                             ctx.strokeStyle = 'rgba(0, 240, 255, ' + opacity + ')';
                             ctx.lineWidth = 0.5;
                             ctx.moveTo(particles[i].x, particles[i].y);
@@ -2926,21 +2924,21 @@
 
             function animateParticles() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                particles.forEach(p => {
-                    p.update();
-                    p.draw();
-                });
+                for (var i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw();
+                }
                 drawConnections();
                 requestAnimationFrame(animateParticles);
             }
             animateParticles();
 
-            document.addEventListener('mousemove', (e) => {
+            document.addEventListener('mousemove', function(e) {
                 mouseX = e.clientX;
                 mouseY = e.clientY;
             });
 
-            window.addEventListener('resize', () => {
+            window.addEventListener('resize', function() {
                 resizeCanvas();
                 initParticles();
             });
@@ -2950,17 +2948,17 @@
         // DROPDOWN TOGGLE
         // ============================================================
         function toggleDropdown() {
-            const menu = document.getElementById('dropdownMenu');
-            const chevron = document.getElementById('dropdownChevron');
-            menu.classList.toggle('open');
-            chevron.classList.toggle('open');
+            var menu = document.getElementById('dropdownMenu');
+            var chevron = document.getElementById('dropdownChevron');
+            if (menu) menu.classList.toggle('open');
+            if (chevron) chevron.classList.toggle('open');
         }
 
         document.addEventListener('click', function(event) {
-            const wrapper = document.querySelector('.user-menu-wrapper');
+            var wrapper = document.querySelector('.user-menu-wrapper');
             if (wrapper && !wrapper.contains(event.target)) {
-                const menu = document.getElementById('dropdownMenu');
-                const chevron = document.getElementById('dropdownChevron');
+                var menu = document.getElementById('dropdownMenu');
+                var chevron = document.getElementById('dropdownChevron');
                 if (menu) menu.classList.remove('open');
                 if (chevron) chevron.classList.remove('open');
             }
@@ -2970,35 +2968,42 @@
         // PROFILE MODAL
         // ============================================================
         function openProfileModal() {
-            const modal = document.getElementById('profileModal');
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            loadProfileData();
-            const menu = document.getElementById('dropdownMenu');
-            const chevron = document.getElementById('dropdownChevron');
-            if (menu) menu.classList.remove('open');
-            if (chevron) chevron.classList.remove('open');
+            var modal = document.getElementById('profileModal');
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                loadProfileData();
+                var menu = document.getElementById('dropdownMenu');
+                var chevron = document.getElementById('dropdownChevron');
+                if (menu) menu.classList.remove('open');
+                if (chevron) chevron.classList.remove('open');
+            }
         }
 
         function closeProfileModal() {
-            const modal = document.getElementById('profileModal');
-            modal.classList.remove('active');
-            document.body.style.overflow = 'auto';
+            var modal = document.getElementById('profileModal');
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
         }
 
-        document.getElementById('profileModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeProfileModal();
-            }
-        });
+        var profileModal = document.getElementById('profileModal');
+        if (profileModal) {
+            profileModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeProfileModal();
+                }
+            });
+        }
 
         // ============================================================
         // LOAD PROFILE DATA
         // ============================================================
         async function loadProfileData() {
             try {
-                const response = await fetch('/api/user-data');
-                const data = await response.json();
+                var response = await fetch('/api/user-data');
+                var data = await response.json();
                 
                 if (data.error) {
                     showToast('Error loading profile: ' + data.error, 'error');
@@ -3015,122 +3020,91 @@
         // RENDER PROFILE
         // ============================================================
         function renderProfile(data) {
-            const container = document.getElementById('profileContent');
+            var container = document.getElementById('profileContent');
+            if (!container) return;
             
-            const avatarLetter = (data.display_name || data.first_name || data.username || 'U').charAt(0).toUpperCase();
-            const initials = (data.first_name ? data.first_name.charAt(0) : '') + (data.last_name ? data.last_name.charAt(0) : '');
+            var avatarLetter = (data.display_name || data.first_name || data.username || 'U').charAt(0).toUpperCase();
+            var initials = (data.first_name ? data.first_name.charAt(0) : '') + (data.last_name ? data.last_name.charAt(0) : '');
+            var completion = data.completion || 0;
             
-            const completion = data.completion || 0;
-            
-            container.innerHTML = `
-                <div class="profile-avatar-section">
-                    <div class="profile-avatar">
-                        ${data.profile_photo ? `<img src="${data.profile_photo}" alt="Profile">` : initials || avatarLetter}
-                        <div class="avatar-badge">
-                            <i class="fas fa-check"></i>
-                        </div>
-                    </div>
-                    <div class="profile-display-name">${data.display_name || data.first_name || data.username || 'User'}</div>
-                    <div class="profile-username">@${data.username || 'username'}</div>
-                </div>
-
-                <div class="completion-section">
-                    <div class="completion-header">
-                        <span>Profile Completion</span>
-                        <span>${completion}%</span>
-                    </div>
-                    <div class="completion-bar">
-                        <div class="completion-fill" style="width: ${completion}%;"></div>
-                    </div>
-                </div>
-
-                <div class="profile-field">
-                    <label><i class="fas fa-id-card" style="color: var(--neon-cyan); margin-right: 0.3rem;"></i> Full Name</label>
-                    <div class="field-value editable" id="nameDisplay" onclick="editField('name')">
-                        ${data.first_name || ''} ${data.last_name || ''}
-                        <span class="edit-icon"><i class="fas fa-pen"></i></span>
-                    </div>
-                    <div class="field-value" id="nameEdit" style="display: none;">
-                        <input type="text" id="editFirstName" value="${data.first_name || ''}" placeholder="First Name">
-                        <input type="text" id="editLastName" value="${data.last_name || ''}" placeholder="Last Name" style="margin-top: 0.3rem;">
-                        <div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">
-                            <button class="btn btn-primary btn-sm" onclick="saveName()">Save</button>
-                            <button class="btn btn-secondary btn-sm" onclick="cancelEdit('name')">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="profile-field">
-                    <label><i class="fas fa-user" style="color: var(--neon-cyan); margin-right: 0.3rem;"></i> Display Name</label>
-                    <div class="field-value editable" id="displayNameDisplay" onclick="editField('displayName')">
-                        ${data.display_name || data.first_name || data.username || 'User'}
-                        <span class="edit-icon"><i class="fas fa-pen"></i></span>
-                    </div>
-                    <div class="field-value" id="displayNameEdit" style="display: none;">
-                        <input type="text" id="editDisplayName" value="${data.display_name || ''}" placeholder="Display Name">
-                        <div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">
-                            <button class="btn btn-primary btn-sm" onclick="saveDisplayName()">Save</button>
-                            <button class="btn btn-secondary btn-sm" onclick="cancelEdit('displayName')">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="profile-field">
-                    <label><i class="fas fa-at" style="color: var(--neon-cyan); margin-right: 0.3rem;"></i> Email</label>
-                    <div class="field-value editable" id="emailDisplay" onclick="editField('email')">
-                        ${data.email || 'Not set'}
-                        <span class="edit-icon"><i class="fas fa-pen"></i></span>
-                    </div>
-                    <div class="field-value" id="emailEdit" style="display: none;">
-                        <input type="email" id="editEmail" value="${data.email || ''}" placeholder="Enter your email">
-                        <div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">
-                            <button class="btn btn-primary btn-sm" onclick="saveEmail()">Save</button>
-                            <button class="btn btn-secondary btn-sm" onclick="cancelEdit('email')">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="profile-field">
-                    <label><i class="fab fa-telegram" style="color: var(--neon-cyan); margin-right: 0.3rem;"></i> Telegram ID</label>
-                    <div class="field-value">${data.telegram_id || 'N/A'}</div>
-                </div>
-
-                <div class="profile-field">
-                    <label><i class="fas fa-calendar-plus" style="color: var(--neon-cyan); margin-right: 0.3rem;"></i> Joined</label>
-                    <div class="field-value">${data.created_at ? new Date(data.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</div>
-                </div>
-
-                <div class="profile-field">
-                    <label><i class="fas fa-clock" style="color: var(--neon-pink); margin-right: 0.3rem;"></i> Last Login</label>
-                    <div class="field-value">${data.last_login ? new Date(data.last_login).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}</div>
-                </div>
-
-                <div class="profile-field">
-                    <label><i class="fas fa-circle" style="color: ${data.account_status === 'active' ? 'var(--neon-green)' : 'var(--neon-pink)'}; margin-right: 0.3rem;"></i> Account Status</label>
-                    <div class="field-value" style="text-transform: capitalize;">${data.account_status || 'active'}</div>
-                </div>
-
-                <div class="profile-field">
-                    <label><i class="fas fa-link" style="color: var(--neon-purple); margin-right: 0.3rem;"></i> Total Links</label>
-                    <div class="field-value">${data.totalLinks || 0}</div>
-                </div>
-
-                <div class="profile-field">
-                    <label><i class="fas fa-mouse-pointer" style="color: var(--neon-cyan); margin-right: 0.3rem;"></i> Total Clicks</label>
-                    <div class="field-value">${data.totalClicks || 0}</div>
-                </div>
-
-                <div class="profile-field">
-                    <label><i class="fas fa-globe" style="color: var(--neon-cyan); margin-right: 0.3rem;"></i> Timezone</label>
-                    <div class="field-value">${data.timezone || 'Asia/Dhaka'}</div>
-                </div>
-
-                <div class="modal-actions">
-                    <button class="btn btn-secondary" onclick="closeProfileModal()">
-                        <i class="fas fa-times"></i> Close
-                    </button>
-                </div>
-            `;
+            container.innerHTML = 
+                '<div class="profile-avatar-section">' +
+                    '<div class="profile-avatar">' +
+                        (data.profile_photo ? '<img src="' + data.profile_photo + '" alt="Profile">' : (initials || avatarLetter)) +
+                        '<div class="avatar-badge"><i class="fas fa-check"></i></div>' +
+                    '</div>' +
+                    '<div class="profile-display-name">' + (data.display_name || data.first_name || data.username || 'User') + '</div>' +
+                    '<div class="profile-username">@' + (data.username || 'username') + '</div>' +
+                '</div>' +
+                '<div class="completion-section">' +
+                    '<div class="completion-header"><span>Profile Completion</span><span>' + completion + '%</span></div>' +
+                    '<div class="completion-bar"><div class="completion-fill" style="width: ' + completion + '%;"></div></div>' +
+                '</div>' +
+                '<div class="profile-field">' +
+                    '<label><i class="fas fa-id-card" style="color: var(--neon-cyan); margin-right: 0.3rem;"></i> Full Name</label>' +
+                    '<div class="field-value editable" id="nameDisplay" onclick="editField(\'name\')">' + (data.first_name || '') + ' ' + (data.last_name || '') + '<span class="edit-icon"><i class="fas fa-pen"></i></span></div>' +
+                    '<div class="field-value" id="nameEdit" style="display: none;">' +
+                        '<input type="text" id="editFirstName" value="' + (data.first_name || '') + '" placeholder="First Name">' +
+                        '<input type="text" id="editLastName" value="' + (data.last_name || '') + '" placeholder="Last Name" style="margin-top: 0.3rem;">' +
+                        '<div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">' +
+                            '<button class="btn btn-primary btn-sm" onclick="saveName()">Save</button>' +
+                            '<button class="btn btn-secondary btn-sm" onclick="cancelEdit(\'name\')">Cancel</button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="profile-field">' +
+                    '<label><i class="fas fa-user" style="color: var(--neon-cyan); margin-right: 0.3rem;"></i> Display Name</label>' +
+                    '<div class="field-value editable" id="displayNameDisplay" onclick="editField(\'displayName\')">' + (data.display_name || data.first_name || data.username || 'User') + '<span class="edit-icon"><i class="fas fa-pen"></i></span></div>' +
+                    '<div class="field-value" id="displayNameEdit" style="display: none;">' +
+                        '<input type="text" id="editDisplayName" value="' + (data.display_name || '') + '" placeholder="Display Name">' +
+                        '<div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">' +
+                            '<button class="btn btn-primary btn-sm" onclick="saveDisplayName()">Save</button>' +
+                            '<button class="btn btn-secondary btn-sm" onclick="cancelEdit(\'displayName\')">Cancel</button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="profile-field">' +
+                    '<label><i class="fas fa-at" style="color: var(--neon-cyan); margin-right: 0.3rem;"></i> Email</label>' +
+                    '<div class="field-value editable" id="emailDisplay" onclick="editField(\'email\')">' + (data.email || 'Not set') + '<span class="edit-icon"><i class="fas fa-pen"></i></span></div>' +
+                    '<div class="field-value" id="emailEdit" style="display: none;">' +
+                        '<input type="email" id="editEmail" value="' + (data.email || '') + '" placeholder="Enter your email">' +
+                        '<div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">' +
+                            '<button class="btn btn-primary btn-sm" onclick="saveEmail()">Save</button>' +
+                            '<button class="btn btn-secondary btn-sm" onclick="cancelEdit(\'email\')">Cancel</button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="profile-field">' +
+                    '<label><i class="fab fa-telegram" style="color: var(--neon-cyan); margin-right: 0.3rem;"></i> Telegram ID</label>' +
+                    '<div class="field-value">' + (data.telegram_id || 'N/A') + '</div>' +
+                '</div>' +
+                '<div class="profile-field">' +
+                    '<label><i class="fas fa-calendar-plus" style="color: var(--neon-cyan); margin-right: 0.3rem;"></i> Joined</label>' +
+                    '<div class="field-value">' + (data.created_at ? new Date(data.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A') + '</div>' +
+                '</div>' +
+                '<div class="profile-field">' +
+                    '<label><i class="fas fa-clock" style="color: var(--neon-pink); margin-right: 0.3rem;"></i> Last Login</label>' +
+                    '<div class="field-value">' + (data.last_login ? new Date(data.last_login).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A') + '</div>' +
+                '</div>' +
+                '<div class="profile-field">' +
+                    '<label><i class="fas fa-circle" style="color: ' + (data.account_status === 'active' ? 'var(--neon-green)' : 'var(--neon-pink)') + '; margin-right: 0.3rem;"></i> Account Status</label>' +
+                    '<div class="field-value" style="text-transform: capitalize;">' + (data.account_status || 'active') + '</div>' +
+                '</div>' +
+                '<div class="profile-field">' +
+                    '<label><i class="fas fa-link" style="color: var(--neon-purple); margin-right: 0.3rem;"></i> Total Links</label>' +
+                    '<div class="field-value">' + (data.totalLinks || 0) + '</div>' +
+                '</div>' +
+                '<div class="profile-field">' +
+                    '<label><i class="fas fa-mouse-pointer" style="color: var(--neon-cyan); margin-right: 0.3rem;"></i> Total Clicks</label>' +
+                    '<div class="field-value">' + (data.totalClicks || 0) + '</div>' +
+                '</div>' +
+                '<div class="profile-field">' +
+                    '<label><i class="fas fa-globe" style="color: var(--neon-cyan); margin-right: 0.3rem;"></i> Timezone</label>' +
+                    '<div class="field-value">' + (data.timezone || 'Asia/Dhaka') + '</div>' +
+                '</div>' +
+                '<div class="modal-actions">' +
+                    '<button class="btn btn-secondary" onclick="closeProfileModal()"><i class="fas fa-times"></i> Close</button>' +
+                '</div>';
         }
 
         // ============================================================
@@ -3138,27 +3112,39 @@
         // ============================================================
         function editField(field) {
             if (field === 'name') {
-                document.getElementById('nameDisplay').style.display = 'none';
-                document.getElementById('nameEdit').style.display = 'block';
+                var nameDisplay = document.getElementById('nameDisplay');
+                var nameEdit = document.getElementById('nameEdit');
+                if (nameDisplay) nameDisplay.style.display = 'none';
+                if (nameEdit) nameEdit.style.display = 'block';
             } else if (field === 'displayName') {
-                document.getElementById('displayNameDisplay').style.display = 'none';
-                document.getElementById('displayNameEdit').style.display = 'block';
+                var displayNameDisplay = document.getElementById('displayNameDisplay');
+                var displayNameEdit = document.getElementById('displayNameEdit');
+                if (displayNameDisplay) displayNameDisplay.style.display = 'none';
+                if (displayNameEdit) displayNameEdit.style.display = 'block';
             } else if (field === 'email') {
-                document.getElementById('emailDisplay').style.display = 'none';
-                document.getElementById('emailEdit').style.display = 'block';
+                var emailDisplay = document.getElementById('emailDisplay');
+                var emailEdit = document.getElementById('emailEdit');
+                if (emailDisplay) emailDisplay.style.display = 'none';
+                if (emailEdit) emailEdit.style.display = 'block';
             }
         }
 
         function cancelEdit(field) {
             if (field === 'name') {
-                document.getElementById('nameDisplay').style.display = 'block';
-                document.getElementById('nameEdit').style.display = 'none';
+                var nameDisplay = document.getElementById('nameDisplay');
+                var nameEdit = document.getElementById('nameEdit');
+                if (nameDisplay) nameDisplay.style.display = 'block';
+                if (nameEdit) nameEdit.style.display = 'none';
             } else if (field === 'displayName') {
-                document.getElementById('displayNameDisplay').style.display = 'block';
-                document.getElementById('displayNameEdit').style.display = 'none';
+                var displayNameDisplay = document.getElementById('displayNameDisplay');
+                var displayNameEdit = document.getElementById('displayNameEdit');
+                if (displayNameDisplay) displayNameDisplay.style.display = 'block';
+                if (displayNameEdit) displayNameEdit.style.display = 'none';
             } else if (field === 'email') {
-                document.getElementById('emailDisplay').style.display = 'block';
-                document.getElementById('emailEdit').style.display = 'none';
+                var emailDisplay = document.getElementById('emailDisplay');
+                var emailEdit = document.getElementById('emailEdit');
+                if (emailDisplay) emailDisplay.style.display = 'block';
+                if (emailEdit) emailEdit.style.display = 'none';
             }
         }
 
@@ -3166,8 +3152,12 @@
         // SAVE FUNCTIONS
         // ============================================================
         async function saveName() {
-            const firstName = document.getElementById('editFirstName').value.trim();
-            const lastName = document.getElementById('editLastName').value.trim();
+            var firstNameInput = document.getElementById('editFirstName');
+            var lastNameInput = document.getElementById('editLastName');
+            if (!firstNameInput || !lastNameInput) return;
+            
+            var firstName = firstNameInput.value.trim();
+            var lastName = lastNameInput.value.trim();
             
             if (!firstName) {
                 showToast('First name is required', 'error');
@@ -3175,20 +3165,23 @@
             }
 
             try {
-                const response = await fetch('/api/update-profile', {
+                var response = await fetch('/api/update-profile', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ first_name: firstName, last_name: lastName })
                 });
 
-                const data = await response.json();
+                var data = await response.json();
                 
                 if (data.success) {
                     showToast('Profile updated successfully!', 'success');
                     loadProfileData();
-                    document.querySelector('.user-profile-btn .user-name').textContent = data.user.display_name || data.user.first_name;
-                    document.querySelector('.user-profile-btn .avatar').textContent = data.user.display_name.charAt(0).toUpperCase();
-                    document.querySelector('.dropdown-menu .dd-name').textContent = data.user.display_name || data.user.first_name;
+                    var userNameEl = document.querySelector('.user-profile-btn .user-name');
+                    var avatarEl = document.querySelector('.user-profile-btn .avatar');
+                    var ddNameEl = document.querySelector('.dropdown-menu .dd-name');
+                    if (userNameEl) userNameEl.textContent = data.user.display_name || data.user.first_name;
+                    if (avatarEl) avatarEl.textContent = data.user.display_name.charAt(0).toUpperCase();
+                    if (ddNameEl) ddNameEl.textContent = data.user.display_name || data.user.first_name;
                 } else {
                     showToast(data.error || 'Failed to update profile', 'error');
                 }
@@ -3198,7 +3191,10 @@
         }
 
         async function saveDisplayName() {
-            const displayName = document.getElementById('editDisplayName').value.trim();
+            var displayNameInput = document.getElementById('editDisplayName');
+            if (!displayNameInput) return;
+            
+            var displayName = displayNameInput.value.trim();
             
             if (!displayName) {
                 showToast('Display name is required', 'error');
@@ -3206,20 +3202,23 @@
             }
 
             try {
-                const response = await fetch('/api/update-profile', {
+                var response = await fetch('/api/update-profile', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ display_name: displayName })
                 });
 
-                const data = await response.json();
+                var data = await response.json();
                 
                 if (data.success) {
                     showToast('Profile updated successfully!', 'success');
                     loadProfileData();
-                    document.querySelector('.user-profile-btn .user-name').textContent = data.user.display_name;
-                    document.querySelector('.user-profile-btn .avatar').textContent = data.user.display_name.charAt(0).toUpperCase();
-                    document.querySelector('.dropdown-menu .dd-name').textContent = data.user.display_name;
+                    var userNameEl = document.querySelector('.user-profile-btn .user-name');
+                    var avatarEl = document.querySelector('.user-profile-btn .avatar');
+                    var ddNameEl = document.querySelector('.dropdown-menu .dd-name');
+                    if (userNameEl) userNameEl.textContent = data.user.display_name;
+                    if (avatarEl) avatarEl.textContent = data.user.display_name.charAt(0).toUpperCase();
+                    if (ddNameEl) ddNameEl.textContent = data.user.display_name;
                 } else {
                     showToast(data.error || 'Failed to update profile', 'error');
                 }
@@ -3229,32 +3228,36 @@
         }
 
         async function saveEmail() {
-            const email = document.getElementById('editEmail').value.trim();
+            var emailInput = document.getElementById('editEmail');
+            if (!emailInput) return;
+            
+            var email = emailInput.value.trim();
             
             if (!email) {
                 showToast('Email is required', 'error');
                 return;
             }
 
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 showToast('Please enter a valid email address', 'error');
                 return;
             }
 
             try {
-                const response = await fetch('/api/update-profile', {
+                var response = await fetch('/api/update-profile', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: email })
                 });
 
-                const data = await response.json();
+                var data = await response.json();
                 
                 if (data.success) {
                     showToast('Email updated successfully!', 'success');
                     loadProfileData();
-                    document.querySelector('.dropdown-menu .dd-email').textContent = data.user.email || 'No email set';
+                    var ddEmailEl = document.querySelector('.dropdown-menu .dd-email');
+                    if (ddEmailEl) ddEmailEl.textContent = data.user.email || 'No email set';
                 } else {
                     showToast(data.error || 'Failed to update email', 'error');
                 }
@@ -3267,19 +3270,20 @@
         // UPDATE TIMEZONE
         // ============================================================
         async function updateTimezone() {
-            const select = document.getElementById('userTimezone');
-            const timezone = select.value;
+            var select = document.getElementById('userTimezone');
+            if (!select) return;
             
+            var timezone = select.value;
             if (!timezone) return;
 
             try {
-                const response = await fetch('/api/update-timezone', {
+                var response = await fetch('/api/update-timezone', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ timezone: timezone })
                 });
 
-                const data = await response.json();
+                var data = await response.json();
                 
                 if (data.success) {
                     showToast('Timezone updated successfully!', 'success');
@@ -3293,44 +3297,50 @@
         }
 
         // ============================================================
-        // UPDATE CURRENT TIME
+        // UPDATE CURRENT TIME - FIXED
         // ============================================================
         function updateCurrentTime() {
-            const select = document.getElementById('userTimezone');
-            const timezone = select.value || 'Asia/Dhaka';
-            const display = document.getElementById('currentTimeDisplay');
+            var select = document.getElementById('userTimezone');
+            if (!select) return;
+            
+            var timezone = select.value || 'Asia/Dhaka';
+            var display = document.getElementById('currentTimeDisplay');
             
             if (display) {
-                const now = new Date();
-                const options = {
-                    timeZone: timezone,
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                    hour12: true
-                };
-                display.textContent = now.toLocaleString('en-US', options);
+                try {
+                    var now = new Date();
+                    var options = {
+                        timeZone: timezone,
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: true
+                    };
+                    display.textContent = now.toLocaleString('en-US', options);
+                } catch (e) {
+                    display.textContent = 'Loading time...';
+                }
             }
         }
 
-        setInterval(updateCurrentTime, 1000);
-
         // ============================================================
-        // CONVERT LINK DATES TO USER TIMEZONE
+        // CONVERT LINK DATES TO USER TIMEZONE - FIXED
         // ============================================================
         function convertLinkDates() {
-            const select = document.getElementById('userTimezone');
-            const timezone = select.value || 'Asia/Dhaka';
+            var select = document.getElementById('userTimezone');
+            if (!select) return;
+            
+            var timezone = select.value || 'Asia/Dhaka';
             
             document.querySelectorAll('.link-date').forEach(function(el) {
-                const dateStr = el.getAttribute('data-date');
+                var dateStr = el.getAttribute('data-date');
                 if (dateStr) {
                     try {
-                        const date = new Date(dateStr);
-                        const options = {
+                        var date = new Date(dateStr);
+                        var options = {
                             timeZone: timezone,
                             year: 'numeric',
                             month: 'short',
@@ -3339,18 +3349,21 @@
                             minute: '2-digit'
                         };
                         el.textContent = date.toLocaleString('en-US', options);
-                    } catch (e) {}
+                    } catch (e) {
+                        // Keep original if conversion fails
+                    }
                 }
             });
         }
 
+        // ============================================================
+        // DOM CONTENT LOADED - FIXED
+        // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
-            const select = document.getElementById('userTimezone');
+            var select = document.getElementById('userTimezone');
             if (select) {
-                const userTimezone = '<%= typeof user !== "undefined" && user.timezone ? user.timezone : "Asia/Dhaka" %>';
-                if (userTimezone) {
-                    select.value = userTimezone;
-                }
+                // Set default timezone
+                select.value = 'Asia/Dhaka';
                 updateCurrentTime();
                 convertLinkDates();
                 
@@ -3358,178 +3371,39 @@
                     setTimeout(convertLinkDates, 500);
                 });
             }
-        });
-
-        // ============================================================
-        // TOAST NOTIFICATIONS
-        // ============================================================
-        function showToast(message, type = 'info', duration = 3000) {
-            const container = document.getElementById('toastContainer');
-            const icons = {
-                success: 'fas fa-check-circle',
-                error: 'fas fa-exclamation-circle',
-                info: 'fas fa-info-circle'
-            };
-
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                <span class="toast-icon"><i class="${icons[type] || icons.info}"></i></span>
-                <span class="toast-message">${message}</span>
-                <button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
-            `;
-
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.style.animation = 'slideOutRight 0.4s ease forwards';
-                setTimeout(() => {
-                    if (toast.parentElement) {
-                        toast.remove();
-                    }
-                }, 400);
-            }, duration);
-        }
-
-        // ============================================================
-        // COPY TO CLIPBOARD
-        // ============================================================
-        function copyToClipboard(text) {
-            const cleanText = String(text).trim();
             
-            if (!cleanText || cleanText === '') {
-                showToast('❌ Error: Nothing to copy', 'error');
-                return;
-            }
-            
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(cleanText).then(() => {
-                    showToast('✅ Link copied to clipboard!', 'success');
-                }).catch(() => {
-                    fallbackCopy(cleanText);
-                });
-            } else {
-                fallbackCopy(cleanText);
-            }
-        }
-
-        function fallbackCopy(text) {
-            try {
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                textarea.style.position = 'fixed';
-                textarea.style.opacity = '0';
-                textarea.style.width = '1px';
-                textarea.style.height = '1px';
-                document.body.appendChild(textarea);
-                textarea.select();
-                const success = document.execCommand('copy');
-                document.body.removeChild(textarea);
-                if (success) {
-                    showToast('✅ Link copied to clipboard!', 'success');
-                } else {
-                    showToast('❌ Failed to copy. Please copy manually.', 'error');
-                }
-            } catch (err) {
-                showToast('❌ Failed to copy. Please copy manually.', 'error');
-            }
-        }
-
-        // ============================================================
-        // QR CODE GENERATOR
-        // ============================================================
-        async function generateQR(shortCode) {
-            try {
-                const response = await fetch(`/qr/${shortCode}`);
-                const data = await response.json();
-                
-                if (data.qr) {
-                    const win = window.open('', '_blank');
-                    win.document.write(`
-                        <html>
-                        <head><title>QR Code</title></head>
-                        <body style="background:#0A0A0F;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;font-family:'Orbitron',monospace;flex-direction:column;">
-                            <div style="background:white;padding:20px;border-radius:12px;box-shadow:0 0 40px rgba(0,240,255,0.1);">
-                                <img src="${data.qr}" style="max-width:300px;width:100%;">
-                            </div>
-                            <p style="color:#B0B0C8;margin-top:20px;font-size:14px;font-family:'Rajdhani',sans-serif;letter-spacing:1px;">Scan to visit: ${data.url}</p>
-                            <button onclick="window.close()" style="margin-top:10px;padding:8px 20px;background:linear-gradient(135deg,#00F0FF,#9B59FF);border:none;border-radius:8px;color:#0A0A0F;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:600;">Close</button>
-                        </body>
-                        </html>
-                    `);
-                }
-            } catch (error) {
-                showToast('❌ Failed to generate QR code', 'error');
-            }
-        }
-
-        // ============================================================
-        // COPY BUTTON EVENT LISTENERS
-        // ============================================================
-        document.addEventListener('DOMContentLoaded', function() {
+            // Copy button listeners
             document.querySelectorAll('.copy-link-btn').forEach(function(btn) {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    const url = this.getAttribute('data-url');
+                    var url = this.getAttribute('data-url');
                     copyToClipboard(url);
                 });
             });
-        });
-
-        // ============================================================
-        // UPDATE LIVE USER COUNT
-        // ============================================================
-        setInterval(async () => {
-            try {
-                const response = await fetch('/api/online-users');
-                const data = await response.json();
-                const countEl = document.getElementById('liveUserCount');
-                if (countEl) {
-                    countEl.textContent = (data.count || 0) + ' Online';
-                }
-                const listEl = document.getElementById('userList');
-                if (listEl && data.users) {
-                    if (data.users.length > 0) {
-                        listEl.innerHTML = data.users.map(u =>
-                            `<span class="user-badge"><span class="online-dot"></span>${u.name}</span>`
-                        ).join('');
-                    } else {
-                        listEl.innerHTML = '<span style="color: var(--text-muted);">No users online</span>';
-                    }
-                }
-            } catch (e) {}
-        }, 10000);
-
-        // ============================================================
-        // FORM SUBMIT ANIMATION
-        // ============================================================
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('shortenForm');
-            const btn = document.getElementById('shortenBtn');
+            
+            // Shorten form
+            var form = document.getElementById('shortenForm');
+            var btn = document.getElementById('shortenBtn');
             if (form && btn) {
                 form.addEventListener('submit', function() {
-                    const original = btn.innerHTML;
+                    var original = btn.innerHTML;
                     btn.innerHTML = '⚡ Processing...';
                     btn.disabled = true;
                     btn.style.opacity = '0.7';
-                    setTimeout(() => {
+                    setTimeout(function() {
                         btn.innerHTML = original;
                         btn.disabled = false;
                         btn.style.opacity = '1';
                     }, 3000);
                 });
             }
-        });
-
-        // ============================================================
-        // ANALYTICS CHART
-        // ============================================================
-        document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('analyticsChart');
+            
+            // Analytics Chart
+            var ctx = document.getElementById('analyticsChart');
             if (ctx) {
-                const weekData = <%= typeof weekData !== 'undefined' && weekData ? JSON.stringify(weekData) : '[0,0,0,0,0,0,0]' %>;
+                var weekData = <%= typeof weekData !== 'undefined' && weekData ? JSON.stringify(weekData) : '[0,0,0,0,0,0,0]' %>;
                 
-                const chart = new Chart(ctx, {
+                new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -3554,49 +3428,161 @@
                             legend: {
                                 labels: {
                                     color: '#B0B0C8',
-                                    font: {
-                                        family: 'Rajdhani',
-                                        size: 12
-                                    }
+                                    font: { family: 'Rajdhani', size: 12 }
                                 }
                             }
                         },
                         scales: {
                             x: {
-                                grid: {
-                                    color: 'rgba(255,255,255,0.05)'
-                                },
-                                ticks: {
-                                    color: '#B0B0C8',
-                                    font: {
-                                        family: 'Rajdhani',
-                                        size: 11
-                                    }
-                                }
+                                grid: { color: 'rgba(255,255,255,0.05)' },
+                                ticks: { color: '#B0B0C8', font: { family: 'Rajdhani', size: 11 } }
                             },
                             y: {
-                                grid: {
-                                    color: 'rgba(255,255,255,0.05)'
-                                },
-                                ticks: {
-                                    color: '#B0B0C8',
-                                    font: {
-                                        family: 'Rajdhani',
-                                        size: 11
-                                    },
-                                    stepSize: 1
-                                },
+                                grid: { color: 'rgba(255,255,255,0.05)' },
+                                ticks: { color: '#B0B0C8', font: { family: 'Rajdhani', size: 11 }, stepSize: 1 },
                                 beginAtZero: true
                             }
                         },
-                        animation: {
-                            duration: 2000,
-                            easing: 'easeInOutQuart'
-                        }
+                        animation: { duration: 2000, easing: 'easeInOutQuart' }
                     }
                 });
             }
         });
+
+        // Update time every second
+        setInterval(updateCurrentTime, 1000);
+
+        // ============================================================
+        // TOAST NOTIFICATIONS
+        // ============================================================
+        function showToast(message, type, duration) {
+            type = type || 'info';
+            duration = duration || 3000;
+            var container = document.getElementById('toastContainer');
+            if (!container) return;
+            
+            var icons = {
+                success: 'fas fa-check-circle',
+                error: 'fas fa-exclamation-circle',
+                info: 'fas fa-info-circle'
+            };
+
+            var toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.innerHTML = 
+                '<span class="toast-icon"><i class="' + (icons[type] || icons.info) + '"></i></span>' +
+                '<span class="toast-message">' + message + '</span>' +
+                '<button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>';
+
+            container.appendChild(toast);
+
+            setTimeout(function() {
+                toast.style.animation = 'slideOutRight 0.4s ease forwards';
+                setTimeout(function() {
+                    if (toast.parentElement) {
+                        toast.remove();
+                    }
+                }, 400);
+            }, duration);
+        }
+
+        // ============================================================
+        // COPY TO CLIPBOARD
+        // ============================================================
+        function copyToClipboard(text) {
+            var cleanText = String(text).trim();
+            
+            if (!cleanText || cleanText === '') {
+                showToast('❌ Error: Nothing to copy', 'error');
+                return;
+            }
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(cleanText).then(function() {
+                    showToast('✅ Link copied to clipboard!', 'success');
+                }).catch(function() {
+                    fallbackCopy(cleanText);
+                });
+            } else {
+                fallbackCopy(cleanText);
+            }
+        }
+
+        function fallbackCopy(text) {
+            try {
+                var textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                textarea.style.width = '1px';
+                textarea.style.height = '1px';
+                document.body.appendChild(textarea);
+                textarea.select();
+                var success = document.execCommand('copy');
+                document.body.removeChild(textarea);
+                if (success) {
+                    showToast('✅ Link copied to clipboard!', 'success');
+                } else {
+                    showToast('❌ Failed to copy. Please copy manually.', 'error');
+                }
+            } catch (err) {
+                showToast('❌ Failed to copy. Please copy manually.', 'error');
+            }
+        }
+
+        // ============================================================
+        // QR CODE GENERATOR
+        // ============================================================
+        async function generateQR(shortCode) {
+            try {
+                var response = await fetch('/qr/' + shortCode);
+                var data = await response.json();
+                
+                if (data.qr) {
+                    var win = window.open('', '_blank');
+                    if (win) {
+                        win.document.write(
+                            '<html><head><title>QR Code</title></head>' +
+                            '<body style="background:#0A0A0F;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;font-family:\'Orbitron\',monospace;flex-direction:column;">' +
+                            '<div style="background:white;padding:20px;border-radius:12px;box-shadow:0 0 40px rgba(0,240,255,0.1);">' +
+                            '<img src="' + data.qr + '" style="max-width:300px;width:100%;">' +
+                            '</div>' +
+                            '<p style="color:#B0B0C8;margin-top:20px;font-size:14px;font-family:\'Rajdhani\',sans-serif;letter-spacing:1px;">Scan to visit: ' + data.url + '</p>' +
+                            '<button onclick="window.close()" style="margin-top:10px;padding:8px 20px;background:linear-gradient(135deg,#00F0FF,#9B59FF);border:none;border-radius:8px;color:#0A0A0F;cursor:pointer;font-family:\'Rajdhani\',sans-serif;font-weight:600;">Close</button>' +
+                            '</body></html>'
+                        );
+                    }
+                }
+            } catch (error) {
+                showToast('❌ Failed to generate QR code', 'error');
+            }
+        }
+
+        // ============================================================
+        // UPDATE LIVE USER COUNT
+        // ============================================================
+        setInterval(async function() {
+            try {
+                var response = await fetch('/api/online-users');
+                var data = await response.json();
+                var countEl = document.getElementById('liveUserCount');
+                if (countEl) {
+                    countEl.textContent = (data.count || 0) + ' Online';
+                }
+                var listEl = document.getElementById('userList');
+                if (listEl && data.users) {
+                    if (data.users.length > 0) {
+                        var html = '';
+                        for (var i = 0; i < data.users.length; i++) {
+                            html += '<span class="user-badge"><span class="online-dot"></span>' + data.users[i].name + '</span>';
+                        }
+                        listEl.innerHTML = html;
+                    } else {
+                        listEl.innerHTML = '<span style="color: var(--text-muted);">No users online</span>';
+                    }
+                }
+            } catch (e) {}
+        }, 10000);
     </script>
 
 </body>
