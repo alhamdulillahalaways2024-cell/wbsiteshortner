@@ -1,4 +1,4 @@
-// server.js - Complete Working Version (All Countries with Flags)
+// server.js - Complete Working Version with Premium Authentication
 const express = require('express');
 const session = require('express-session');
 const sqlite3 = require('sqlite3').verbose();
@@ -36,201 +36,88 @@ const db = new sqlite3.Database('./database.db', (err) => {
     }
 });
 
-// ============================================================
-// ALL COUNTRIES WITH FLAGS (COMPLETE LIST)
-// ============================================================
+// ============ ALL COUNTRIES WITH FLAGS ============
 const COUNTRIES = {
-    // Asia
     'BD': { name: 'Bangladesh', flag: '🇧🇩' },
+    'US': { name: 'United States', flag: '🇺🇸' },
+    'GB': { name: 'United Kingdom', flag: '🇬🇧' },
     'IN': { name: 'India', flag: '🇮🇳' },
-    'PK': { name: 'Pakistan', flag: '🇵🇰' },
-    'CN': { name: 'China', flag: '🇨🇳' },
+    'CA': { name: 'Canada', flag: '🇨🇦' },
+    'AU': { name: 'Australia', flag: '🇦🇺' },
+    'DE': { name: 'Germany', flag: '🇩🇪' },
+    'FR': { name: 'France', flag: '🇫🇷' },
     'JP': { name: 'Japan', flag: '🇯🇵' },
-    'KR': { name: 'South Korea', flag: '🇰🇷' },
-    'KP': { name: 'North Korea', flag: '🇰🇵' },
-    'MN': { name: 'Mongolia', flag: '🇲🇳' },
-    'TW': { name: 'Taiwan', flag: '🇹🇼' },
-    'HK': { name: 'Hong Kong', flag: '🇭🇰' },
-    'MO': { name: 'Macau', flag: '🇲🇴' },
+    'CN': { name: 'China', flag: '🇨🇳' },
+    'RU': { name: 'Russia', flag: '🇷🇺' },
+    'BR': { name: 'Brazil', flag: '🇧🇷' },
+    'NG': { name: 'Nigeria', flag: '🇳🇬' },
+    'PK': { name: 'Pakistan', flag: '🇵🇰' },
+    'EG': { name: 'Egypt', flag: '🇪🇬' },
     'ID': { name: 'Indonesia', flag: '🇮🇩' },
+    'MX': { name: 'Mexico', flag: '🇲🇽' },
+    'SA': { name: 'Saudi Arabia', flag: '🇸🇦' },
+    'TR': { name: 'Turkey', flag: '🇹🇷' },
+    'KR': { name: 'South Korea', flag: '🇰🇷' },
+    'IT': { name: 'Italy', flag: '🇮🇹' },
+    'ES': { name: 'Spain', flag: '🇪🇸' },
+    'ZA': { name: 'South Africa', flag: '🇿🇦' },
+    'AR': { name: 'Argentina', flag: '🇦🇷' },
+    'AE': { name: 'UAE', flag: '🇦🇪' },
+    'SG': { name: 'Singapore', flag: '🇸🇬' },
     'MY': { name: 'Malaysia', flag: '🇲🇾' },
     'PH': { name: 'Philippines', flag: '🇵🇭' },
-    'SG': { name: 'Singapore', flag: '🇸🇬' },
-    'TH': { name: 'Thailand', flag: '🇹🇭' },
     'VN': { name: 'Vietnam', flag: '🇻🇳' },
-    'LA': { name: 'Laos', flag: '🇱🇦' },
-    'KH': { name: 'Cambodia', flag: '🇰🇭' },
-    'MM': { name: 'Myanmar', flag: '🇲🇲' },
-    'BN': { name: 'Brunei', flag: '🇧🇳' },
-    'TL': { name: 'Timor-Leste', flag: '🇹🇱' },
+    'TH': { name: 'Thailand', flag: '🇹🇭' },
+    'NL': { name: 'Netherlands', flag: '🇳🇱' },
+    'SE': { name: 'Sweden', flag: '🇸🇪' },
+    'NO': { name: 'Norway', flag: '🇳🇴' },
+    'DK': { name: 'Denmark', flag: '🇩🇰' },
+    'FI': { name: 'Finland', flag: '🇫🇮' },
+    'PL': { name: 'Poland', flag: '🇵🇱' },
+    'UA': { name: 'Ukraine', flag: '🇺🇦' },
+    'RO': { name: 'Romania', flag: '🇷🇴' },
+    'GR': { name: 'Greece', flag: '🇬🇷' },
+    'PT': { name: 'Portugal', flag: '🇵🇹' },
+    'BE': { name: 'Belgium', flag: '🇧🇪' },
+    'CH': { name: 'Switzerland', flag: '🇨🇭' },
+    'AT': { name: 'Austria', flag: '🇦🇹' },
+    'HU': { name: 'Hungary', flag: '🇭🇺' },
+    'CZ': { name: 'Czech Republic', flag: '🇨🇿' },
+    'IE': { name: 'Ireland', flag: '🇮🇪' },
+    'NZ': { name: 'New Zealand', flag: '🇳🇿' },
+    'CL': { name: 'Chile', flag: '🇨🇱' },
+    'CO': { name: 'Colombia', flag: '🇨🇴' },
+    'PE': { name: 'Peru', flag: '🇵🇪' },
+    'VE': { name: 'Venezuela', flag: '🇻🇪' },
+    'IL': { name: 'Israel', flag: '🇮🇱' },
+    'IR': { name: 'Iran', flag: '🇮🇷' },
+    'IQ': { name: 'Iraq', flag: '🇮🇶' },
+    'SY': { name: 'Syria', flag: '🇸🇾' },
+    'LB': { name: 'Lebanon', flag: '🇱🇧' },
+    'JO': { name: 'Jordan', flag: '🇯🇴' },
+    'KW': { name: 'Kuwait', flag: '🇰🇼' },
+    'QA': { name: 'Qatar', flag: '🇶🇦' },
+    'BH': { name: 'Bahrain', flag: '🇧🇭' },
+    'OM': { name: 'Oman', flag: '🇴🇲' },
+    'YE': { name: 'Yemen', flag: '🇾🇪' },
     'AF': { name: 'Afghanistan', flag: '🇦🇫' },
     'KZ': { name: 'Kazakhstan', flag: '🇰🇿' },
     'UZ': { name: 'Uzbekistan', flag: '🇺🇿' },
     'TM': { name: 'Turkmenistan', flag: '🇹🇲' },
     'KG': { name: 'Kyrgyzstan', flag: '🇰🇬' },
     'TJ': { name: 'Tajikistan', flag: '🇹🇯' },
-    'IR': { name: 'Iran', flag: '🇮🇷' },
-    'IQ': { name: 'Iraq', flag: '🇮🇶' },
-    'SY': { name: 'Syria', flag: '🇸🇾' },
-    'LB': { name: 'Lebanon', flag: '🇱🇧' },
-    'JO': { name: 'Jordan', flag: '🇯🇴' },
-    'IL': { name: 'Israel', flag: '🇮🇱' },
-    'SA': { name: 'Saudi Arabia', flag: '🇸🇦' },
-    'YE': { name: 'Yemen', flag: '🇾🇪' },
-    'OM': { name: 'Oman', flag: '🇴🇲' },
-    'AE': { name: 'UAE', flag: '🇦🇪' },
-    'QA': { name: 'Qatar', flag: '🇶🇦' },
-    'BH': { name: 'Bahrain', flag: '🇧🇭' },
-    'KW': { name: 'Kuwait', flag: '🇰🇼' },
-    'TR': { name: 'Turkey', flag: '🇹🇷' },
-    'GE': { name: 'Georgia', flag: '🇬🇪' },
-    'AM': { name: 'Armenia', flag: '🇦🇲' },
-    'AZ': { name: 'Azerbaijan', flag: '🇦🇿' },
-    
-    // Europe
-    'GB': { name: 'United Kingdom', flag: '🇬🇧' },
-    'DE': { name: 'Germany', flag: '🇩🇪' },
-    'FR': { name: 'France', flag: '🇫🇷' },
-    'IT': { name: 'Italy', flag: '🇮🇹' },
-    'ES': { name: 'Spain', flag: '🇪🇸' },
-    'PT': { name: 'Portugal', flag: '🇵🇹' },
-    'NL': { name: 'Netherlands', flag: '🇳🇱' },
-    'BE': { name: 'Belgium', flag: '🇧🇪' },
-    'CH': { name: 'Switzerland', flag: '🇨🇭' },
-    'AT': { name: 'Austria', flag: '🇦🇹' },
-    'SE': { name: 'Sweden', flag: '🇸🇪' },
-    'NO': { name: 'Norway', flag: '🇳🇴' },
-    'DK': { name: 'Denmark', flag: '🇩🇰' },
-    'FI': { name: 'Finland', flag: '🇫🇮' },
-    'PL': { name: 'Poland', flag: '🇵🇱' },
-    'CZ': { name: 'Czech Republic', flag: '🇨🇿' },
-    'HU': { name: 'Hungary', flag: '🇭🇺' },
-    'RO': { name: 'Romania', flag: '🇷🇴' },
-    'BG': { name: 'Bulgaria', flag: '🇧🇬' },
-    'GR': { name: 'Greece', flag: '🇬🇷' },
-    'IE': { name: 'Ireland', flag: '🇮🇪' },
-    'IS': { name: 'Iceland', flag: '🇮🇸' },
-    'LI': { name: 'Liechtenstein', flag: '🇱🇮' },
-    'LU': { name: 'Luxembourg', flag: '🇱🇺' },
-    'MT': { name: 'Malta', flag: '🇲🇹' },
-    'MC': { name: 'Monaco', flag: '🇲🇨' },
-    'SM': { name: 'San Marino', flag: '🇸🇲' },
-    'VA': { name: 'Vatican City', flag: '🇻🇦' },
-    'SK': { name: 'Slovakia', flag: '🇸🇰' },
-    'SI': { name: 'Slovenia', flag: '🇸🇮' },
-    'HR': { name: 'Croatia', flag: '🇭🇷' },
-    'BA': { name: 'Bosnia', flag: '🇧🇦' },
-    'RS': { name: 'Serbia', flag: '🇷🇸' },
-    'ME': { name: 'Montenegro', flag: '🇲🇪' },
-    'MK': { name: 'North Macedonia', flag: '🇲🇰' },
-    'AL': { name: 'Albania', flag: '🇦🇱' },
-    'BY': { name: 'Belarus', flag: '🇧🇾' },
-    'UA': { name: 'Ukraine', flag: '🇺🇦' },
-    'MD': { name: 'Moldova', flag: '🇲🇩' },
-    'LT': { name: 'Lithuania', flag: '🇱🇹' },
-    'LV': { name: 'Latvia', flag: '🇱🇻' },
-    'EE': { name: 'Estonia', flag: '🇪🇪' },
-    
-    // North America
-    'US': { name: 'United States', flag: '🇺🇸' },
-    'CA': { name: 'Canada', flag: '🇨🇦' },
-    'MX': { name: 'Mexico', flag: '🇲🇽' },
-    'GT': { name: 'Guatemala', flag: '🇬🇹' },
-    'BZ': { name: 'Belize', flag: '🇧🇿' },
-    'SV': { name: 'El Salvador', flag: '🇸🇻' },
-    'HN': { name: 'Honduras', flag: '🇭🇳' },
-    'NI': { name: 'Nicaragua', flag: '🇳🇮' },
-    'CR': { name: 'Costa Rica', flag: '🇨🇷' },
-    'PA': { name: 'Panama', flag: '🇵🇦' },
-    'CU': { name: 'Cuba', flag: '🇨🇺' },
-    'JM': { name: 'Jamaica', flag: '🇯🇲' },
-    'HT': { name: 'Haiti', flag: '🇭🇹' },
-    'DO': { name: 'Dominican Republic', flag: '🇩🇴' },
-    'BS': { name: 'Bahamas', flag: '🇧🇸' },
-    'BB': { name: 'Barbados', flag: '🇧🇧' },
-    'TT': { name: 'Trinidad', flag: '🇹🇹' },
-    'LC': { name: 'St Lucia', flag: '🇱🇨' },
-    'VC': { name: 'St Vincent', flag: '🇻🇨' },
-    'GD': { name: 'Grenada', flag: '🇬🇩' },
-    'DM': { name: 'Dominica', flag: '🇩🇲' },
-    'KN': { name: 'St Kitts', flag: '🇰🇳' },
-    'AG': { name: 'Antigua', flag: '🇦🇬' },
-    
-    // South America
-    'BR': { name: 'Brazil', flag: '🇧🇷' },
-    'AR': { name: 'Argentina', flag: '🇦🇷' },
-    'CL': { name: 'Chile', flag: '🇨🇱' },
-    'CO': { name: 'Colombia', flag: '🇨🇴' },
-    'PE': { name: 'Peru', flag: '🇵🇪' },
-    'VE': { name: 'Venezuela', flag: '🇻🇪' },
-    'BO': { name: 'Bolivia', flag: '🇧🇴' },
-    'PY': { name: 'Paraguay', flag: '🇵🇾' },
-    'UY': { name: 'Uruguay', flag: '🇺🇾' },
-    'EC': { name: 'Ecuador', flag: '🇪🇨' },
-    'GY': { name: 'Guyana', flag: '🇬🇾' },
-    'SR': { name: 'Suriname', flag: '🇸🇷' },
-    'GF': { name: 'French Guiana', flag: '🇬🇫' },
-    
-    // Africa
-    'EG': { name: 'Egypt', flag: '🇪🇬' },
-    'ZA': { name: 'South Africa', flag: '🇿🇦' },
-    'NG': { name: 'Nigeria', flag: '🇳🇬' },
-    'KE': { name: 'Kenya', flag: '🇰🇪' },
-    'TZ': { name: 'Tanzania', flag: '🇹🇿' },
-    'GH': { name: 'Ghana', flag: '🇬🇭' },
-    'MA': { name: 'Morocco', flag: '🇲🇦' },
-    'DZ': { name: 'Algeria', flag: '🇩🇿' },
-    'TN': { name: 'Tunisia', flag: '🇹🇳' },
-    'LY': { name: 'Libya', flag: '🇱🇾' },
-    'SD': { name: 'Sudan', flag: '🇸🇩' },
-    'SS': { name: 'South Sudan', flag: '🇸🇸' },
-    'ET': { name: 'Ethiopia', flag: '🇪🇹' },
-    'SO': { name: 'Somalia', flag: '🇸🇴' },
-    'DJ': { name: 'Djibouti', flag: '🇩🇯' },
-    'ER': { name: 'Eritrea', flag: '🇪🇷' },
-    'UG': { name: 'Uganda', flag: '🇺🇬' },
-    'RW': { name: 'Rwanda', flag: '🇷🇼' },
-    'BI': { name: 'Burundi', flag: '🇧🇮' },
-    'CD': { name: 'DR Congo', flag: '🇨🇩' },
-    'CG': { name: 'Congo', flag: '🇨🇬' },
-    'GA': { name: 'Gabon', flag: '🇬🇦' },
-    'CM': { name: 'Cameroon', flag: '🇨🇲' },
-    'CI': { name: 'Ivory Coast', flag: '🇨🇮' },
-    'BF': { name: 'Burkina Faso', flag: '🇧🇫' },
-    'ML': { name: 'Mali', flag: '🇲🇱' },
-    'NE': { name: 'Niger', flag: '🇳🇪' },
-    'TD': { name: 'Chad', flag: '🇹🇩' },
-    'CF': { name: 'Central Africa', flag: '🇨🇫' },
-    'AO': { name: 'Angola', flag: '🇦🇴' },
-    'ZM': { name: 'Zambia', flag: '🇿🇲' },
-    'ZW': { name: 'Zimbabwe', flag: '🇿🇼' },
-    'MW': { name: 'Malawi', flag: '🇲🇼' },
-    'MZ': { name: 'Mozambique', flag: '🇲🇿' },
-    'MG': { name: 'Madagascar', flag: '🇲🇬' },
-    'MU': { name: 'Mauritius', flag: '🇲🇺' },
-    'SC': { name: 'Seychelles', flag: '🇸🇨' },
-    'KM': { name: 'Comoros', flag: '🇰🇲' },
-    'CV': { name: 'Cape Verde', flag: '🇨🇻' },
-    'ST': { name: 'Sao Tome', flag: '🇸🇹' },
-    'GW': { name: 'Guinea-Bissau', flag: '🇬🇼' },
-    'GN': { name: 'Guinea', flag: '🇬🇳' },
-    'SL': { name: 'Sierra Leone', flag: '🇸🇱' },
-    'LR': { name: 'Liberia', flag: '🇱🇷' },
-    'TG': { name: 'Togo', flag: '🇹🇬' },
-    'BJ': { name: 'Benin', flag: '🇧🇯' },
-    'SN': { name: 'Senegal', flag: '🇸🇳' },
-    'GM': { name: 'Gambia', flag: '🇬🇲' },
-    'MR': { name: 'Mauritania', flag: '🇲🇷' },
-    'LS': { name: 'Lesotho', flag: '🇱🇸' },
-    'BW': { name: 'Botswana', flag: '🇧🇼' },
-    'NA': { name: 'Namibia', flag: '🇳🇦' },
-    'SZ': { name: 'Eswatini', flag: '🇸🇿' },
-    
-    // Oceania
-    'AU': { name: 'Australia', flag: '🇦🇺' },
-    'NZ': { name: 'New Zealand', flag: '🇳🇿' },
-    'PG': { name: 'Papua New Guinea', flag: '🇵🇬' },
+    'MN': { name: 'Mongolia', flag: '🇲🇳' },
+    'KP': { name: 'North Korea', flag: '🇰🇵' },
+    'TW': { name: 'Taiwan', flag: '🇹🇼' },
+    'HK': { name: 'Hong Kong', flag: '🇭🇰' },
+    'MO': { name: 'Macau', flag: '🇲🇴' },
+    'MM': { name: 'Myanmar', flag: '🇲🇲' },
+    'LA': { name: 'Laos', flag: '🇱🇦' },
+    'KH': { name: 'Cambodia', flag: '🇰🇭' },
+    'BN': { name: 'Brunei', flag: '🇧🇳' },
+    'TL': { name: 'Timor-Leste', flag: '🇹🇱' },
     'FJ': { name: 'Fiji', flag: '🇫🇯' },
+    'PG': { name: 'Papua New Guinea', flag: '🇵🇬' },
     'SB': { name: 'Solomon Islands', flag: '🇸🇧' },
     'VU': { name: 'Vanuatu', flag: '🇻🇺' },
     'WS': { name: 'Samoa', flag: '🇼🇸' },
@@ -243,12 +130,6 @@ const COUNTRIES = {
     'NR': { name: 'Nauru', flag: '🇳🇷' },
     'CK': { name: 'Cook Islands', flag: '🇨🇰' },
     'NF': { name: 'Norfolk Island', flag: '🇳🇫' },
-    'PN': { name: 'Pitcairn', flag: '🇵🇳' },
-    'TK': { name: 'Tokelau', flag: '🇹🇰' },
-    'WF': { name: 'Wallis & Futuna', flag: '🇼🇫' },
-    'NU': { name: 'Niue', flag: '🇳🇺' },
-    
-    // Others
     'XX': { name: 'Unknown', flag: '🌍' }
 };
 
@@ -262,15 +143,23 @@ const PRE_ADDED_DOMAINS = [
     { domain: 'easylink.click', description: 'Easy' }
 ];
 
-// ============ CREATE TABLES ============
+// ============================================================
+// CREATE TABLES WITH UPDATED USER SCHEMA
+// ============================================================
 db.serialize(function() {
+    // ===== UPDATED USERS TABLE =====
     db.run(`CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        telegramId TEXT UNIQUE,
-        name TEXT,
+        telegram_id TEXT UNIQUE,
+        username TEXT,
+        first_name TEXT,
+        last_name TEXT,
+        display_name TEXT,
         email TEXT,
-        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-        lastSeen DATETIME DEFAULT CURRENT_TIMESTAMP,
+        profile_photo TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        last_login DATETIME DEFAULT CURRENT_TIMESTAMP,
+        account_status TEXT DEFAULT 'active',
         isOnline INTEGER DEFAULT 0,
         isValidated INTEGER DEFAULT 0,
         totalLinks INTEGER DEFAULT 0,
@@ -391,9 +280,14 @@ app.get('/login', function(req, res) {
     });
 });
 
+// ============================================================
+// PREMIUM LOGIN WITH TELEGRAM
+// ============================================================
 app.post('/login', function(req, res) {
     var telegramId = req.body.telegramId;
     var username = req.body.username;
+    var firstName = req.body.firstName || username;
+    var lastName = req.body.lastName || '';
     var email = req.body.email || null;
     
     if (!telegramId || !username) {
@@ -416,34 +310,219 @@ app.post('/login', function(req, res) {
         });
     }
 
-    db.get('SELECT * FROM users WHERE telegramId = ?', [cleanTelegramId], function(err, user) {
+    // Check if user exists
+    db.get('SELECT * FROM users WHERE telegram_id = ?', [cleanTelegramId], function(err, user) {
         if (err) {
             return res.render('index', { page: 'login', error: 'Database error.', success: null, info: null });
         }
 
         if (user) {
-            db.run('UPDATE users SET name = ?, email = ?, lastSeen = CURRENT_TIMESTAMP, isOnline = 1, isValidated = 1 WHERE id = ?', 
-                [username, email, user.id], function(err) {
+            // Update existing user
+            db.run(`UPDATE users SET 
+                    username = ?, 
+                    first_name = ?, 
+                    last_name = ?, 
+                    display_name = ?,
+                    email = COALESCE(?, email),
+                    last_login = CURRENT_TIMESTAMP, 
+                    isOnline = 1, 
+                    isValidated = 1 
+                    WHERE telegram_id = ?`,
+                [username, firstName, lastName, firstName + ' ' + lastName, email, cleanTelegramId], 
+                function(err) {
                     if (err) {
                         return res.render('index', { page: 'login', error: 'Update failed.', success: null, info: null });
                     }
-                    req.session.user = { id: user.id, name: username, telegramId: cleanTelegramId };
-                    req.session.save(function() {
-                        res.redirect('/dashboard');
+                    
+                    // Get updated user data
+                    db.get('SELECT * FROM users WHERE telegram_id = ?', [cleanTelegramId], function(err, updatedUser) {
+                        req.session.user = { 
+                            id: updatedUser.id, 
+                            telegram_id: updatedUser.telegram_id,
+                            username: updatedUser.username,
+                            first_name: updatedUser.first_name,
+                            last_name: updatedUser.last_name,
+                            display_name: updatedUser.display_name,
+                            email: updatedUser.email,
+                            profile_photo: updatedUser.profile_photo
+                        };
+                        req.session.save(function() {
+                            res.redirect('/dashboard');
+                        });
                     });
                 });
         } else {
-            db.run('INSERT INTO users (telegramId, name, email, isOnline, isValidated) VALUES (?, ?, ?, 1, 1)',
-                [cleanTelegramId, username, email], function(err) {
+            // Create new user
+            db.run(`INSERT INTO users 
+                    (telegram_id, username, first_name, last_name, display_name, email, isOnline, isValidated, last_login) 
+                    VALUES (?, ?, ?, ?, ?, ?, 1, 1, CURRENT_TIMESTAMP)`,
+                [cleanTelegramId, username, firstName, lastName, firstName + ' ' + lastName, email], 
+                function(err) {
                     if (err) {
+                        console.error('Registration error:', err);
                         return res.render('index', { page: 'login', error: 'Registration failed.', success: null, info: null });
                     }
-                    req.session.user = { id: this.lastID, name: username, telegramId: cleanTelegramId };
-                    req.session.save(function() {
-                        res.redirect('/dashboard');
+                    
+                    db.get('SELECT * FROM users WHERE telegram_id = ?', [cleanTelegramId], function(err, newUser) {
+                        req.session.user = { 
+                            id: newUser.id, 
+                            telegram_id: newUser.telegram_id,
+                            username: newUser.username,
+                            first_name: newUser.first_name,
+                            last_name: newUser.last_name,
+                            display_name: newUser.display_name,
+                            email: newUser.email,
+                            profile_photo: newUser.profile_photo
+                        };
+                        req.session.save(function() {
+                            res.redirect('/dashboard');
+                        });
                     });
                 });
         }
+    });
+});
+
+// ============================================================
+// GET USER DATA FOR PROFILE
+// ============================================================
+app.get('/api/user-data', function(req, res) {
+    if (!req.session.user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    db.get('SELECT * FROM users WHERE id = ?', [req.session.user.id], function(err, user) {
+        if (err || !user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Calculate profile completion percentage
+        var fields = ['email', 'first_name', 'last_name', 'display_name', 'profile_photo'];
+        var filled = 0;
+        fields.forEach(function(field) {
+            if (user[field] && user[field] !== '') filled++;
+        });
+        var completion = Math.round((filled / fields.length) * 100);
+
+        res.json({
+            id: user.id,
+            telegram_id: user.telegram_id,
+            username: user.username,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            display_name: user.display_name,
+            email: user.email,
+            profile_photo: user.profile_photo,
+            created_at: user.created_at,
+            last_login: user.last_login,
+            account_status: user.account_status,
+            totalLinks: user.totalLinks || 0,
+            totalClicks: user.totalClicks || 0,
+            completion: completion
+        });
+    });
+});
+
+// ============================================================
+// UPDATE USER PROFILE
+// ============================================================
+app.post('/api/update-profile', function(req, res) {
+    if (!req.session.user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    var { first_name, last_name, display_name, email, profile_photo } = req.body;
+    
+    // Validate email if provided
+    if (email && email !== '') {
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ error: 'Please enter a valid email address' });
+        }
+    }
+
+    // Clean up data
+    first_name = first_name || req.session.user.first_name || '';
+    last_name = last_name || req.session.user.last_name || '';
+    display_name = display_name || first_name + ' ' + last_name;
+    
+    db.run(`UPDATE users SET 
+            first_name = ?, 
+            last_name = ?, 
+            display_name = ?, 
+            email = ?,
+            profile_photo = COALESCE(?, profile_photo)
+            WHERE id = ?`,
+        [first_name, last_name, display_name, email || null, profile_photo || null, req.session.user.id],
+        function(err) {
+            if (err) {
+                console.error('Profile update error:', err);
+                return res.status(500).json({ error: 'Failed to update profile' });
+            }
+
+            // Update session data
+            db.get('SELECT * FROM users WHERE id = ?', [req.session.user.id], function(err, updatedUser) {
+                if (err || !updatedUser) {
+                    return res.status(404).json({ error: 'User not found' });
+                }
+
+                req.session.user = {
+                    id: updatedUser.id,
+                    telegram_id: updatedUser.telegram_id,
+                    username: updatedUser.username,
+                    first_name: updatedUser.first_name,
+                    last_name: updatedUser.last_name,
+                    display_name: updatedUser.display_name,
+                    email: updatedUser.email,
+                    profile_photo: updatedUser.profile_photo
+                };
+
+                res.json({
+                    success: true,
+                    user: req.session.user,
+                    message: 'Profile updated successfully!'
+                });
+            });
+        });
+});
+
+// ============================================================
+// UPDATE EMAIL
+// ============================================================
+app.post('/api/update-email', function(req, res) {
+    if (!req.session.user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    var { email } = req.body;
+    
+    if (!email || email === '') {
+        return res.status(400).json({ error: 'Email is required' });
+    }
+
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: 'Please enter a valid email address' });
+    }
+
+    db.run('UPDATE users SET email = ? WHERE id = ?', [email, req.session.user.id], function(err) {
+        if (err) {
+            return res.status(500).json({ error: 'Failed to update email' });
+        }
+
+        db.get('SELECT * FROM users WHERE id = ?', [req.session.user.id], function(err, updatedUser) {
+            if (err || !updatedUser) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            req.session.user.email = updatedUser.email;
+
+            res.json({
+                success: true,
+                email: updatedUser.email,
+                message: 'Email updated successfully!'
+            });
+        });
     });
 });
 
@@ -465,7 +544,7 @@ app.get('/dashboard', function(req, res) {
         return res.redirect('/login');
     }
 
-    db.run('UPDATE users SET isOnline = 1, lastSeen = CURRENT_TIMESTAMP WHERE id = ?', [req.session.user.id]);
+    db.run('UPDATE users SET isOnline = 1, last_login = CURRENT_TIMESTAMP WHERE id = ?', [req.session.user.id]);
 
     db.get('SELECT * FROM users WHERE id = ?', [req.session.user.id], function(err, userData) {
         if (err) userData = {};
@@ -785,6 +864,5 @@ app.use(function(err, req, res, next) {
 app.listen(PORT, '0.0.0.0', function() {
     console.log('🚀 Server running on port ' + PORT);
     console.log('🔗 BASE_URL: ' + BASE_URL);
-    console.log('🏳️ ' + Object.keys(COUNTRIES).length + ' countries loaded with flags');
     console.log('✅ Ready to use!');
 });
