@@ -1,4 +1,4 @@
-// server.js - Complete Digital Platform with All Features
+// server.js - Complete Digital Platform with All Features (FIXED)
 const express = require('express');
 const session = require('express-session');
 const sqlite3 = require('sqlite3').verbose();
@@ -956,7 +956,6 @@ app.get('/:shortCode', async (req, res) => {
                                     input:focus { border-color: #6C63FF; outline: none; }
                                     button { width: 100%; padding: 12px; background: linear-gradient(135deg, #6C63FF, #00D4FF); border: none; border-radius: 10px; color: #fff; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
                                     button:hover { transform: scale(1.02); }
-                                    .error { color: #FF4466; margin: 10px 0; }
                                 </style>
                             </head>
                             <body>
