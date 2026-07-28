@@ -35,6 +35,9 @@
     <!-- ===== GOOGLE FONTS ===== -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     
+    <!-- ===== FONT AWESOME ICONS ===== -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <!-- ===== CHART.JS FOR ANALYTICS ===== -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -126,7 +129,7 @@
         }
 
         /* ============================================================ */
-        /* DROPDOWN / SELECT FIX - White text visibility */
+        /* DROPDOWN / SELECT FIX */
         /* ============================================================ */
         select.form-control {
             color: #FFFFFF !important;
@@ -227,13 +230,13 @@
         }
 
         /* ============================================================ */
-        /* NAVIGATION */
+        /* PREMIUM NAVIGATION */
         /* ============================================================ */
         .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 3rem;
+            padding: 0.8rem 3rem;
             background: rgba(10, 10, 15, 0.85);
             backdrop-filter: blur(20px) saturate(1.2);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -252,14 +255,14 @@
         }
 
         .logo-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             box-shadow: 0 0 30px rgba(108, 99, 255, 0.3);
             position: relative;
             transition: all 0.4s;
@@ -269,7 +272,7 @@
             content: '';
             position: absolute;
             inset: -2px;
-            border-radius: 16px;
+            border-radius: 14px;
             background: linear-gradient(135deg, var(--primary), var(--accent), var(--secondary));
             z-index: -1;
             opacity: 0.5;
@@ -292,7 +295,7 @@
         }
 
         .logo-text .brand {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 800;
             background: linear-gradient(135deg, var(--primary), var(--accent), var(--secondary));
             -webkit-background-clip: text;
@@ -302,7 +305,7 @@
         }
 
         .logo-text .sub {
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             color: var(--text-muted);
             font-weight: 400;
             letter-spacing: 2px;
@@ -321,7 +324,7 @@
             color: var(--text-muted);
             text-decoration: none;
             font-weight: 500;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             transition: all 0.3s;
             position: relative;
             padding: 0.3rem 0;
@@ -346,7 +349,473 @@
             color: var(--text);
         }
 
-        /* ===== BUTTONS ===== */
+        /* ===== LIVE COUNTER ===== */
+        .live-counter {
+            background: rgba(255, 101, 132, 0.08);
+            border: 1px solid rgba(255, 101, 132, 0.15);
+            border-radius: 50px;
+            padding: 0.3rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--secondary);
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .live-counter .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #00FF88;
+            animation: pulse 1.5s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.7); }
+        }
+
+        /* ============================================================ */
+        /* PREMIUM USER PROFILE DROPDOWN */
+        /* ============================================================ */
+        .user-menu-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 0.3rem 1rem 0.3rem 0.3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .user-profile-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(108, 99, 255, 0.3);
+            box-shadow: 0 0 30px rgba(108, 99, 255, 0.1);
+        }
+
+        .user-profile-btn .avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 0 20px rgba(108, 99, 255, 0.2);
+            flex-shrink: 0;
+        }
+
+        .user-profile-btn .avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-profile-btn .user-name {
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: var(--text);
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .user-profile-btn .chevron {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            transition: transform 0.3s ease;
+        }
+
+        .user-profile-btn .chevron.open {
+            transform: rotate(180deg);
+        }
+
+        /* ===== DROPDOWN MENU ===== */
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            min-width: 240px;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(30px) saturate(1.5);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 0.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px) scale(0.95);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 1001;
+        }
+
+        .dropdown-menu.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .dropdown-menu .dropdown-header {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 0.3rem;
+        }
+
+        .dropdown-menu .dropdown-header .dd-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+
+        .dropdown-menu .dropdown-header .dd-email {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.1rem;
+        }
+
+        .dropdown-menu .dropdown-divider {
+            height: 1px;
+            background: var(--glass-border);
+            margin: 0.3rem 0;
+        }
+
+        .dropdown-menu .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.6rem 1rem;
+            border-radius: 10px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .dropdown-menu .dropdown-item:hover {
+            background: rgba(108, 99, 255, 0.1);
+            color: var(--text);
+        }
+
+        .dropdown-menu .dropdown-item i {
+            width: 20px;
+            font-size: 0.9rem;
+            color: var(--primary);
+        }
+
+        .dropdown-menu .dropdown-item.danger:hover {
+            background: rgba(255, 68, 102, 0.1);
+            color: var(--danger);
+        }
+
+        .dropdown-menu .dropdown-item.danger i {
+            color: var(--danger);
+        }
+
+        /* ============================================================ */
+        /* PREMIUM PROFILE MODAL */
+        /* ============================================================ */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(30px) saturate(1.5);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            max-width: 550px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+            box-shadow: 0 50px 100px -12px rgba(0, 0, 0, 0.8);
+            animation: modalFadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 0.3rem;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+        }
+
+        /* Profile Avatar */
+        .profile-avatar-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            box-shadow: 0 0 40px rgba(108, 99, 255, 0.3);
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-avatar .avatar-badge {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--success);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-avatar .avatar-badge i {
+            font-size: 0.6rem;
+            color: var(--dark);
+        }
+
+        .profile-display-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .profile-username {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Profile Completion */
+        .completion-section {
+            background: var(--glass);
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--glass-border);
+        }
+
+        .completion-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+        }
+
+        .completion-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--glass-border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .completion-bar .completion-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 4px;
+            transition: width 0.8s ease;
+        }
+
+        /* Profile Fields */
+        .profile-field {
+            margin-bottom: 1rem;
+        }
+
+        .profile-field label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.2rem;
+        }
+
+        .profile-field .field-value {
+            font-size: 0.95rem;
+            color: var(--text);
+            padding: 0.4rem 0;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .profile-field .field-value.editable {
+            border-bottom-color: var(--glass-border);
+            cursor: pointer;
+        }
+
+        .profile-field .field-value.editable:hover {
+            border-bottom-color: var(--primary);
+        }
+
+        .profile-field .field-value input {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 0.4rem 0.8rem;
+            color: var(--text);
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .profile-field .field-value input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15);
+        }
+
+        .profile-field .field-value .edit-icon {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .profile-field .field-value .edit-icon:hover {
+            color: var(--primary);
+        }
+
+        /* Modal Actions */
+        .modal-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 25px rgba(108, 99, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 40px rgba(108, 99, 255, 0.5);
+        }
+
+        .btn-secondary {
+            background: var(--glass);
+            color: var(--text);
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* ============================================================ */
+        /* BUTTONS */
+        /* ============================================================ */
         .btn {
             padding: 0.6rem 1.6rem;
             border: none;
@@ -378,49 +847,6 @@
 
         .btn:hover::before {
             opacity: 1;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            box-shadow: 0 4px 25px rgba(108, 99, 255, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 8px 40px rgba(108, 99, 255, 0.5);
-        }
-
-        .btn-secondary {
-            background: var(--glass);
-            color: var(--text);
-            border: 1px solid var(--glass-border);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger), #CC2244);
-            color: white;
-            box-shadow: 0 4px 25px rgba(255, 68, 102, 0.3);
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 8px 40px rgba(255, 68, 102, 0.5);
-        }
-
-        .btn-warning {
-            background: linear-gradient(135deg, var(--warning), #F09B00);
-            color: var(--dark);
-            box-shadow: 0 4px 25px rgba(255, 184, 0, 0.3);
-        }
-
-        .btn-warning:hover {
-            transform: translateY(-2px) scale(1.02);
         }
 
         .btn-telegram {
@@ -902,35 +1328,8 @@
         }
 
         /* ============================================================ */
-        /* LIVE USERS */
+        /* USER LIST */
         /* ============================================================ */
-        .live-counter {
-            background: rgba(255, 101, 132, 0.08);
-            border: 1px solid rgba(255, 101, 132, 0.15);
-            border-radius: 50px;
-            padding: 0.4rem 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            color: var(--secondary);
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
-        .live-counter .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #00FF88;
-            animation: pulse 1.5s ease-in-out infinite;
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.7); }
-        }
-
         .user-list {
             display: flex;
             gap: 0.6rem;
@@ -963,54 +1362,6 @@
             background: #00FF88;
             display: inline-block;
             box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
-        }
-
-        /* ============================================================ */
-        /* USER PROFILE */
-        /* ============================================================ */
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            background: rgba(0, 136, 204, 0.08);
-            padding: 0.3rem 1rem 0.3rem 0.3rem;
-            border-radius: 50px;
-            border: 1px solid rgba(0, 136, 204, 0.15);
-        }
-
-        .user-profile .avatar {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.9rem;
-            box-shadow: 0 0 20px rgba(108, 99, 255, 0.2);
-        }
-
-        .user-profile .name {
-            color: var(--text);
-            font-weight: 500;
-            font-size: 0.85rem;
-        }
-
-        .logout-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 0.8rem;
-            padding: 0.2rem 0.5rem;
-            border-radius: 6px;
-            transition: all 0.3s;
-        }
-
-        .logout-btn:hover {
-            color: var(--danger);
-            background: rgba(255, 68, 102, 0.1);
         }
 
         /* ============================================================ */
@@ -1253,12 +1604,20 @@
             .country-grid {
                 grid-template-columns: 1fr;
             }
+            .navbar {
+                padding: 0.8rem 1.5rem;
+            }
+            .modal-content {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
         }
 
         @media (max-width: 768px) {
             .navbar {
                 flex-direction: column;
-                padding: 1rem 1.5rem;
+                padding: 0.8rem 1.5rem;
+                gap: 0.8rem;
             }
 
             .nav-links {
@@ -1341,6 +1700,32 @@
             .country-grid {
                 grid-template-columns: 1fr;
             }
+
+            .user-profile-btn .user-name {
+                max-width: 80px;
+                font-size: 0.75rem;
+            }
+
+            .dropdown-menu {
+                right: -10px;
+                min-width: 200px;
+            }
+
+            .modal-content {
+                padding: 1.2rem;
+                margin: 0.5rem;
+                max-height: 95vh;
+            }
+
+            .profile-avatar {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+
+            .modal-header h2 {
+                font-size: 1.2rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1373,6 +1758,12 @@
                 padding: 0.4rem 1rem;
                 font-size: 0.8rem;
             }
+
+            .modal-actions .btn {
+                font-size: 0.8rem;
+                padding: 0.5rem 1rem;
+                min-width: 80px;
+            }
         }
 
         /* ============================================================ */
@@ -1387,9 +1778,101 @@
             animation: fadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
 
-        .fade-in-delay-1 { animation-delay: 0.1s; }
-        .fade-in-delay-2 { animation-delay: 0.2s; }
-        .fade-in-delay-3 { animation-delay: 0.3s; }
+        /* ============================================================ */
+        /* TOAST NOTIFICATIONS */
+        /* ============================================================ */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 360px;
+            width: 100%;
+        }
+
+        .toast {
+            padding: 1rem 1.2rem;
+            border-radius: 14px;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            animation: slideInRight 0.4s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .toast.success {
+            border-color: rgba(0, 255, 136, 0.3);
+        }
+
+        .toast.success i {
+            color: var(--success);
+        }
+
+        .toast.error {
+            border-color: rgba(255, 68, 102, 0.3);
+        }
+
+        .toast.error i {
+            color: var(--danger);
+        }
+
+        .toast.info {
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .toast.info i {
+            color: var(--accent);
+        }
+
+        .toast .toast-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .toast .toast-message {
+            color: var(--text);
+            font-size: 0.85rem;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .toast .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.8rem;
+            padding: 0.2rem;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+        }
     </style>
 </head>
 <body>
@@ -1398,6 +1881,29 @@
     <!-- ANIMATED PARTICLES CANVAS -->
     <!-- ============================================================ -->
     <canvas id="particles-canvas"></canvas>
+
+    <!-- ============================================================ -->
+    <!-- TOAST CONTAINER -->
+    <!-- ============================================================ -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- ============================================================ -->
+    <!-- PROFILE MODAL -->
+    <!-- ============================================================ -->
+    <div id="profileModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-cog" style="color: var(--primary); margin-right: 0.5rem;"></i> User Details</h2>
+                <button class="modal-close" onclick="closeProfileModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div id="profileContent">
+                <!-- Will be loaded via JavaScript -->
+            </div>
+        </div>
+    </div>
 
     <!-- ============================================================ -->
     <!-- NAVIGATION -->
@@ -1421,12 +1927,42 @@
             </span>
 
             <% if (typeof user !== 'undefined' && user) { %>
-                <div class="user-profile">
-                    <div class="avatar"><%= user.name.charAt(0) %></div>
-                    <span class="name"><%= user.name %></span>
-                    <form action="/logout" method="POST" style="display: inline;">
-                        <button type="submit" class="logout-btn" title="Logout">✕</button>
-                    </form>
+                <!-- ===== PREMIUM USER DROPDOWN ===== -->
+                <div class="user-menu-wrapper">
+                    <button class="user-profile-btn" onclick="toggleDropdown()">
+                        <div class="avatar">
+                            <% if (user.profile_photo && user.profile_photo !== '') { %>
+                                <img src="<%= user.profile_photo %>" alt="Profile">
+                            <% } else { %>
+                                <%= (user.display_name || user.first_name || user.username || 'U').charAt(0).toUpperCase() %>
+                            <% } %>
+                        </div>
+                        <span class="user-name"><%= user.display_name || user.first_name || user.username || 'User' %></span>
+                        <span class="chevron" id="dropdownChevron"><i class="fas fa-chevron-down"></i></span>
+                    </button>
+                    
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <div class="dropdown-header">
+                            <div class="dd-name"><%= user.display_name || user.first_name || user.username || 'User' %></div>
+                            <div class="dd-email"><%= user.email || 'No email set' %></div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" onclick="openProfileModal()">
+                            <i class="fas fa-user"></i> User Details
+                        </button>
+                        <button class="dropdown-item" onclick="window.location.href='/dashboard'">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </button>
+                        <button class="dropdown-item" onclick="window.location.href='/'">
+                            <i class="fas fa-home"></i> Home
+                        </button>
+                        <div class="dropdown-divider"></div>
+                        <form action="/logout" method="POST" style="display: inline;">
+                            <button type="submit" class="dropdown-item danger">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </form>
+                    </div>
                 </div>
             <% } else { %>
                 <a href="/login" class="btn btn-telegram btn-glow">🔑 Login with Telegram</a>
@@ -1476,9 +2012,19 @@
                                    placeholder="Enter your Telegram ID (e.g., 123456789)" required>
                         </div>
                         <div class="form-group">
-                            <label for="username">Your Name</label>
+                            <label for="username">Username</label>
                             <input type="text" class="form-control" id="username" name="username"
-                                   placeholder="Enter your full name" required>
+                                   placeholder="Enter your Telegram username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" class="form-control" id="firstName" name="firstName"
+                                   placeholder="Enter your first name">
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" name="lastName"
+                                   placeholder="Enter your last name">
                         </div>
                         <div class="form-group">
                             <label for="email">Email (Optional)</label>
@@ -1797,7 +2343,7 @@
                 </div>
 
                 <!-- ========================================================== -->
-                <!-- CREATE LINK FORM - FIXED DROPDOWN -->
+                <!-- CREATE LINK FORM -->
                 <!-- ========================================================== -->
                 <div class="glass-card" style="margin-bottom: 2rem;">
                     <h3 style="margin-bottom: 0.5rem; font-weight: 700;">🔗 Create New Short Link</h3>
@@ -1811,26 +2357,24 @@
                                    placeholder="Custom slug (optional)">
                         </div>
                         
-                        <!-- ===== DOMAIN SELECT - FIXED ===== -->
                         <div class="form-group" style="min-width: 160px;">
-                            <select class="form-control" name="domainId" style="padding: 0.7rem 1rem; color: #FFFFFF !important; background: rgba(255,255,255,0.05) !important;">
-                                <option value="" style="background: #1A1A2E; color: #FFFFFF;">🔗 Default</option>
+                            <select class="form-control" name="domainId">
+                                <option value="">🔗 Default</option>
                                 <% if (typeof domains !== 'undefined' && domains) { %>
                                     <% domains.forEach(function(domain) { %>
-                                        <option value="<%= domain.id %>" style="background: #1A1A2E; color: #FFFFFF;">🌐 <%= domain.domain %></option>
+                                        <option value="<%= domain.id %>">🌐 <%= domain.domain %></option>
                                     <% }); %>
                                 <% } %>
                             </select>
                         </div>
                         
-                        <!-- ===== EXPIRY SELECT - FIXED ===== -->
                         <div class="form-group" style="min-width: 120px;">
-                            <select class="form-control" name="expiresIn" style="padding: 0.7rem 1rem; color: #FFFFFF !important; background: rgba(255,255,255,0.05) !important;">
-                                <option value="" style="background: #1A1A2E; color: #FFFFFF;">Never</option>
-                                <option value="1d" style="background: #1A1A2E; color: #FFFFFF;">1 Day</option>
-                                <option value="7d" style="background: #1A1A2E; color: #FFFFFF;">7 Days</option>
-                                <option value="30d" style="background: #1A1A2E; color: #FFFFFF;">30 Days</option>
-                                <option value="90d" style="background: #1A1A2E; color: #FFFFFF;">90 Days</option>
+                            <select class="form-control" name="expiresIn">
+                                <option value="">Never</option>
+                                <option value="1d">1 Day</option>
+                                <option value="7d">7 Days</option>
+                                <option value="30d">30 Days</option>
+                                <option value="90d">90 Days</option>
                             </select>
                         </div>
                         
@@ -2053,19 +2597,369 @@
         })();
 
         // ============================================================
+        // DROPDOWN TOGGLE
+        // ============================================================
+        function toggleDropdown() {
+            const menu = document.getElementById('dropdownMenu');
+            const chevron = document.getElementById('dropdownChevron');
+            menu.classList.toggle('open');
+            chevron.classList.toggle('open');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const wrapper = document.querySelector('.user-menu-wrapper');
+            if (wrapper && !wrapper.contains(event.target)) {
+                const menu = document.getElementById('dropdownMenu');
+                const chevron = document.getElementById('dropdownChevron');
+                if (menu) menu.classList.remove('open');
+                if (chevron) chevron.classList.remove('open');
+            }
+        });
+
+        // ============================================================
+        // PROFILE MODAL
+        // ============================================================
+        function openProfileModal() {
+            const modal = document.getElementById('profileModal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            loadProfileData();
+            // Close dropdown
+            const menu = document.getElementById('dropdownMenu');
+            const chevron = document.getElementById('dropdownChevron');
+            if (menu) menu.classList.remove('open');
+            if (chevron) chevron.classList.remove('open');
+        }
+
+        function closeProfileModal() {
+            const modal = document.getElementById('profileModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal on overlay click
+        document.getElementById('profileModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeProfileModal();
+            }
+        });
+
+        // ============================================================
+        // LOAD PROFILE DATA
+        // ============================================================
+        async function loadProfileData() {
+            try {
+                const response = await fetch('/api/user-data');
+                const data = await response.json();
+                
+                if (data.error) {
+                    showToast('Error loading profile: ' + data.error, 'error');
+                    return;
+                }
+
+                renderProfile(data);
+            } catch (error) {
+                showToast('Error loading profile data', 'error');
+            }
+        }
+
+        // ============================================================
+        // RENDER PROFILE
+        // ============================================================
+        function renderProfile(data) {
+            const container = document.getElementById('profileContent');
+            
+            const avatarLetter = (data.display_name || data.first_name || data.username || 'U').charAt(0).toUpperCase();
+            const initials = (data.first_name ? data.first_name.charAt(0) : '') + (data.last_name ? data.last_name.charAt(0) : '');
+            
+            const completion = data.completion || 0;
+            
+            container.innerHTML = `
+                <!-- Profile Avatar -->
+                <div class="profile-avatar-section">
+                    <div class="profile-avatar">
+                        ${data.profile_photo ? `<img src="${data.profile_photo}" alt="Profile">` : initials || avatarLetter}
+                        <div class="avatar-badge">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    </div>
+                    <div class="profile-display-name">${data.display_name || data.first_name || data.username || 'User'}</div>
+                    <div class="profile-username">@${data.username || 'username'}</div>
+                </div>
+
+                <!-- Profile Completion -->
+                <div class="completion-section">
+                    <div class="completion-header">
+                        <span>Profile Completion</span>
+                        <span>${completion}%</span>
+                    </div>
+                    <div class="completion-bar">
+                        <div class="completion-fill" style="width: ${completion}%;"></div>
+                    </div>
+                </div>
+
+                <!-- Profile Fields -->
+                <div class="profile-field">
+                    <label><i class="fas fa-id-card" style="color: var(--primary); margin-right: 0.3rem;"></i> Full Name</label>
+                    <div class="field-value editable" id="nameDisplay" onclick="editField('name')">
+                        ${data.first_name || ''} ${data.last_name || ''}
+                        <span class="edit-icon"><i class="fas fa-pen"></i></span>
+                    </div>
+                    <div class="field-value" id="nameEdit" style="display: none;">
+                        <input type="text" id="editFirstName" value="${data.first_name || ''}" placeholder="First Name">
+                        <input type="text" id="editLastName" value="${data.last_name || ''}" placeholder="Last Name" style="margin-top: 0.3rem;">
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">
+                            <button class="btn btn-primary btn-sm" onclick="saveName()">Save</button>
+                            <button class="btn btn-secondary btn-sm" onclick="cancelEdit('name')">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-field">
+                    <label><i class="fas fa-user" style="color: var(--primary); margin-right: 0.3rem;"></i> Display Name</label>
+                    <div class="field-value editable" id="displayNameDisplay" onclick="editField('displayName')">
+                        ${data.display_name || data.first_name || data.username || 'User'}
+                        <span class="edit-icon"><i class="fas fa-pen"></i></span>
+                    </div>
+                    <div class="field-value" id="displayNameEdit" style="display: none;">
+                        <input type="text" id="editDisplayName" value="${data.display_name || ''}" placeholder="Display Name">
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">
+                            <button class="btn btn-primary btn-sm" onclick="saveDisplayName()">Save</button>
+                            <button class="btn btn-secondary btn-sm" onclick="cancelEdit('displayName')">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-field">
+                    <label><i class="fas fa-at" style="color: var(--primary); margin-right: 0.3rem;"></i> Email</label>
+                    <div class="field-value editable" id="emailDisplay" onclick="editField('email')">
+                        ${data.email || 'Not set'}
+                        <span class="edit-icon"><i class="fas fa-pen"></i></span>
+                    </div>
+                    <div class="field-value" id="emailEdit" style="display: none;">
+                        <input type="email" id="editEmail" value="${data.email || ''}" placeholder="Enter your email">
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">
+                            <button class="btn btn-primary btn-sm" onclick="saveEmail()">Save</button>
+                            <button class="btn btn-secondary btn-sm" onclick="cancelEdit('email')">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-field">
+                    <label><i class="fab fa-telegram" style="color: var(--telegram); margin-right: 0.3rem;"></i> Telegram ID</label>
+                    <div class="field-value">${data.telegram_id || 'N/A'}</div>
+                </div>
+
+                <div class="profile-field">
+                    <label><i class="fas fa-calendar-plus" style="color: var(--accent); margin-right: 0.3rem;"></i> Joined</label>
+                    <div class="field-value">${data.created_at ? new Date(data.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</div>
+                </div>
+
+                <div class="profile-field">
+                    <label><i class="fas fa-clock" style="color: var(--secondary); margin-right: 0.3rem;"></i> Last Login</label>
+                    <div class="field-value">${data.last_login ? new Date(data.last_login).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}</div>
+                </div>
+
+                <div class="profile-field">
+                    <label><i class="fas fa-circle" style="color: ${data.account_status === 'active' ? 'var(--success)' : 'var(--danger)'}; margin-right: 0.3rem;"></i> Account Status</label>
+                    <div class="field-value" style="text-transform: capitalize;">${data.account_status || 'active'}</div>
+                </div>
+
+                <div class="profile-field">
+                    <label><i class="fas fa-link" style="color: var(--warning); margin-right: 0.3rem;"></i> Total Links</label>
+                    <div class="field-value">${data.totalLinks || 0}</div>
+                </div>
+
+                <div class="profile-field">
+                    <label><i class="fas fa-mouse-pointer" style="color: var(--success); margin-right: 0.3rem;"></i> Total Clicks</label>
+                    <div class="field-value">${data.totalClicks || 0}</div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="closeProfileModal()">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            `;
+        }
+
+        // ============================================================
+        // EDIT FIELD FUNCTIONS
+        // ============================================================
+        function editField(field) {
+            if (field === 'name') {
+                document.getElementById('nameDisplay').style.display = 'none';
+                document.getElementById('nameEdit').style.display = 'block';
+            } else if (field === 'displayName') {
+                document.getElementById('displayNameDisplay').style.display = 'none';
+                document.getElementById('displayNameEdit').style.display = 'block';
+            } else if (field === 'email') {
+                document.getElementById('emailDisplay').style.display = 'none';
+                document.getElementById('emailEdit').style.display = 'block';
+            }
+        }
+
+        function cancelEdit(field) {
+            if (field === 'name') {
+                document.getElementById('nameDisplay').style.display = 'block';
+                document.getElementById('nameEdit').style.display = 'none';
+            } else if (field === 'displayName') {
+                document.getElementById('displayNameDisplay').style.display = 'block';
+                document.getElementById('displayNameEdit').style.display = 'none';
+            } else if (field === 'email') {
+                document.getElementById('emailDisplay').style.display = 'block';
+                document.getElementById('emailEdit').style.display = 'none';
+            }
+        }
+
+        // ============================================================
+        // SAVE FUNCTIONS
+        // ============================================================
+        async function saveName() {
+            const firstName = document.getElementById('editFirstName').value.trim();
+            const lastName = document.getElementById('editLastName').value.trim();
+            
+            if (!firstName) {
+                showToast('First name is required', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/update-profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ first_name: firstName, last_name: lastName })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('Profile updated successfully!', 'success');
+                    loadProfileData();
+                    // Update navbar
+                    document.querySelector('.user-profile-btn .user-name').textContent = data.user.display_name || data.user.first_name;
+                    document.querySelector('.user-profile-btn .avatar').textContent = data.user.display_name.charAt(0).toUpperCase();
+                    document.querySelector('.dropdown-menu .dd-name').textContent = data.user.display_name || data.user.first_name;
+                } else {
+                    showToast(data.error || 'Failed to update profile', 'error');
+                }
+            } catch (error) {
+                showToast('Failed to update profile', 'error');
+            }
+        }
+
+        async function saveDisplayName() {
+            const displayName = document.getElementById('editDisplayName').value.trim();
+            
+            if (!displayName) {
+                showToast('Display name is required', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/update-profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ display_name: displayName })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('Profile updated successfully!', 'success');
+                    loadProfileData();
+                    document.querySelector('.user-profile-btn .user-name').textContent = data.user.display_name;
+                    document.querySelector('.user-profile-btn .avatar').textContent = data.user.display_name.charAt(0).toUpperCase();
+                    document.querySelector('.dropdown-menu .dd-name').textContent = data.user.display_name;
+                } else {
+                    showToast(data.error || 'Failed to update profile', 'error');
+                }
+            } catch (error) {
+                showToast('Failed to update profile', 'error');
+            }
+        }
+
+        async function saveEmail() {
+            const email = document.getElementById('editEmail').value.trim();
+            
+            if (!email) {
+                showToast('Email is required', 'error');
+                return;
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showToast('Please enter a valid email address', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/update-profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('Email updated successfully!', 'success');
+                    loadProfileData();
+                    document.querySelector('.dropdown-menu .dd-email').textContent = data.user.email || 'No email set';
+                } else {
+                    showToast(data.error || 'Failed to update email', 'error');
+                }
+            } catch (error) {
+                showToast('Failed to update email', 'error');
+            }
+        }
+
+        // ============================================================
+        // TOAST NOTIFICATIONS
+        // ============================================================
+        function showToast(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('toastContainer');
+            const icons = {
+                success: 'fas fa-check-circle',
+                error: 'fas fa-exclamation-circle',
+                info: 'fas fa-info-circle'
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span class="toast-icon"><i class="${icons[type] || icons.info}"></i></span>
+                <span class="toast-message">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.4s ease forwards';
+                setTimeout(() => {
+                    if (toast.parentElement) {
+                        toast.remove();
+                    }
+                }, 400);
+            }, duration);
+        }
+
+        // ============================================================
         // COPY TO CLIPBOARD
         // ============================================================
         function copyToClipboard(text) {
             const cleanText = String(text).trim();
             
             if (!cleanText || cleanText === '') {
-                showToast('❌ Error: Nothing to copy');
+                showToast('❌ Error: Nothing to copy', 'error');
                 return;
             }
             
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(cleanText).then(() => {
-                    showToast('✅ Link copied to clipboard!');
+                    showToast('✅ Link copied to clipboard!', 'success');
                 }).catch(() => {
                     fallbackCopy(cleanText);
                 });
@@ -2087,48 +2981,13 @@
                 const success = document.execCommand('copy');
                 document.body.removeChild(textarea);
                 if (success) {
-                    showToast('✅ Link copied to clipboard!');
+                    showToast('✅ Link copied to clipboard!', 'success');
                 } else {
-                    showToast('❌ Failed to copy. Please copy manually.');
+                    showToast('❌ Failed to copy. Please copy manually.', 'error');
                 }
             } catch (err) {
-                showToast('❌ Failed to copy. Please copy manually.');
+                showToast('❌ Failed to copy. Please copy manually.', 'error');
             }
-        }
-
-        function showToast(message) {
-            const existing = document.querySelector('.custom-toast');
-            if (existing) existing.remove();
-            
-            const toast = document.createElement('div');
-            toast.className = 'custom-toast';
-            toast.textContent = message;
-            Object.assign(toast.style, {
-                position: 'fixed',
-                bottom: '30px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                background: 'rgba(10,10,15,0.95)',
-                backdropFilter: 'blur(20px)',
-                color: '#fff',
-                padding: '1rem 2rem',
-                borderRadius: '14px',
-                border: '1px solid rgba(255,255,255,0.08)',
-                boxShadow: '0 20px 40px -12px rgba(0,0,0,0.8)',
-                zIndex: '9999',
-                fontFamily: 'Inter, sans-serif',
-                fontWeight: '500',
-                fontSize: '0.95rem',
-                maxWidth: '90%',
-                textAlign: 'center',
-                animation: 'fadeIn 0.4s ease'
-            });
-            document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.4s';
-                setTimeout(() => toast.remove(), 400);
-            }, 3000);
         }
 
         // ============================================================
@@ -2155,7 +3014,7 @@
                     `);
                 }
             } catch (error) {
-                showToast('❌ Failed to generate QR code');
+                showToast('❌ Failed to generate QR code', 'error');
             }
         }
 
