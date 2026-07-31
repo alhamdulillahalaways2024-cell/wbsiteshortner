@@ -31,9 +31,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
-        /* ============================================================ */
-        /* UNIQUE PREMIUM DESIGN SYSTEM - 100% VISIBLE */
-        /* ============================================================ */
         :root {
             --primary: #6C63FF;
             --primary-dark: #5A52D5;
@@ -43,7 +40,6 @@
             --danger: #FF4466;
             --warning: #FFB800;
             --dark: #0D0D1A;
-            --dark-card: #14142A;
             --glass: rgba(255, 255, 255, 0.06);
             --glass-border: rgba(255, 255, 255, 0.1);
             --text: #FFFFFF;
@@ -53,15 +49,8 @@
             --radius: 20px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -71,7 +60,6 @@
             position: relative;
         }
 
-        /* ===== BACKGROUND EFFECTS ===== */
         body::before {
             content: '';
             position: fixed;
@@ -93,14 +81,10 @@
             100% { transform: scale(1.05) rotate(2deg); opacity: 1; }
         }
 
-        /* ===== SCROLLBAR ===== */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--dark); }
         ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--primary), var(--accent)); border-radius: 50px; }
 
-        /* ============================================================ */
-        /* GLASS CARD */
-        /* ============================================================ */
         .glass-card {
             background: var(--glass);
             backdrop-filter: blur(20px);
@@ -119,9 +103,6 @@
             box-shadow: 0 8px 40px rgba(108, 99, 255, 0.05);
         }
 
-        /* ============================================================ */
-        /* NAVBAR */
-        /* ============================================================ */
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -176,7 +157,6 @@
             text-transform: uppercase;
         }
 
-        /* ===== NAV LINKS ===== */
         .nav-links {
             display: flex;
             gap: 1.2rem;
@@ -199,7 +179,6 @@
             border-bottom-color: var(--primary);
         }
 
-        /* ===== LIVE COUNTER ===== */
         .live-counter {
             background: rgba(0, 230, 118, 0.1);
             border: 1px solid rgba(0, 230, 118, 0.2);
@@ -227,9 +206,6 @@
             50% { opacity: 0.4; transform: scale(0.7); }
         }
 
-        /* ============================================================ */
-        /* BUTTONS */
-        /* ============================================================ */
         .btn {
             padding: 0.7rem 1.8rem;
             border: none;
@@ -312,9 +288,6 @@
 
         .btn-sm { padding: 0.4rem 1.2rem; font-size: 0.8rem; }
 
-        /* ============================================================ */
-        /* FORMS */
-        /* ============================================================ */
         .form-group { margin-bottom: 1.2rem; }
 
         .form-group label {
@@ -346,9 +319,6 @@
 
         .form-control::placeholder { color: var(--text-muted); opacity: 0.5; }
 
-        /* ============================================================ */
-        /* DROPDOWN SELECT */
-        /* ============================================================ */
         select.form-control {
             appearance: none;
             -webkit-appearance: none;
@@ -367,14 +337,8 @@
 
         select.form-control option:checked { background: #6C63FF; }
 
-        /* ============================================================ */
-        /* CONTAINER */
-        /* ============================================================ */
         .container { max-width: 1200px; margin: 0 auto; padding: 2rem; position: relative; z-index: 1; }
 
-        /* ============================================================ */
-        /* SECTION HEADERS */
-        /* ============================================================ */
         .section-title {
             font-size: 2rem;
             font-weight: 800;
@@ -390,9 +354,6 @@
             margin-bottom: 1.5rem;
         }
 
-        /* ============================================================ */
-        /* STATS GRID */
-        /* ============================================================ */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -429,9 +390,6 @@
             font-weight: 500;
         }
 
-        /* ============================================================ */
-        /* ANALYTICS GRID */
-        /* ============================================================ */
         .analytics-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -466,9 +424,6 @@
         .analytics-stats .stat-item .value.success { color: var(--success); }
         .analytics-stats .stat-item .value.danger { color: var(--danger); }
 
-        /* ============================================================ */
-        /* COUNTRY GRID */
-        /* ============================================================ */
         .country-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -502,9 +457,6 @@
         .country-item .country-flag { font-size: 1.2rem; }
         .country-item .country-clicks { color: var(--accent); font-weight: 600; }
 
-        /* ============================================================ */
-        /* DEVICE TAGS */
-        /* ============================================================ */
         .device-tag {
             display: inline-flex;
             align-items: center;
@@ -517,9 +469,6 @@
             color: var(--text-muted);
         }
 
-        /* ============================================================ */
-        /* TIMEZONE SELECTOR */
-        /* ============================================================ */
         .timezone-selector {
             display: flex;
             align-items: center;
@@ -553,9 +502,6 @@
             color: var(--text-muted);
         }
 
-        /* ============================================================ */
-        /* LINK CARDS */
-        /* ============================================================ */
         .link-card {
             background: var(--glass);
             border: 1px solid var(--glass-border);
@@ -665,9 +611,6 @@
             flex-wrap: wrap;
         }
 
-        /* ============================================================ */
-        /* USER PROFILE DROPDOWN */
-        /* ============================================================ */
         .user-menu-wrapper { position: relative; display: inline-block; }
 
         .user-profile-btn {
@@ -794,9 +737,6 @@
         .dropdown-menu .dropdown-item.danger:hover { background: rgba(255, 68, 102, 0.1); color: var(--danger); }
         .dropdown-menu .dropdown-item.danger i { color: var(--danger); }
 
-        /* ============================================================ */
-        /* PROFILE MODAL */
-        /* ============================================================ */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -1007,9 +947,6 @@
 
         .modal-actions .btn { flex: 1; min-width: 100px; justify-content: center; }
 
-        /* ============================================================ */
-        /* ALERTS */
-        /* ============================================================ */
         .alert {
             padding: 1rem 1.5rem;
             border-radius: 12px;
@@ -1021,9 +958,6 @@
         .alert-danger { background: rgba(255, 68, 102, 0.08); border-color: rgba(255, 68, 102, 0.2); color: var(--danger); }
         .alert-info { background: rgba(0, 212, 255, 0.08); border-color: rgba(0, 212, 255, 0.2); color: var(--accent); }
 
-        /* ============================================================ */
-        /* USER LIST */
-        /* ============================================================ */
         .user-list {
             display: flex;
             gap: 0.6rem;
@@ -1058,9 +992,6 @@
             box-shadow: 0 0 10px rgba(0, 230, 118, 0.3);
         }
 
-        /* ============================================================ */
-        /* SHORTEN FORM */
-        /* ============================================================ */
         .shorten-form {
             display: flex;
             gap: 1rem;
@@ -1072,9 +1003,6 @@
         .shorten-form .form-group .form-control { padding: 0.8rem 1.2rem; }
         .shorten-form .btn { padding: 0.8rem 2rem; }
 
-        /* ============================================================ */
-        /* UNLIMITED BADGE */
-        /* ============================================================ */
         .unlimited-badge {
             display: inline-block;
             background: linear-gradient(135deg, var(--success), #00B859);
@@ -1088,9 +1016,6 @@
             box-shadow: 0 0 20px rgba(0, 230, 118, 0.15);
         }
 
-        /* ============================================================ */
-        /* SHORT LINK DISPLAY */
-        /* ============================================================ */
         .short-link-display {
             background: rgba(0, 212, 255, 0.05);
             border: 1px solid rgba(0, 212, 255, 0.15);
@@ -1129,9 +1054,6 @@
             box-shadow: 0 0 30px rgba(108, 99, 255, 0.2);
         }
 
-        /* ============================================================ */
-        /* BRAND CENTER */
-        /* ============================================================ */
         .brand-center {
             text-align: center;
             padding: 0.5rem 0 2rem 0;
@@ -1151,9 +1073,6 @@
             margin-top: 0.3rem;
         }
 
-        /* ============================================================ */
-        /* FEATURES GRID */
-        /* ============================================================ */
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -1179,9 +1098,6 @@
         .feature-card h3 { font-weight: 700; font-size: 1rem; margin-bottom: 0.3rem; }
         .feature-card p { color: var(--text-muted); font-size: 0.85rem; }
 
-        /* ============================================================ */
-        /* FOOTER */
-        /* ============================================================ */
         .footer {
             text-align: center;
             padding: 2.5rem 2rem;
@@ -1211,58 +1127,6 @@
             50% { transform: scale(1.2); }
         }
 
-        /* ============================================================ */
-        /* RESPONSIVE */
-        /* ============================================================ */
-        @media (max-width: 992px) {
-            .brand-center h1 { font-size: 2.8rem; }
-            .analytics-grid { grid-template-columns: 1fr; }
-            .stats-grid-2col { grid-template-columns: 1fr; }
-            .country-grid { grid-template-columns: 1fr; }
-            .navbar { padding: 1rem 1.5rem; }
-            .modal-content { padding: 1.5rem; margin: 1rem; }
-        }
-
-        @media (max-width: 768px) {
-            .navbar { flex-direction: column; padding: 0.8rem 1rem; gap: 0.8rem; }
-            .nav-links { justify-content: center; gap: 0.8rem; width: 100%; flex-wrap: wrap; }
-            .container { padding: 1rem; }
-            .stats-grid { grid-template-columns: 1fr 1fr; }
-            .brand-center h1 { font-size: 2rem; }
-            .dashboard-header { flex-direction: column; align-items: flex-start; }
-            .shorten-form { flex-direction: column; }
-            .shorten-form .form-group { min-width: auto; width: 100%; }
-            .shorten-form .btn { width: 100%; justify-content: center; }
-            .link-card .link-actions .edit-form { flex-direction: column; width: 100%; }
-            .link-card .link-actions .edit-form input[type="url"] { min-width: auto; width: 100%; }
-            .link-card .link-actions .btn-group { width: 100%; justify-content: center; }
-            .glass-card { padding: 1.2rem; }
-            .logo-wrapper { width: 100%; justify-content: center; }
-            .logo-text .brand { font-size: 1rem; }
-            .analytics-grid .chart-container { height: 200px; }
-            .timezone-selector { flex-direction: column; align-items: stretch; }
-            .user-profile-btn .user-name { max-width: 80px; font-size: 0.8rem; }
-            .dropdown-menu { right: -10px; min-width: 200px; }
-            .profile-avatar { width: 60px; height: 60px; font-size: 1.5rem; }
-            .modal-header h2 { font-size: 1.2rem; }
-        }
-
-        @media (max-width: 480px) {
-            .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
-            .stat-card { padding: 1rem; }
-            .stat-card .number { font-size: 2rem; }
-            .brand-center h1 { font-size: 1.6rem; }
-            .nav-links { gap: 0.5rem; }
-            .nav-links a { font-size: 0.8rem; }
-            .btn { padding: 0.5rem 1rem; font-size: 0.8rem; }
-            .modal-actions .btn { font-size: 0.8rem; padding: 0.5rem 1rem; min-width: 80px; }
-            .features-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
-            .feature-card { padding: 1rem; }
-        }
-
-        /* ============================================================ */
-        /* TOAST */
-        /* ============================================================ */
         .toast-container {
             position: fixed;
             top: 80px;
@@ -1309,31 +1173,65 @@
             from { opacity: 1; transform: translateX(0); }
             to { opacity: 0; transform: translateX(50px); }
         }
+
+        @media (max-width: 992px) {
+            .brand-center h1 { font-size: 2.8rem; }
+            .analytics-grid { grid-template-columns: 1fr; }
+            .navbar { padding: 1rem 1.5rem; }
+            .modal-content { padding: 1.5rem; margin: 1rem; }
+        }
+
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; padding: 0.8rem 1rem; gap: 0.8rem; }
+            .nav-links { justify-content: center; gap: 0.8rem; width: 100%; flex-wrap: wrap; }
+            .container { padding: 1rem; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .brand-center h1 { font-size: 2rem; }
+            .shorten-form { flex-direction: column; }
+            .shorten-form .form-group { min-width: auto; width: 100%; }
+            .shorten-form .btn { width: 100%; justify-content: center; }
+            .link-card .link-actions .edit-form { flex-direction: column; width: 100%; }
+            .link-card .link-actions .edit-form input[type="url"] { min-width: auto; width: 100%; }
+            .link-card .link-actions .btn-group { width: 100%; justify-content: center; }
+            .glass-card { padding: 1.2rem; }
+            .logo-wrapper { width: 100%; justify-content: center; }
+            .logo-text .brand { font-size: 1rem; }
+            .analytics-grid .chart-container { height: 200px; }
+            .timezone-selector { flex-direction: column; align-items: stretch; }
+            .user-profile-btn .user-name { max-width: 80px; font-size: 0.8rem; }
+            .dropdown-menu { right: -10px; min-width: 200px; }
+            .profile-avatar { width: 60px; height: 60px; font-size: 1.5rem; }
+            .modal-header h2 { font-size: 1.2rem; }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+            .stat-card { padding: 1rem; }
+            .stat-card .number { font-size: 2rem; }
+            .brand-center h1 { font-size: 1.6rem; }
+            .nav-links { gap: 0.5rem; }
+            .nav-links a { font-size: 0.8rem; }
+            .btn { padding: 0.5rem 1rem; font-size: 0.8rem; }
+            .modal-actions .btn { font-size: 0.8rem; padding: 0.5rem 1rem; min-width: 80px; }
+            .features-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+            .feature-card { padding: 1rem; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- ============================================================ -->
-    <!-- TOAST CONTAINER -->
-    <!-- ============================================================ -->
     <div id="toastContainer" class="toast-container"></div>
 
-    <!-- ============================================================ -->
-    <!-- PROFILE MODAL -->
-    <!-- ============================================================ -->
     <div id="profileModal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
                 <h2><i class="fas fa-user-cog" style="color: var(--primary); margin-right: 0.5rem;"></i> User Details</h2>
                 <button class="modal-close" onclick="closeProfileModal()"><i class="fas fa-times"></i></button>
             </div>
-            <div id="profileContent"><!-- Loaded via JavaScript --></div>
+            <div id="profileContent"></div>
         </div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- NAVIGATION -->
-    <!-- ============================================================ -->
     <nav class="navbar">
         <a href="/" class="logo-wrapper">
             <div class="logo-icon">🔗</div>
@@ -1382,29 +1280,27 @@
                     </div>
                 </div>
             <% } else { %>
-                <a href="/login" class="btn btn-telegram btn-glow">🔑 Login with Telegram</a>
+                <a href="/login" class="btn btn-telegram">🔑 Login</a>
             <% } %>
         </div>
     </nav>
 
-    <!-- ============================================================ -->
-    <!-- MAIN CONTENT -->
-    <!-- ============================================================ -->
     <div class="container">
 
-        <!-- ===== ALERTS ===== -->
-        <% 
-            var queryError = typeof error !== 'undefined' ? error : null;
-            var querySuccess = typeof success !== 'undefined' ? success : null;
-            var queryInfo = typeof info !== 'undefined' ? info : null;
-        %>
-        <% if (queryError) { %><div class="alert alert-danger"><%= queryError %></div><% } %>
-        <% if (querySuccess) { %><div class="alert alert-success"><%= querySuccess %></div><% } %>
-        <% if (queryInfo) { %><div class="alert alert-info"><%= queryInfo %></div><% } %>
+        <% var queryError = typeof error !== 'undefined' ? error : null; %>
+        <% var querySuccess = typeof success !== 'undefined' ? success : null; %>
+        <% var queryInfo = typeof info !== 'undefined' ? info : null; %>
+        
+        <% if (queryError) { %>
+            <div class="alert alert-danger"><%= queryError %></div>
+        <% } %>
+        <% if (querySuccess) { %>
+            <div class="alert alert-success"><%= querySuccess %></div>
+        <% } %>
+        <% if (queryInfo) { %>
+            <div class="alert alert-info"><%= queryInfo %></div>
+        <% } %>
 
-        <!-- ========================================================== -->
-        <!-- PAGE: LOGIN / SIGN IN -->
-        <!-- ========================================================== -->
         <% if (page === 'login') { %>
             <div class="glass-card" style="max-width: 500px; margin: 2rem auto;">
                 <div style="text-align: center; margin-bottom: 1.5rem;">
@@ -1412,18 +1308,18 @@
                     <h2 style="font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-top: 0.3rem;">
                         <%= typeof loginMode !== 'undefined' && loginMode === 'signin' ? 'Sign In' : 'Sign Up' %>
                     </h2>
-                    <p style="color: var(--text-muted);"><%= typeof loginMode !== 'undefined' && loginMode === 'signin' ? 'Welcome back! Login to your account.' : 'Create your account to get started.' %></p>
+                    <p style="color: var(--text-muted);">
+                        <%= typeof loginMode !== 'undefined' && loginMode === 'signin' ? 'Welcome back! Login to your account.' : 'Create your account to get started.' %>
+                    </p>
                 </div>
 
                 <form action="/login" method="POST">
-                    <!-- Telegram ID (always required) -->
                     <div class="form-group">
                         <label for="telegramId">Telegram ID <span style="color: var(--danger);">*</span></label>
-                        <input type="text" class="form-control" id="telegramId" name="telegramId" placeholder="Enter your Telegram ID (e.g., 123456789)" required>
+                        <input type="text" class="form-control" id="telegramId" name="telegramId" placeholder="Enter your Telegram ID" required>
                     </div>
 
                     <% if (typeof loginMode === 'undefined' || loginMode !== 'signin') { %>
-                        <!-- ===== SIGN UP FIELDS ===== -->
                         <div class="form-group">
                             <label for="username">Username <span style="color: var(--danger);">*</span></label>
                             <input type="text" class="form-control" id="username" name="username" placeholder="Choose a username" required>
@@ -1445,7 +1341,6 @@
                             <input type="password" class="form-control" id="password" name="password" placeholder="Create a password (min 6 characters)" required minlength="6">
                         </div>
                     <% } else { %>
-                        <!-- ===== SIGN IN FIELDS ===== -->
                         <input type="hidden" name="username" value="">
                         <input type="hidden" name="firstName" value="">
                         <input type="hidden" name="lastName" value="">
@@ -1518,7 +1413,7 @@
 
                     <input type="hidden" name="loginMode" value="<%= typeof loginMode !== 'undefined' ? loginMode : 'signup' %>">
 
-                    <button type="submit" class="btn btn-primary btn-glow" style="width: 100%; padding: 0.9rem; justify-content: center;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.9rem; justify-content: center;">
                         <%= typeof loginMode !== 'undefined' && loginMode === 'signin' ? '🔑 Sign In' : '🚀 Create Account' %>
                     </button>
                 </form>
@@ -1539,9 +1434,6 @@
             </div>
         <% } %>
 
-        <!-- ========================================================== -->
-        <!-- PAGE: HOME -->
-        <!-- ========================================================== -->
         <% if (page === 'home') { %>
             <div class="brand-center fade-in">
                 <h1>This Person Is brand Shortlink</h1>
@@ -1572,7 +1464,7 @@
                                 <option value="90d">90 Days</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-glow" id="shortenBtn">🚀 Shorten</button>
+                        <button type="submit" class="btn btn-primary" id="shortenBtn">🚀 Shorten</button>
                     </form>
 
                     <% if (typeof shortUrl !== 'undefined' && shortUrl) { %>
@@ -1584,12 +1476,11 @@
                 <% } else { %>
                     <div style="text-align: center; padding: 2.5rem; background: var(--glass); border-radius: 16px; border: 1px solid var(--glass-border);">
                         <p style="font-size: 1.2rem; margin-bottom: 1rem;">🔐 Please login to create short links</p>
-                        <a href="/login" class="btn btn-telegram btn-glow">Login with Telegram</a>
+                        <a href="/login" class="btn btn-telegram">Login with Telegram</a>
                     </div>
                 <% } %>
             </div>
 
-            <!-- Features -->
             <div class="features-grid">
                 <div class="feature-card"><div class="icon">♾️</div><h3>Unlimited Links</h3><p>Create as many as you want!</p></div>
                 <div class="feature-card"><div class="icon">🔄</div><h3>Updateable</h3><p>Change URL anytime</p></div>
@@ -1599,7 +1490,6 @@
                 <div class="feature-card"><div class="icon">🌐</div><h3>Custom Domains</h3><p>Branded short links</p></div>
             </div>
 
-            <!-- Live Users -->
             <div class="glass-card fade-in" style="margin-top: 2rem;">
                 <h3 style="font-weight: 700;">👥 Live Users</h3>
                 <p style="color: var(--text-muted); margin-bottom: 0.5rem;">
@@ -1617,22 +1507,16 @@
             </div>
         <% } %>
 
-        <!-- ========================================================== -->
-        <!-- PAGE: DASHBOARD -->
-        <!-- ========================================================== -->
         <% if (page === 'dashboard') { %>
             <div class="fade-in">
-
-                <!-- Dashboard Header -->
                 <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
                     <div>
                         <h2 style="font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, var(--text), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">📊 Dashboard</h2>
                         <span class="unlimited-badge" style="margin-top: 0.3rem;">♾️ Unlimited Short Links</span>
                     </div>
-                    <a href="/" class="btn btn-primary btn-glow">+ Create New Link</a>
+                    <a href="/" class="btn btn-primary">+ Create New Link</a>
                 </div>
 
-                <!-- Stats -->
                 <div class="stats-grid">
                     <div class="stat-card"><div class="number"><%= typeof links !== 'undefined' && links ? links.length : 0 %></div><div class="label">Total Links</div></div>
                     <div class="stat-card"><div class="number"><%= typeof totalClicks !== 'undefined' ? totalClicks : 0 %></div><div class="label">Total Clicks</div></div>
@@ -1640,7 +1524,6 @@
                     <div class="stat-card"><div class="number">♾️</div><div class="label">Unlimited</div></div>
                 </div>
 
-                <!-- Analytics -->
                 <div class="glass-card" style="margin-bottom: 2rem;">
                     <h3 style="margin-bottom: 1rem; font-weight: 700;">📈 Link Analytics</h3>
                     <div class="analytics-grid">
@@ -1657,7 +1540,6 @@
                     </div>
                 </div>
 
-                <!-- Timezone -->
                 <div class="glass-card" style="margin-bottom: 2rem;">
                     <h3 style="margin-bottom: 0.5rem; font-weight: 700;">🕐 Your Timezone</h3>
                     <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.8rem;">Select your timezone to see link creation times in your local time</p>
@@ -1720,13 +1602,11 @@
                     </div>
                 </div>
 
-                <!-- Country & Device Stats -->
                 <div class="glass-card" style="margin-bottom: 2rem;">
                     <h3 style="margin-bottom: 0.5rem; font-weight: 700;">🌍 Visitor Analytics</h3>
                     <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">See where your visitors are coming from and what devices they use</p>
                     
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 0.5rem;">
-                        <!-- Countries -->
                         <div>
                             <h4 style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">🏳️ Top Countries</h4>
                             <div class="country-grid">
@@ -1754,7 +1634,6 @@
                             </div>
                         </div>
                         
-                        <!-- Devices -->
                         <div>
                             <h4 style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">📱 Devices & Browsers</h4>
                             <div style="display: flex; flex-direction: column; gap: 0.4rem;">
@@ -1773,7 +1652,6 @@
                                     <p style="color: var(--text-muted); text-align: center; padding: 0.5rem;">No device data yet</p>
                                 <% } %>
                                 
-                                <!-- Bot Protection -->
                                 <div style="margin-top: 0.5rem; padding: 0.5rem 0.8rem; background: var(--glass); border-radius: 8px; border: 1px solid var(--glass-border);">
                                     <div style="display: flex; justify-content: space-between; align-items: center;">
                                         <span style="color: var(--text-muted);">🤖 Bot Protection</span>
@@ -1793,7 +1671,6 @@
                     </div>
                 </div>
 
-                <!-- Create Link Form -->
                 <div class="glass-card" style="margin-bottom: 2rem;">
                     <h3 style="margin-bottom: 0.5rem; font-weight: 700;">🔗 Create New Short Link</h3>
                     <form action="/shorten" method="POST" class="shorten-form">
@@ -1816,7 +1693,6 @@
                     </form>
                 </div>
 
-                <!-- Links List -->
                 <h2 style="margin-bottom: 1.5rem; font-weight: 700;">My Short Links</h2>
 
                 <% if (typeof links !== 'undefined' && links && links.length > 0) { %>
@@ -1875,27 +1751,17 @@
                         <p style="color: var(--text-muted); margin-top: 0.5rem;">Use the form above to create your first short link!</p>
                     </div>
                 <% } %>
-
             </div>
         <% } %>
-
     </div>
 
-    <!-- ============================================================ -->
-    <!-- FOOTER -->
-    <!-- ============================================================ -->
     <footer class="footer">
         <p>🔗 This Person Is brand Shortlink &bull; <span class="heart">❤️</span> &bull; Powered by <a href="https://t.me/thispersonisbrand537" target="_blank" rel="noopener noreferrer">@thispersonisbrand537</a></p>
         <p style="font-size: 0.75rem; margin-top: 0.5rem; opacity: 0.5;">© 2026 All rights reserved &bull; ♾️ Unlimited Short Links</p>
     </footer>
 
-    <!-- ============================================================ -->
-    <!-- SCRIPTS -->
-    <!-- ============================================================ -->
     <script>
-        // ============================================================
-        // DROPDOWN TOGGLE
-        // ============================================================
+        // ===== DROPDOWN TOGGLE =====
         function toggleDropdown() {
             var menu = document.getElementById('dropdownMenu');
             var chevron = document.getElementById('dropdownChevron');
@@ -1913,9 +1779,7 @@
             }
         });
 
-        // ============================================================
-        // PROFILE MODAL
-        // ============================================================
+        // ===== PROFILE MODAL =====
         function openProfileModal() {
             var modal = document.getElementById('profileModal');
             if (modal) {
@@ -1944,9 +1808,7 @@
             });
         }
 
-        // ============================================================
-        // LOAD PROFILE DATA
-        // ============================================================
+        // ===== LOAD PROFILE DATA =====
         async function loadProfileData() {
             try {
                 var response = await fetch('/api/user-data');
@@ -1961,9 +1823,7 @@
             }
         }
 
-        // ============================================================
-        // RENDER PROFILE
-        // ============================================================
+        // ===== RENDER PROFILE =====
         function renderProfile(data) {
             var container = document.getElementById('profileContent');
             if (!container) return;
@@ -1986,7 +1846,7 @@
                     '<div class="completion-bar"><div class="completion-fill" style="width: ' + completion + '%;"></div></div>' +
                 '</div>' +
                 '<div class="profile-field">' +
-                    '<label><i class="fas fa-id-card" style="color: var(--primary); margin-right: 0.3rem;"></i> Full Name</label>' +
+                    '<label><i class="fas fa-id-card"></i> Full Name</label>' +
                     '<div class="field-value editable" id="nameDisplay" onclick="editField(\'name\')">' + (data.first_name || '') + ' ' + (data.last_name || '') + '<span class="edit-icon"><i class="fas fa-pen"></i></span></div>' +
                     '<div class="field-value" id="nameEdit" style="display: none;">' +
                         '<input type="text" id="editFirstName" value="' + (data.first_name || '') + '" placeholder="First Name">' +
@@ -1998,7 +1858,7 @@
                     '</div>' +
                 '</div>' +
                 '<div class="profile-field">' +
-                    '<label><i class="fas fa-user" style="color: var(--primary); margin-right: 0.3rem;"></i> Display Name</label>' +
+                    '<label><i class="fas fa-user"></i> Display Name</label>' +
                     '<div class="field-value editable" id="displayNameDisplay" onclick="editField(\'displayName\')">' + (data.display_name || data.first_name || data.username || 'User') + '<span class="edit-icon"><i class="fas fa-pen"></i></span></div>' +
                     '<div class="field-value" id="displayNameEdit" style="display: none;">' +
                         '<input type="text" id="editDisplayName" value="' + (data.display_name || '') + '" placeholder="Display Name">' +
@@ -2009,7 +1869,7 @@
                     '</div>' +
                 '</div>' +
                 '<div class="profile-field">' +
-                    '<label><i class="fas fa-at" style="color: var(--primary); margin-right: 0.3rem;"></i> Email</label>' +
+                    '<label><i class="fas fa-at"></i> Email</label>' +
                     '<div class="field-value editable" id="emailDisplay" onclick="editField(\'email\')">' + (data.email || 'Not set') + '<span class="edit-icon"><i class="fas fa-pen"></i></span></div>' +
                     '<div class="field-value" id="emailEdit" style="display: none;">' +
                         '<input type="email" id="editEmail" value="' + (data.email || '') + '" placeholder="Enter your email">' +
@@ -2020,31 +1880,31 @@
                     '</div>' +
                 '</div>' +
                 '<div class="profile-field">' +
-                    '<label><i class="fab fa-telegram" style="color: var(--telegram); margin-right: 0.3rem;"></i> Telegram ID</label>' +
+                    '<label><i class="fab fa-telegram"></i> Telegram ID</label>' +
                     '<div class="field-value">' + (data.telegram_id || 'N/A') + '</div>' +
                 '</div>' +
                 '<div class="profile-field">' +
-                    '<label><i class="fas fa-calendar-plus" style="color: var(--accent); margin-right: 0.3rem;"></i> Joined</label>' +
+                    '<label><i class="fas fa-calendar-plus"></i> Joined</label>' +
                     '<div class="field-value">' + (data.created_at ? new Date(data.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A') + '</div>' +
                 '</div>' +
                 '<div class="profile-field">' +
-                    '<label><i class="fas fa-clock" style="color: var(--secondary); margin-right: 0.3rem;"></i> Last Login</label>' +
+                    '<label><i class="fas fa-clock"></i> Last Login</label>' +
                     '<div class="field-value">' + (data.last_login ? new Date(data.last_login).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A') + '</div>' +
                 '</div>' +
                 '<div class="profile-field">' +
-                    '<label><i class="fas fa-circle" style="color: ' + (data.account_status === 'active' ? 'var(--success)' : 'var(--danger)') + '; margin-right: 0.3rem;"></i> Account Status</label>' +
+                    '<label><i class="fas fa-circle"></i> Account Status</label>' +
                     '<div class="field-value" style="text-transform: capitalize;">' + (data.account_status || 'active') + '</div>' +
                 '</div>' +
                 '<div class="profile-field">' +
-                    '<label><i class="fas fa-link" style="color: var(--warning); margin-right: 0.3rem;"></i> Total Links</label>' +
+                    '<label><i class="fas fa-link"></i> Total Links</label>' +
                     '<div class="field-value">' + (data.totalLinks || 0) + '</div>' +
                 '</div>' +
                 '<div class="profile-field">' +
-                    '<label><i class="fas fa-mouse-pointer" style="color: var(--success); margin-right: 0.3rem;"></i> Total Clicks</label>' +
+                    '<label><i class="fas fa-mouse-pointer"></i> Total Clicks</label>' +
                     '<div class="field-value">' + (data.totalClicks || 0) + '</div>' +
                 '</div>' +
                 '<div class="profile-field">' +
-                    '<label><i class="fas fa-globe" style="color: var(--accent); margin-right: 0.3rem;"></i> Timezone</label>' +
+                    '<label><i class="fas fa-globe"></i> Timezone</label>' +
                     '<div class="field-value">' + (data.timezone || 'Asia/Dhaka') + '</div>' +
                 '</div>' +
                 '<div class="modal-actions">' +
@@ -2052,9 +1912,7 @@
                 '</div>';
         }
 
-        // ============================================================
-        // EDIT FIELD FUNCTIONS
-        // ============================================================
+        // ===== EDIT FUNCTIONS =====
         function editField(field) {
             if (field === 'name') {
                 var nameDisplay = document.getElementById('nameDisplay');
@@ -2093,9 +1951,7 @@
             }
         }
 
-        // ============================================================
-        // SAVE FUNCTIONS
-        // ============================================================
+        // ===== SAVE FUNCTIONS =====
         async function saveName() {
             var firstNameInput = document.getElementById('editFirstName');
             var lastNameInput = document.getElementById('editLastName');
@@ -2211,9 +2067,7 @@
             }
         }
 
-        // ============================================================
-        // UPDATE TIMEZONE
-        // ============================================================
+        // ===== TIMEZONE =====
         async function updateTimezone() {
             var select = document.getElementById('userTimezone');
             if (!select) return;
@@ -2241,9 +2095,6 @@
             }
         }
 
-        // ============================================================
-        // UPDATE CURRENT TIME
-        // ============================================================
         function updateCurrentTime() {
             var select = document.getElementById('userTimezone');
             if (!select) return;
@@ -2271,9 +2122,6 @@
             }
         }
 
-        // ============================================================
-        // CONVERT LINK DATES
-        // ============================================================
         function convertLinkDates() {
             var select = document.getElementById('userTimezone');
             if (!select) return;
@@ -2299,9 +2147,7 @@
             });
         }
 
-        // ============================================================
-        // DOM READY
-        // ============================================================
+        // ===== DOM READY =====
         document.addEventListener('DOMContentLoaded', function() {
             var select = document.getElementById('userTimezone');
             if (select) {
@@ -2377,9 +2223,7 @@
 
         setInterval(updateCurrentTime, 1000);
 
-        // ============================================================
-        // TOAST
-        // ============================================================
+        // ===== TOAST =====
         function showToast(message, type, duration) {
             type = type || 'info';
             duration = duration || 3000;
@@ -2405,9 +2249,7 @@
             }, duration);
         }
 
-        // ============================================================
-        // COPY TO CLIPBOARD
-        // ============================================================
+        // ===== COPY =====
         function copyToClipboard(text) {
             var cleanText = String(text).trim();
             if (!cleanText || cleanText === '') {
@@ -2448,9 +2290,7 @@
             }
         }
 
-        // ============================================================
-        // QR CODE
-        // ============================================================
+        // ===== QR CODE =====
         async function generateQR(shortCode) {
             try {
                 var response = await fetch('/qr/' + shortCode);
@@ -2475,9 +2315,7 @@
             }
         }
 
-        // ============================================================
-        // UPDATE LIVE USER COUNT
-        // ============================================================
+        // ===== LIVE USER COUNT =====
         setInterval(async function() {
             try {
                 var response = await fetch('/api/online-users');
