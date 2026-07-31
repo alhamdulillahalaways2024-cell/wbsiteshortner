@@ -1,4 +1,4 @@
-// server.js - Complete with Timezone, Country Detection & Bot Protection
+// server.js - Complete Working Version with Online Users Fix
 const express = require('express');
 const session = require('express-session');
 const sqlite3 = require('sqlite3').verbose();
@@ -7,7 +7,6 @@ const path = require('path');
 const fs = require('fs');
 const axios = require('axios');
 const QRCode = require('qrcode');
-const moment = require('moment-timezone');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,63 +15,28 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
 const SKIP_VALIDATION = process.env.SKIP_VALIDATION === 'true' || !TELEGRAM_BOT_TOKEN;
 
 console.log('🔗 BASE_URL:', BASE_URL);
+console.log('📦 TELEGRAM_BOT_TOKEN:', TELEGRAM_BOT_TOKEN ? '✅ Set' : '❌ Not Set');
+console.log('🔓 SKIP_VALIDATION:', SKIP_VALIDATION ? '✅ Yes' : '❌ No');
 
-// ============ TIMEZONES ============
-const TIMEZONES = {
-    'BD': { name: 'Bangladesh', timezone: 'Asia/Dhaka', flag: '🇧🇩' },
-    'US': { name: 'United States', timezone: 'America/New_York', flag: '🇺🇸' },
-    'GB': { name: 'United Kingdom', timezone: 'Europe/London', flag: '🇬🇧' },
-    'IN': { name: 'India', timezone: 'Asia/Kolkata', flag: '🇮🇳' },
-    'CA': { name: 'Canada', timezone: 'America/Toronto', flag: '🇨🇦' },
-    'AU': { name: 'Australia', timezone: 'Australia/Sydney', flag: '🇦🇺' },
-    'DE': { name: 'Germany', timezone: 'Europe/Berlin', flag: '🇩🇪' },
-    'FR': { name: 'France', timezone: 'Europe/Paris', flag: '🇫🇷' },
-    'JP': { name: 'Japan', timezone: 'Asia/Tokyo', flag: '🇯🇵' },
-    'CN': { name: 'China', timezone: 'Asia/Shanghai', flag: '🇨🇳' },
-    'RU': { name: 'Russia', timezone: 'Europe/Moscow', flag: '🇷🇺' },
-    'BR': { name: 'Brazil', timezone: 'America/Sao_Paulo', flag: '🇧🇷' },
-    'NG': { name: 'Nigeria', timezone: 'Africa/Lagos', flag: '🇳🇬' },
-    'PK': { name: 'Pakistan', timezone: 'Asia/Karachi', flag: '🇵🇰' },
-    'EG': { name: 'Egypt', timezone: 'Africa/Cairo', flag: '🇪🇬' },
-    'ID': { name: 'Indonesia', timezone: 'Asia/Jakarta', flag: '🇮🇩' },
-    'MX': { name: 'Mexico', timezone: 'America/Mexico_City', flag: '🇲🇽' },
-    'SA': { name: 'Saudi Arabia', timezone: 'Asia/Riyadh', flag: '🇸🇦' },
-    'TR': { name: 'Turkey', timezone: 'Europe/Istanbul', flag: '🇹🇷' },
-    'KR': { name: 'South Korea', timezone: 'Asia/Seoul', flag: '🇰🇷' },
-    'IT': { name: 'Italy', timezone: 'Europe/Rome', flag: '🇮🇹' },
-    'ES': { name: 'Spain', timezone: 'Europe/Madrid', flag: '🇪🇸' },
-    'ZA': { name: 'South Africa', timezone: 'Africa/Johannesburg', flag: '🇿🇦' },
-    'AR': { name: 'Argentina', timezone: 'America/Argentina/Buenos_Aires', flag: '🇦🇷' },
-    'AE': { name: 'UAE', timezone: 'Asia/Dubai', flag: '🇦🇪' },
-    'SG': { name: 'Singapore', timezone: 'Asia/Singapore', flag: '🇸🇬' },
-    'MY': { name: 'Malaysia', timezone: 'Asia/Kuala_Lumpur', flag: '🇲🇾' },
-    'PH': { name: 'Philippines', timezone: 'Asia/Manila', flag: '🇵🇭' },
-    'VN': { name: 'Vietnam', timezone: 'Asia/Ho_Chi_Minh', flag: '🇻🇳' },
-    'TH': { name: 'Thailand', timezone: 'Asia/Bangkok', flag: '🇹🇭' },
-    'NL': { name: 'Netherlands', timezone: 'Europe/Amsterdam', flag: '🇳🇱' },
-    'SE': { name: 'Sweden', timezone: 'Europe/Stockholm', flag: '🇸🇪' },
-    'NO': { name: 'Norway', timezone: 'Europe/Oslo', flag: '🇳🇴' },
-    'DK': { name: 'Denmark', timezone: 'Europe/Copenhagen', flag: '🇩🇰' },
-    'FI': { name: 'Finland', timezone: 'Europe/Helsinki', flag: '🇫🇮' },
-    'PL': { name: 'Poland', timezone: 'Europe/Warsaw', flag: '🇵🇱' },
-    'UA': { name: 'Ukraine', timezone: 'Europe/Kyiv', flag: '🇺🇦' },
-    'RO': { name: 'Romania', timezone: 'Europe/Bucharest', flag: '🇷🇴' },
-    'GR': { name: 'Greece', timezone: 'Europe/Athens', flag: '🇬🇷' },
-    'PT': { name: 'Portugal', timezone: 'Europe/Lisbon', flag: '🇵🇹' },
-    'BE': { name: 'Belgium', timezone: 'Europe/Brussels', flag: '🇧🇪' },
-    'CH': { name: 'Switzerland', timezone: 'Europe/Zurich', flag: '🇨🇭' },
-    'AT': { name: 'Austria', timezone: 'Europe/Vienna', flag: '🇦🇹' },
-    'HU': { name: 'Hungary', timezone: 'Europe/Budapest', flag: '🇭🇺' },
-    'CZ': { name: 'Czech Republic', timezone: 'Europe/Prague', flag: '🇨🇿' },
-    'IE': { name: 'Ireland', timezone: 'Europe/Dublin', flag: '🇮🇪' },
-    'NZ': { name: 'New Zealand', timezone: 'Pacific/Auckland', flag: '🇳🇿' },
-    'CL': { name: 'Chile', timezone: 'America/Santiago', flag: '🇨🇱' },
-    'CO': { name: 'Colombia', timezone: 'America/Bogota', flag: '🇨🇴' },
-    'PE': { name: 'Peru', timezone: 'America/Lima', flag: '🇵🇪' },
-    'VE': { name: 'Venezuela', timezone: 'America/Caracas', flag: '🇻🇪' }
-};
+// ============ Setup ============
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
-// ============ COUNTRIES WITH FLAGS ============
+const viewsDir = path.join(__dirname, 'views');
+if (!fs.existsSync(viewsDir)) {
+    fs.mkdirSync(viewsDir, { recursive: true });
+}
+
+// ============ SQLite Database ============
+const db = new sqlite3.Database('./database.db', (err) => {
+    if (err) {
+        console.error('❌ Database error:', err.message);
+    } else {
+        console.log('✅ SQLite database connected');
+    }
+});
+
+// ============ ALL COUNTRIES WITH FLAGS ============
 const COUNTRIES = {
     'BD': { name: 'Bangladesh', flag: '🇧🇩' },
     'US': { name: 'United States', flag: '🇺🇸' },
@@ -188,8 +152,7 @@ db.serialize(function() {
         isOnline INTEGER DEFAULT 0,
         isValidated INTEGER DEFAULT 0,
         totalLinks INTEGER DEFAULT 0,
-        totalClicks INTEGER DEFAULT 0,
-        timezone TEXT DEFAULT 'Asia/Dhaka'
+        totalClicks INTEGER DEFAULT 0
     )`);
 
     db.run(`CREATE TABLE IF NOT EXISTS links (
@@ -240,16 +203,17 @@ app.use(session({
     cookie: { maxAge: 1000 * 60 * 60 * 24 * 7, secure: false, httpOnly: true }
 }));
 
-// ============ Make Data Available ============
+// ============ Make Data Available - FIX: No 'name' column ============
 app.use(function(req, res, next) {
     res.locals.BASE_URL = BASE_URL;
     res.locals.user = req.session.user || null;
     res.locals.page = req.path === '/' ? 'home' : req.path.slice(1);
     res.locals.countries = COUNTRIES;
-    res.locals.timezones = TIMEZONES;
     
+    // ===== FIX: Use display_name instead of name =====
     db.all('SELECT id, display_name, username FROM users WHERE isOnline = 1', function(err, users) {
         if (err) {
+            console.error('❌ Online users error:', err);
             res.locals.onlineUsers = 0;
             res.locals.onlineUserList = [];
         } else {
@@ -272,8 +236,10 @@ function generateShortCode() {
 }
 
 function getOnlineUsers(callback) {
+    // ===== FIX: Use display_name instead of name =====
     db.all('SELECT id, display_name, username FROM users WHERE isOnline = 1', function(err, users) {
         if (err) {
+            console.error('❌ Online users error:', err);
             return callback(0, []);
         }
         const formattedUsers = (users || []).map(function(u) {
@@ -322,62 +288,6 @@ async function getLocationFromIP(ip) {
     }
 }
 
-// ============ BOT DETECTION ============
-function isBot(userAgent, ip) {
-    const botPatterns = [
-        /bot/i, /crawl/i, /spider/i, /scrape/i, /headless/i,
-        /puppeteer/i, /selenium/i, /phantom/i, /curl/i, /wget/i,
-        /python/i, /java/i, /go-http/i, /node-fetch/i, /axios/i,
-        /postman/i, /insomnia/i, /httpie/i, /lighthouse/i,
-        /googlebot/i, /bingbot/i, /slurp/i, /duckduckbot/i,
-        /baiduspider/i, /yandexbot/i, /facebookexternalhit/i,
-        /facebot/i, /twitterbot/i, /telegrambot/i, /whatsapp/i,
-        /slackbot/i, /discordbot/i, /applebot/i, /datadog/i,
-        /newrelic/i, /pingdom/i, /uptime/i, /monitor/i, /healthcheck/i,
-        /headlesschrome/i, /phantomjs/i, /selenium/i
-    ];
-
-    if (userAgent) {
-        for (let pattern of botPatterns) {
-            if (pattern.test(userAgent)) {
-                return true;
-            }
-        }
-    }
-
-    if (userAgent && (userAgent.includes('Headless') || userAgent.includes('HeadlessChrome'))) {
-        return true;
-    }
-
-    return false;
-}
-
-// ============ DETECT DEVICE ============
-function detectDeviceInfo(userAgent) {
-    const info = { device: 'Desktop', browser: 'Unknown', os: 'Unknown' };
-    if (!userAgent) return info;
-
-    if (userAgent.includes('Mobile') || userAgent.includes('Android') || userAgent.includes('iPhone')) {
-        info.device = 'Mobile';
-    } else if (userAgent.includes('Tablet') || userAgent.includes('iPad')) {
-        info.device = 'Tablet';
-    }
-
-    if (userAgent.includes('Chrome') && !userAgent.includes('Edg')) info.browser = 'Chrome';
-    else if (userAgent.includes('Firefox')) info.browser = 'Firefox';
-    else if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) info.browser = 'Safari';
-    else if (userAgent.includes('Edg')) info.browser = 'Edge';
-    else if (userAgent.includes('Opera')) info.browser = 'Opera';
-
-    if (userAgent.includes('Windows')) info.os = 'Windows';
-    else if (userAgent.includes('Mac')) info.os = 'macOS';
-    else if (userAgent.includes('Linux')) info.os = 'Linux';
-    else if (userAgent.includes('Android')) info.os = 'Android';
-    else if (userAgent.includes('iOS') || userAgent.includes('iPhone') || userAgent.includes('iPad')) info.os = 'iOS';
-
-    return info;
-}
-
 // ============ Routes ============
 
 // Home
@@ -410,7 +320,6 @@ app.post('/login', function(req, res) {
     var firstName = req.body.firstName || username;
     var lastName = req.body.lastName || '';
     var email = req.body.email || null;
-    var timezone = req.body.timezone || 'Asia/Dhaka';
     
     if (!telegramId || !username) {
         return res.render('index', {
@@ -444,12 +353,11 @@ app.post('/login', function(req, res) {
                     last_name = ?, 
                     display_name = ?,
                     email = COALESCE(?, email),
-                    timezone = ?,
                     last_login = CURRENT_TIMESTAMP, 
                     isOnline = 1, 
                     isValidated = 1 
                     WHERE telegram_id = ?`,
-                [username, firstName, lastName, firstName + ' ' + lastName, email, timezone, cleanTelegramId], 
+                [username, firstName, lastName, firstName + ' ' + lastName, email, cleanTelegramId], 
                 function(err) {
                     if (err) {
                         return res.render('index', { page: 'login', error: 'Update failed.', success: null, info: null });
@@ -468,8 +376,7 @@ app.post('/login', function(req, res) {
                             last_name: updatedUser.last_name,
                             display_name: updatedUser.display_name,
                             email: updatedUser.email,
-                            profile_photo: updatedUser.profile_photo,
-                            timezone: updatedUser.timezone || 'Asia/Dhaka'
+                            profile_photo: updatedUser.profile_photo
                         };
                         req.session.save(function() {
                             res.redirect('/dashboard');
@@ -478,9 +385,9 @@ app.post('/login', function(req, res) {
                 });
         } else {
             db.run(`INSERT INTO users 
-                    (telegram_id, username, first_name, last_name, display_name, email, timezone, isOnline, isValidated, last_login) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, 1, 1, CURRENT_TIMESTAMP)`,
-                [cleanTelegramId, username, firstName, lastName, firstName + ' ' + lastName, email, timezone], 
+                    (telegram_id, username, first_name, last_name, display_name, email, isOnline, isValidated, last_login) 
+                    VALUES (?, ?, ?, ?, ?, ?, 1, 1, CURRENT_TIMESTAMP)`,
+                [cleanTelegramId, username, firstName, lastName, firstName + ' ' + lastName, email], 
                 function(err) {
                     if (err) {
                         console.error('Registration error:', err);
@@ -500,8 +407,7 @@ app.post('/login', function(req, res) {
                             last_name: newUser.last_name,
                             display_name: newUser.display_name,
                             email: newUser.email,
-                            profile_photo: newUser.profile_photo,
-                            timezone: newUser.timezone || 'Asia/Dhaka'
+                            profile_photo: newUser.profile_photo
                         };
                         req.session.save(function() {
                             res.redirect('/dashboard');
@@ -509,40 +415,6 @@ app.post('/login', function(req, res) {
                     });
                 });
         }
-    });
-});
-
-// ============================================================
-// UPDATE TIMEZONE
-// ============================================================
-app.post('/api/update-timezone', function(req, res) {
-    if (!req.session.user) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    var { timezone } = req.body;
-    if (!timezone) {
-        return res.status(400).json({ error: 'Timezone is required' });
-    }
-
-    db.run('UPDATE users SET timezone = ? WHERE id = ?', [timezone, req.session.user.id], function(err) {
-        if (err) {
-            return res.status(500).json({ error: 'Failed to update timezone' });
-        }
-
-        db.get('SELECT * FROM users WHERE id = ?', [req.session.user.id], function(err, updatedUser) {
-            if (err || !updatedUser) {
-                return res.status(404).json({ error: 'User not found' });
-            }
-
-            req.session.user.timezone = updatedUser.timezone;
-
-            res.json({
-                success: true,
-                timezone: updatedUser.timezone,
-                message: 'Timezone updated successfully!'
-            });
-        });
     });
 });
 
@@ -580,7 +452,6 @@ app.get('/api/user-data', function(req, res) {
             account_status: user.account_status,
             totalLinks: user.totalLinks || 0,
             totalClicks: user.totalClicks || 0,
-            timezone: user.timezone || 'Asia/Dhaka',
             completion: completion
         });
     });
@@ -634,8 +505,7 @@ app.post('/api/update-profile', function(req, res) {
                     last_name: updatedUser.last_name,
                     display_name: updatedUser.display_name,
                     email: updatedUser.email,
-                    profile_photo: updatedUser.profile_photo,
-                    timezone: updatedUser.timezone || 'Asia/Dhaka'
+                    profile_photo: updatedUser.profile_photo
                 };
 
                 res.json({
@@ -652,7 +522,11 @@ app.post('/api/update-profile', function(req, res) {
 // ============================================================
 app.post('/logout', function(req, res) {
     if (req.session.user) {
-        db.run('UPDATE users SET isOnline = 0 WHERE id = ?', [req.session.user.id]);
+        db.run('UPDATE users SET isOnline = 0 WHERE id = ?', [req.session.user.id], function(err) {
+            if (err) {
+                console.error('❌ Logout error:', err);
+            }
+        });
     }
     req.session.destroy(function() {
         res.redirect('/');
@@ -706,6 +580,7 @@ app.get('/dashboard', function(req, res) {
             db.run('UPDATE users SET totalLinks = ?, totalClicks = ? WHERE id = ?', 
                 [links ? links.length : 0, totalClicks, req.session.user.id]);
 
+            // ===== FIX: Get online users count =====
             getOnlineUsers(function(count, users) {
                 db.all(`SELECT 
                             country,
@@ -732,7 +607,6 @@ app.get('/dashboard', function(req, res) {
                             onlineUsers: count,
                             onlineUserList: users,
                             countries: COUNTRIES,
-                            timezones: TIMEZONES,
                             error: null,
                             success: null,
                             info: null,
@@ -818,7 +692,7 @@ app.post('/shorten', function(req, res) {
 });
 
 // ============================================================
-// REDIRECT - with Bot Protection & Country Detection
+// REDIRECT
 // ============================================================
 app.get('/:shortCode', async function(req, res) {
     var shortCode = req.params.shortCode;
@@ -834,7 +708,6 @@ app.get('/:shortCode', async function(req, res) {
     var userAgent = req.headers['user-agent'] || '';
     var ip = req.ip || req.connection.remoteAddress || 'unknown';
     var referer = req.headers['referer'] || '';
-    var host = req.get('host') || '';
 
     db.get('SELECT * FROM links WHERE shortCode = ?', [shortCode], function(err, link) {
         if (err || !link) {
@@ -849,25 +722,16 @@ app.get('/:shortCode', async function(req, res) {
             return res.status(410).send('This link has expired');
         }
 
-        // ===== BOT DETECTION =====
-        const botDetected = isBot(userAgent, ip);
-
-        // ===== DEVICE DETECTION =====
-        const deviceInfo = detectDeviceInfo(userAgent);
-
-        // ===== COUNT CLICK =====
         db.run('UPDATE links SET clicks = clicks + 1 WHERE id = ?', [link.id], function(err) {
             if (err) {
                 console.error('❌ Click count error:', err);
             }
             
-            // ===== GET LOCATION =====
             getLocationFromIP(ip).then(function(geoData) {
                 db.run(`INSERT INTO click_logs 
-                        (linkId, ip, userAgent, referer, country, countryCode, city, device, browser, os, isBot) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                    [link.id, ip, userAgent, referer, geoData.country, geoData.countryCode, 
-                     geoData.city, deviceInfo.device, deviceInfo.browser, deviceInfo.os, botDetected ? 1 : 0],
+                        (linkId, ip, userAgent, referer, country, countryCode, city, isBot) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, 0)`,
+                    [link.id, ip, userAgent, referer, geoData.country, geoData.countryCode, geoData.city],
                     function(err) {
                         if (err) {
                             console.error('❌ Click log error:', err);
@@ -876,9 +740,9 @@ app.get('/:shortCode', async function(req, res) {
                     });
             }).catch(function(error) {
                 db.run(`INSERT INTO click_logs 
-                        (linkId, ip, userAgent, referer, device, browser, os, isBot) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-                    [link.id, ip, userAgent, referer, deviceInfo.device, deviceInfo.browser, deviceInfo.os, botDetected ? 1 : 0],
+                        (linkId, ip, userAgent, referer, isBot) 
+                        VALUES (?, ?, ?, ?, 0)`,
+                    [link.id, ip, userAgent, referer],
                     function(err) {
                         res.redirect(link.originalUrl);
                     });
@@ -983,6 +847,7 @@ app.get('/qr/:shortCode', function(req, res) {
 // ============================================================
 
 app.get('/api/online-users', function(req, res) {
+    // ===== FIX: Use display_name instead of name =====
     db.all('SELECT id, display_name, username FROM users WHERE isOnline = 1', function(err, users) {
         if (err) {
             return res.json({ count: 0, users: [] });
@@ -997,10 +862,6 @@ app.get('/api/online-users', function(req, res) {
             users: formattedUsers
         });
     });
-});
-
-app.get('/api/timezones', function(req, res) {
-    res.json(TIMEZONES);
 });
 
 // ============================================================
