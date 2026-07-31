@@ -3,52 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>This Person Is brand Shortlink - Premium URL Shortener</title>
+    <title>This Person Is brand Shortlink</title>
     
-    <meta property="og:title" content="This Person Is brand Shortlink - Premium URL Shortener" />
-    <meta property="og:description" content="Create unlimited short links with real-time analytics." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="<%= typeof BASE_URL !== 'undefined' ? BASE_URL : 'https://thispersonisbrandshortner.click' %>" />
-    <meta property="og:image" content="https://img.icons8.com/fluency/96/000000/link.png" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="This Person Is brand Shortlink - Premium URL Shortener" />
-    <meta name="twitter:description" content="Create unlimited short links with real-time analytics." />
-    <meta name="description" content="Create unlimited short links with real-time click tracking and analytics." />
-    <link rel="canonical" href="<%= typeof BASE_URL !== 'undefined' ? BASE_URL : 'https://thispersonisbrandshortner.click' %>" />
-    
+    <!-- ===== FAVICON ===== -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔗</text></svg>">
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- ===== GOOGLE FONTS ===== -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
+        /* ============================================================ */
+        /* PREMIUM CYBERPUNK DESIGN SYSTEM */
+        /* ============================================================ */
         :root {
             --primary: #6C63FF;
-            --primary-dark: #5A52D5;
+            --primary-glow: rgba(108, 99, 255, 0.4);
             --secondary: #FF6584;
+            --secondary-glow: rgba(255, 101, 132, 0.3);
             --accent: #00D4FF;
-            --success: #00E676;
-            --danger: #FF4466;
-            --warning: #FFB800;
-            --dark: #0D0D1A;
+            --accent-glow: rgba(0, 212, 255, 0.3);
+            --dark: #0A0A0F;
+            --dark-card: rgba(255, 255, 255, 0.04);
             --glass: rgba(255, 255, 255, 0.06);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.08);
             --text: #FFFFFF;
-            --text-muted: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.6);
             --telegram: #0088cc;
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            --radius: 20px;
+            --success: #00FF88;
+            --danger: #FF4466;
+            --neon-blue: #00D4FF;
+            --neon-purple: #9B59FF;
+            --neon-pink: #FF6584;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--dark);
             color: var(--text);
             min-height: 100vh;
+            overflow-x: hidden;
             position: relative;
         }
+
+        /* ===== ANIMATED BACKGROUND PARTICLES ===== */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ===== NEON GLOW BACKGROUND ===== */
         body::before {
             content: '';
             position: fixed;
@@ -56,634 +74,1017 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(ellipse at 20% 50%, rgba(108,99,255,0.06) 0%, transparent 50%),
-                         radial-gradient(ellipse at 80% 20%, rgba(255,101,132,0.04) 0%, transparent 40%),
-                         radial-gradient(ellipse at 50% 80%, rgba(0,212,255,0.03) 0%, transparent 40%);
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(108, 99, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(255, 101, 132, 0.06) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 80%, rgba(0, 212, 255, 0.05) 0%, transparent 40%);
             z-index: 0;
             pointer-events: none;
-            animation: bgPulse 10s ease-in-out infinite alternate;
+            animation: glowPulse 8s ease-in-out infinite alternate;
         }
-        @keyframes bgPulse {
-            0% { transform: scale(1) rotate(0deg); opacity: 0.5; }
-            100% { transform: scale(1.05) rotate(2deg); opacity: 1; }
-        }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--dark); }
-        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--primary), var(--accent)); border-radius: 50px; }
 
+        @keyframes glowPulse {
+            0% { opacity: 0.5; transform: scale(1) rotate(0deg); }
+            100% { opacity: 1; transform: scale(1.1) rotate(3deg); }
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--primary), var(--accent));
+            border-radius: 50px;
+        }
+
+        /* ============================================================ */
+        /* GLASSMORPHISM CARDS */
+        /* ============================================================ */
         .glass-card {
             background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(30px) saturate(1.2);
+            -webkit-backdrop-filter: blur(30px) saturate(1.2);
             border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            padding: 2rem;
-            box-shadow: var(--shadow);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.8),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
             position: relative;
             z-index: 1;
-            transition: all 0.4s ease;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
-        .glass-card:hover { border-color: rgba(108,99,255,0.2); box-shadow: 0 8px 40px rgba(108,99,255,0.05); }
 
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, var(--primary-glow), transparent, var(--accent-glow));
+            z-index: -1;
+            opacity: 0.3;
+            transition: opacity 0.4s;
+        }
+
+        .glass-card:hover::before {
+            opacity: 0.6;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 
+                0 30px 60px -12px rgba(108, 99, 255, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        /* ============================================================ */
+        /* NAVIGATION */
+        /* ============================================================ */
         .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 1rem 3rem;
-            background: rgba(13,13,26,0.92);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(20px) saturate(1.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             position: sticky;
             top: 0;
             z-index: 1000;
             gap: 1rem;
             flex-wrap: wrap;
         }
-        .logo-wrapper { display: flex; align-items: center; gap: 0.8rem; text-decoration: none; }
-        .logo-icon {
-            width: 46px; height: 46px; border-radius: 14px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 0 0 40px rgba(108,99,255,0.25);
-            transition: transform 0.3s;
+
+        /* ===== LOGO ===== */
+        .logo-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            text-decoration: none;
+            position: relative;
         }
-        .logo-icon:hover { transform: scale(1.05) rotate(-5deg); }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            box-shadow: 0 0 30px rgba(108, 99, 255, 0.3);
+            position: relative;
+            transition: all 0.4s;
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--accent), var(--secondary));
+            z-index: -1;
+            opacity: 0.5;
+            filter: blur(8px);
+            animation: logoGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoGlow {
+            0% { opacity: 0.3; transform: scale(1); }
+            100% { opacity: 0.8; transform: scale(1.2); }
+        }
+
+        .logo-icon:hover {
+            transform: scale(1.05) rotate(-5deg);
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
         .logo-text .brand {
-            font-size: 1.2rem; font-weight: 800;
+            font-size: 1.2rem;
+            font-weight: 800;
             background: linear-gradient(135deg, var(--primary), var(--accent), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             line-height: 1.2;
+            letter-spacing: -0.5px;
         }
-        .logo-text .sub {
-            font-size: 0.6rem; color: var(--text-muted);
-            font-weight: 400; letter-spacing: 2px; text-transform: uppercase;
-        }
-        .nav-links {
-            display: flex; gap: 1.2rem; align-items: center; flex-wrap: wrap;
-        }
-        .nav-links a {
-            color: var(--text-muted); text-decoration: none; font-weight: 500;
-            font-size: 0.9rem; transition: all 0.3s; padding: 0.4rem 0;
-            border-bottom: 2px solid transparent;
-        }
-        .nav-links a:hover { color: var(--text); border-bottom-color: var(--primary); }
 
+        .logo-text .sub {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            -webkit-text-fill-color: var(--text-muted);
+        }
+
+        /* ===== NAV LINKS ===== */
+        .nav-links {
+            display: flex;
+            gap: 1.2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            position: relative;
+            padding: 0.3rem 0;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 0.6rem 1.6rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            text-decoration: none;
+            display: inline-block;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50px;
+            padding: 2px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .btn:hover::before {
+            opacity: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 25px rgba(108, 99, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 40px rgba(108, 99, 255, 0.5);
+        }
+
+        .btn-secondary {
+            background: var(--glass);
+            color: var(--text);
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #CC2244);
+            color: white;
+            box-shadow: 0 4px 25px rgba(255, 68, 102, 0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 40px rgba(255, 68, 102, 0.5);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #00CC66);
+            color: var(--dark);
+            box-shadow: 0 4px 25px rgba(0, 255, 136, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .btn-telegram {
+            background: linear-gradient(135deg, var(--telegram), #005f8a);
+            color: white;
+            box-shadow: 0 4px 25px rgba(0, 136, 204, 0.3);
+        }
+
+        .btn-telegram:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 40px rgba(0, 136, 204, 0.5);
+        }
+
+        .btn-glow {
+            animation: btnPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes btnPulse {
+            0%, 100% { box-shadow: 0 4px 25px rgba(108, 99, 255, 0.3); }
+            50% { box-shadow: 0 4px 50px rgba(108, 99, 255, 0.6); }
+        }
+
+        /* ============================================================ */
+        /* FORMS */
+        /* ============================================================ */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.3s;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.15), 0 0 30px rgba(108, 99, 255, 0.05);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        /* ============================================================ */
+        /* CONTAINER */
+        /* ============================================================ */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============================================================ */
+        /* DASHBOARD */
+        /* ============================================================ */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--text), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 1.8rem 1.5rem;
+            text-align: center;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(108, 99, 255, 0.05), transparent 60%);
+            animation: statGlow 6s ease-in-out infinite alternate;
+        }
+
+        @keyframes statGlow {
+            0% { transform: translate(-10%, -10%) scale(1); }
+            100% { transform: translate(10%, 10%) scale(1.2); }
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(108, 99, 255, 0.3);
+        }
+
+        .stat-card .number {
+            font-size: 2.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-card .label {
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============================================================ */
+        /* LINK CARDS */
+        /* ============================================================ */
+        .link-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 1.8rem;
+            margin-bottom: 1rem;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+        }
+
+        .link-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.03), rgba(0, 212, 255, 0.03));
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .link-card:hover::before {
+            opacity: 1;
+        }
+
+        .link-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(108, 99, 255, 0.2);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .link-card .link-url {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            word-break: break-all;
+            font-size: 1.1rem;
+            transition: color 0.3s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .link-card .link-url:hover {
+            color: var(--primary);
+        }
+
+        .link-card .link-original {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            word-break: break-all;
+            margin-top: 0.3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .link-card .link-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 0.8rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .link-card .link-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .link-card .link-actions form {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .link-card .link-actions input[type="url"] {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 0.4rem 0.8rem;
+            color: var(--text);
+            min-width: 200px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .link-card .link-actions input[type="url"]:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+        }
+
+        /* ============================================================ */
+        /* ALERTS */
+        /* ============================================================ */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 14px;
+            margin-bottom: 1.5rem;
+            border: 1px solid;
+            backdrop-filter: blur(10px);
+        }
+
+        .alert-success {
+            background: rgba(0, 255, 136, 0.08);
+            border-color: rgba(0, 255, 136, 0.2);
+            color: var(--success);
+        }
+
+        .alert-danger {
+            background: rgba(255, 68, 102, 0.08);
+            border-color: rgba(255, 68, 102, 0.2);
+            color: var(--danger);
+        }
+
+        .alert-info {
+            background: rgba(0, 212, 255, 0.08);
+            border-color: rgba(0, 212, 255, 0.2);
+            color: var(--accent);
+        }
+
+        /* ============================================================ */
+        /* LIVE USERS */
+        /* ============================================================ */
         .live-counter {
-            background: rgba(0,230,118,0.1); border: 1px solid rgba(0,230,118,0.2);
-            border-radius: 50px; padding: 0.3rem 1.2rem;
-            display: flex; align-items: center; gap: 0.6rem;
-            color: var(--success); font-weight: 600; font-size: 0.85rem;
+            background: rgba(255, 101, 132, 0.08);
+            border: 1px solid rgba(255, 101, 132, 0.15);
+            border-radius: 50px;
+            padding: 0.4rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: var(--secondary);
+            font-weight: 600;
+            font-size: 0.85rem;
         }
+
         .live-counter .dot {
-            width: 8px; height: 8px; border-radius: 50%;
-            background: var(--success);
-            animation: livePulse 1.5s ease-in-out infinite;
-            box-shadow: 0 0 20px rgba(0,230,118,0.3);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00FF88;
+            animation: pulse 1.5s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
         }
-        @keyframes livePulse {
-            0%,100% { opacity: 1; transform: scale(1); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.4; transform: scale(0.7); }
         }
 
-        .btn {
-            padding: 0.7rem 1.8rem; border: none; border-radius: 50px;
-            font-weight: 600; font-size: 0.9rem; cursor: pointer;
-            transition: all 0.3s ease; text-decoration: none;
-            display: inline-flex; align-items: center; gap: 0.5rem;
-            font-family: 'Inter', sans-serif;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white; box-shadow: 0 4px 25px rgba(108,99,255,0.3);
-        }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 40px rgba(108,99,255,0.5); }
-        .btn-secondary {
-            background: var(--glass); color: var(--text);
-            border: 1px solid var(--glass-border);
-        }
-        .btn-secondary:hover { background: rgba(255,255,255,0.08); transform: translateY(-3px); }
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger), #CC2244);
-            color: white; box-shadow: 0 4px 25px rgba(255,68,102,0.3);
-        }
-        .btn-danger:hover { transform: translateY(-3px); box-shadow: 0 8px 40px rgba(255,68,102,0.5); }
-        .btn-success {
-            background: linear-gradient(135deg, var(--success), #00B859);
-            color: var(--dark); box-shadow: 0 4px 25px rgba(0,230,118,0.3);
-        }
-        .btn-success:hover { transform: translateY(-3px); box-shadow: 0 8px 40px rgba(0,230,118,0.5); }
-        .btn-warning {
-            background: linear-gradient(135deg, var(--warning), #F09B00);
-            color: var(--dark); box-shadow: 0 4px 25px rgba(255,184,0,0.3);
-        }
-        .btn-warning:hover { transform: translateY(-3px); }
-        .btn-telegram {
-            background: linear-gradient(135deg, var(--telegram), #005f8a);
-            color: white; box-shadow: 0 4px 25px rgba(0,136,204,0.3);
-        }
-        .btn-telegram:hover { transform: translateY(-3px); box-shadow: 0 8px 40px rgba(0,136,204,0.5); }
-        .btn-sm { padding: 0.4rem 1.2rem; font-size: 0.8rem; }
-
-        .form-group { margin-bottom: 1.2rem; }
-        .form-group label {
-            display: block; margin-bottom: 0.4rem;
-            color: var(--text-muted); font-weight: 500; font-size: 0.85rem;
-        }
-        .form-control {
-            width: 100%; padding: 0.9rem 1.2rem;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--glass-border); border-radius: 12px;
-            color: var(--text); font-size: 1rem;
-            transition: all 0.3s; outline: none;
-            font-family: 'Inter', sans-serif;
-        }
-        .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(108,99,255,0.12);
-            background: rgba(255,255,255,0.07);
-        }
-        .form-control::placeholder { color: var(--text-muted); opacity: 0.5; }
-        select.form-control {
-            appearance: none;
-            -webkit-appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236C63FF' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: right 12px center;
-            padding-right: 36px; color: #FFFFFF !important;
-        }
-        select.form-control option { background: #1A1A2E; color: #FFFFFF; padding: 10px; }
-        select.form-control option:checked { background: #6C63FF; }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; position: relative; z-index: 1; }
-        .section-title {
-            font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--text), var(--accent));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .section-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 1.5rem; }
-
-        .stats-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-            gap: 1.5rem; margin-bottom: 2.5rem;
-        }
-        .stat-card {
-            background: var(--glass); border: 1px solid var(--glass-border);
-            border-radius: 16px; padding: 1.8rem 1.5rem; text-align: center;
-            transition: all 0.4s;
-        }
-        .stat-card:hover { border-color: rgba(108,99,255,0.3); transform: translateY(-4px); }
-        .stat-card .number {
-            font-size: 2.8rem; font-weight: 900;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .stat-card .label { color: var(--text-muted); margin-top: 0.3rem; font-size: 0.85rem; font-weight: 500; }
-
-        .analytics-grid {
-            display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;
-        }
-        .analytics-grid .chart-container { position: relative; height: 250px; }
-        .analytics-grid .chart-container canvas { width: 100% !important; height: 100% !important; }
-        .analytics-stats { display: flex; flex-direction: column; gap: 0.5rem; }
-        .analytics-stats .stat-item {
-            display: flex; justify-content: space-between; padding: 0.6rem 1rem;
-            background: var(--glass); border-radius: 10px; border: 1px solid var(--glass-border);
-            transition: all 0.3s;
-        }
-        .analytics-stats .stat-item:hover { border-color: rgba(108,99,255,0.2); }
-        .analytics-stats .stat-item .label { color: var(--text-muted); font-size: 0.85rem; }
-        .analytics-stats .stat-item .value { font-weight: 700; font-size: 0.95rem; color: var(--text); }
-        .analytics-stats .stat-item .value.success { color: var(--success); }
-        .analytics-stats .stat-item .value.danger { color: var(--danger); }
-
-        .country-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;
-        }
-        .country-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0.5rem 0.8rem; background: var(--glass); border-radius: 10px;
-            border: 1px solid var(--glass-border); transition: all 0.3s;
-        }
-        .country-item:hover { border-color: rgba(108,99,255,0.3); transform: translateX(4px); }
-        .country-item .country-name {
-            display: flex; align-items: center; gap: 0.5rem;
-            color: var(--text); font-size: 0.9rem;
-        }
-        .country-item .country-flag { font-size: 1.2rem; }
-        .country-item .country-clicks { color: var(--accent); font-weight: 600; }
-
-        .device-tag {
-            display: inline-flex; align-items: center; gap: 0.4rem;
-            padding: 0.3rem 0.8rem; background: var(--glass); border-radius: 50px;
-            border: 1px solid var(--glass-border); font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .timezone-selector {
-            display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
-            padding: 1rem; background: var(--glass); border-radius: 14px;
-            border: 1px solid var(--glass-border);
-        }
-        .timezone-selector select {
-            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
-            border-radius: 8px; padding: 0.5rem 1rem; color: var(--text);
-            font-family: 'Inter', sans-serif; font-size: 0.9rem; cursor: pointer;
-            min-width: 200px;
-        }
-        .timezone-selector select:focus { border-color: var(--primary); outline: none; }
-        .timezone-display { font-size: 0.9rem; color: var(--text-muted); }
-
-        .link-card {
-            background: var(--glass); border: 1px solid var(--glass-border);
-            border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem;
-            transition: all 0.4s ease;
-        }
-        .link-card:hover {
-            border-color: rgba(108,99,255,0.2); transform: translateY(-3px);
-            box-shadow: 0 8px 40px rgba(0,0,0,0.3);
-        }
-        .link-card .link-top {
-            display: flex; justify-content: space-between; align-items: flex-start;
-            flex-wrap: wrap; gap: 0.5rem;
-        }
-        .link-card .link-url {
-            color: var(--accent); text-decoration: none; font-weight: 600;
-            font-size: 1.05rem; transition: color 0.3s; word-break: break-all;
-        }
-        .link-card .link-url:hover { color: var(--primary); }
-        .link-card .link-title {
-            color: var(--text); font-weight: 500; font-size: 0.95rem;
-            margin-top: 0.2rem;
-        }
-        .link-card .link-original {
-            color: var(--text-muted); font-size: 0.85rem; word-break: break-all;
-            margin-top: 0.2rem;
-        }
-        .link-card .link-meta {
-            display: flex; gap: 1.2rem; margin-top: 0.6rem;
-            font-size: 0.8rem; color: var(--text-muted); flex-wrap: wrap;
-        }
-        .link-card .link-meta .badge {
-            padding: 0.15rem 0.6rem; border-radius: 50px; font-size: 0.7rem; font-weight: 600;
-        }
-        .badge-active { background: rgba(0,230,118,0.15); color: var(--success); }
-        .badge-inactive { background: rgba(255,68,102,0.15); color: var(--danger); }
-        .badge-expired { background: rgba(255,184,0,0.15); color: var(--warning); }
-
-        .link-card .link-actions {
-            display: flex; gap: 0.5rem; margin-top: 0.8rem;
-            flex-wrap: wrap; align-items: center;
-        }
-        .link-card .link-actions .edit-form {
-            display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;
-            flex: 1; min-width: 180px;
-        }
-        .link-card .link-actions .edit-form input[type="url"] {
-            background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
-            border-radius: 8px; padding: 0.4rem 0.8rem; color: var(--text);
-            min-width: 150px; flex: 1; font-family: 'Inter', sans-serif;
-            font-size: 0.85rem; transition: all 0.3s;
-        }
-        .link-card .link-actions .edit-form input[type="url"]:focus {
-            border-color: var(--primary); outline: none;
-            box-shadow: 0 0 0 3px rgba(108,99,255,0.1);
-        }
-        .link-card .link-actions .btn-group { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-
-        .user-menu-wrapper { position: relative; display: inline-block; }
-        .user-profile-btn {
-            display: flex; align-items: center; gap: 0.7rem;
-            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
-            border-radius: 50px; padding: 0.3rem 1rem 0.3rem 0.3rem;
-            cursor: pointer; transition: all 0.3s ease; color: var(--text);
-        }
-        .user-profile-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(108,99,255,0.3); }
-        .user-profile-btn .avatar {
-            width: 34px; height: 34px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 0.9rem; flex-shrink: 0;
-        }
-        .user-profile-btn .avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-        .user-profile-btn .user-name {
-            font-weight: 500; font-size: 0.9rem; color: var(--text);
-            max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-        }
-        .user-profile-btn .chevron { color: var(--text-muted); font-size: 0.7rem; transition: transform 0.3s; }
-        .user-profile-btn .chevron.open { transform: rotate(180deg); }
-
-        .dropdown-menu {
-            position: absolute; top: calc(100% + 10px); right: 0;
-            min-width: 250px; background: rgba(13,13,26,0.98);
-            backdrop-filter: blur(30px); border: 1px solid var(--glass-border);
-            border-radius: 16px; padding: 0.5rem; box-shadow: var(--shadow);
-            opacity: 0; visibility: hidden; transform: translateY(-10px) scale(0.95);
-            transition: all 0.3s ease; z-index: 1001;
-        }
-        .dropdown-menu.open { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
-        .dropdown-menu .dropdown-header { padding: 0.8rem 1rem; border-bottom: 1px solid var(--glass-border); }
-        .dropdown-menu .dropdown-header .dd-name { font-weight: 700; font-size: 1rem; color: var(--text); }
-        .dropdown-menu .dropdown-header .dd-email { font-size: 0.8rem; color: var(--text-muted); }
-        .dropdown-menu .dropdown-item {
-            display: flex; align-items: center; gap: 0.8rem; padding: 0.6rem 1rem;
-            border-radius: 10px; color: var(--text-muted); text-decoration: none;
-            font-size: 0.9rem; font-weight: 500; transition: all 0.3s;
-            cursor: pointer; border: none; background: none; width: 100%;
-            text-align: left; font-family: 'Inter', sans-serif;
-        }
-        .dropdown-menu .dropdown-item:hover { background: rgba(108,99,255,0.1); color: var(--text); }
-        .dropdown-menu .dropdown-item i { width: 20px; color: var(--primary); }
-        .dropdown-menu .dropdown-item.danger:hover { background: rgba(255,68,102,0.1); color: var(--danger); }
-        .dropdown-menu .dropdown-item.danger i { color: var(--danger); }
-
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(12px);
-            z-index: 9999; display: none; justify-content: center; align-items: center;
-            padding: 1rem;
-        }
-        .modal-overlay.active { display: flex; }
-        .modal-content {
-            background: rgba(13,13,26,0.98); backdrop-filter: blur(30px);
-            border: 1px solid var(--glass-border); border-radius: 24px;
-            max-width: 550px; width: 100%; max-height: 90vh; overflow-y: auto;
-            padding: 2rem; box-shadow: var(--shadow);
-            animation: modalFadeIn 0.4s ease;
-        }
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: scale(0.95) translateY(20px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        .modal-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        .modal-header h2 {
-            font-size: 1.5rem; font-weight: 700;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .modal-close {
-            background: none; border: none; color: var(--text-muted);
-            font-size: 1.5rem; cursor: pointer; transition: all 0.3s;
-            width: 40px; height: 40px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .modal-close:hover { background: rgba(255,255,255,0.05); color: var(--text); }
-
-        .profile-avatar-section {
-            display: flex; flex-direction: column; align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        .profile-avatar {
-            width: 80px; height: 80px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex; align-items: center; justify-content: center;
-            font-size: 2rem; font-weight: 700;
-            box-shadow: 0 0 40px rgba(108,99,255,0.2);
-            margin-bottom: 0.5rem; position: relative;
-        }
-        .profile-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-        .profile-avatar .avatar-badge {
-            position: absolute; bottom: 0; right: 0;
-            background: var(--success); width: 22px; height: 22px;
-            border-radius: 50%; border: 2px solid var(--dark);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .profile-avatar .avatar-badge i { font-size: 0.6rem; color: var(--dark); }
-        .profile-display-name { font-size: 1.2rem; font-weight: 700; color: var(--text); }
-        .profile-username { font-size: 0.9rem; color: var(--text-muted); }
-
-        .completion-section {
-            background: var(--glass); border-radius: 12px; padding: 0.8rem 1rem;
-            margin-bottom: 1.5rem; border: 1px solid var(--glass-border);
-        }
-        .completion-header {
-            display: flex; justify-content: space-between;
-            font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.3rem;
-        }
-        .completion-bar {
-            width: 100%; height: 4px; background: var(--glass-border);
-            border-radius: 4px; overflow: hidden;
-        }
-        .completion-bar .completion-fill {
-            height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent));
-            border-radius: 4px; transition: width 0.8s ease;
-        }
-
-        .profile-field { margin-bottom: 1rem; }
-        .profile-field label {
-            display: block; font-size: 0.75rem; font-weight: 600;
-            color: var(--text-muted); text-transform: uppercase;
-            letter-spacing: 0.5px; margin-bottom: 0.2rem;
-        }
-        .profile-field .field-value {
-            font-size: 0.95rem; color: var(--text); padding: 0.4rem 0;
-            border-bottom: 1px solid transparent; transition: all 0.3s;
-        }
-        .profile-field .field-value.editable {
-            border-bottom-color: var(--glass-border); cursor: pointer;
-        }
-        .profile-field .field-value.editable:hover { border-bottom-color: var(--primary); }
-        .profile-field .field-value input {
-            background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
-            border-radius: 8px; padding: 0.4rem 0.8rem; color: var(--text);
-            width: 100%; font-family: 'Inter', sans-serif; font-size: 0.95rem;
-            transition: all 0.3s;
-        }
-        .profile-field .field-value input:focus {
-            border-color: var(--primary); outline: none;
-            box-shadow: 0 0 0 3px rgba(108,99,255,0.12);
-        }
-        .profile-field .field-value .edit-icon {
-            color: var(--text-muted); font-size: 0.7rem; margin-left: 0.5rem;
-            cursor: pointer;
-        }
-        .profile-field .field-value .edit-icon:hover { color: var(--primary); }
-
-        .modal-actions {
-            display: flex; gap: 0.8rem; margin-top: 1.5rem; flex-wrap: wrap;
-        }
-        .modal-actions .btn { flex: 1; min-width: 100px; justify-content: center; }
-
-        .alert {
-            padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;
-            border: 1px solid;
-        }
-        .alert-success { background: rgba(0,230,118,0.08); border-color: rgba(0,230,118,0.2); color: var(--success); }
-        .alert-danger { background: rgba(255,68,102,0.08); border-color: rgba(255,68,102,0.2); color: var(--danger); }
-        .alert-info { background: rgba(0,212,255,0.08); border-color: rgba(0,212,255,0.2); color: var(--accent); }
-
         .user-list {
-            display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.5rem;
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
         }
+
         .user-badge {
-            background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
-            border-radius: 50px; padding: 0.3rem 1rem; font-size: 0.85rem;
-            color: var(--text-muted); display: flex; align-items: center;
-            gap: 0.5rem; transition: all 0.3s;
-        }
-        .user-badge:hover { border-color: var(--primary); color: var(--text); }
-        .user-badge .online-dot {
-            width: 6px; height: 6px; border-radius: 50%;
-            background: var(--success); display: inline-block;
-            box-shadow: 0 0 10px rgba(0,230,118,0.3);
-        }
-
-        .shorten-form {
-            display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;
-        }
-        .shorten-form .form-group { flex: 1; min-width: 200px; margin-bottom: 0; }
-        .shorten-form .form-group .form-control { padding: 0.8rem 1.2rem; }
-        .shorten-form .btn { padding: 0.8rem 2rem; }
-
-        .unlimited-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--success), #00B859);
-            color: var(--dark); padding: 0.2rem 1rem; border-radius: 50px;
-            font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
-            letter-spacing: 0.5px; box-shadow: 0 0 20px rgba(0,230,118,0.15);
-        }
-
-        .short-link-display {
-            background: rgba(0,212,255,0.05); border: 1px solid rgba(0,212,255,0.15);
-            border-radius: 14px; padding: 1rem 1.5rem; margin-top: 1rem;
-            display: flex; justify-content: space-between; align-items: center;
-            flex-wrap: wrap; gap: 1rem;
-        }
-        .short-link-display .link {
-            color: var(--accent); font-weight: 600; font-size: 1.05rem;
-            word-break: break-all;
-        }
-        .copy-btn {
-            background: var(--glass); border: 1px solid var(--glass-border);
-            color: var(--text); padding: 0.4rem 1.2rem; border-radius: 50px;
-            cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 500;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 0.3rem 1rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             transition: all 0.3s;
         }
-        .copy-btn:hover { background: var(--primary); border-color: var(--primary); box-shadow: 0 0 30px rgba(108,99,255,0.2); }
 
+        .user-badge:hover {
+            border-color: var(--primary);
+            color: var(--text);
+        }
+
+        .user-badge .online-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #00FF88;
+            display: inline-block;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+
+        /* ============================================================ */
+        /* USER PROFILE */
+        /* ============================================================ */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: rgba(0, 136, 204, 0.08);
+            padding: 0.3rem 1rem 0.3rem 0.3rem;
+            border-radius: 50px;
+            border: 1px solid rgba(0, 136, 204, 0.15);
+        }
+
+        .user-profile .avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 0 20px rgba(108, 99, 255, 0.2);
+        }
+
+        .user-profile .name {
+            color: var(--text);
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.8rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            color: var(--danger);
+            background: rgba(255, 68, 102, 0.1);
+        }
+
+        /* ============================================================ */
+        /* BRAND CENTER */
+        /* ============================================================ */
         .brand-center {
-            text-align: center; padding: 0.5rem 0 2rem 0;
+            text-align: center;
+            padding: 1rem 0 2.5rem 0;
         }
+
         .brand-center h1 {
-            font-size: 3.5rem; font-weight: 900;
+            font-size: 3.2rem;
+            font-weight: 900;
             background: linear-gradient(135deg, var(--primary), var(--accent), var(--secondary));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+            position: relative;
         }
-        .brand-center p { color: var(--text-muted); font-size: 1.1rem; margin-top: 0.3rem; }
 
-        .features-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1.5rem; margin-top: 2rem;
+        .brand-center h1::after {
+            content: '✦';
+            position: absolute;
+            top: -20px;
+            right: -30px;
+            font-size: 1.5rem;
+            -webkit-text-fill-color: var(--accent);
+            animation: sparkle 3s ease-in-out infinite;
         }
-        .feature-card {
-            background: var(--glass); border: 1px solid var(--glass-border);
-            border-radius: 16px; padding: 1.5rem; text-align: center;
-            transition: all 0.4s;
-        }
-        .feature-card:hover { border-color: rgba(108,99,255,0.2); transform: translateY(-4px); }
-        .feature-card .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
-        .feature-card h3 { font-weight: 700; font-size: 1rem; margin-bottom: 0.3rem; }
-        .feature-card p { color: var(--text-muted); font-size: 0.85rem; }
 
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.3; transform: scale(0.8) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1.2) rotate(180deg); }
+        }
+
+        .brand-center p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+            font-weight: 300;
+        }
+
+        /* ============================================================ */
+        /* SHORT LINK DISPLAY - SCANNING ANIMATION */
+        /* ============================================================ */
+        .short-link-display {
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.15);
+            border-radius: 14px;
+            padding: 1.2rem 1.5rem;
+            margin: 1.2rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .short-link-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 300%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(0, 212, 255, 0.05), 
+                rgba(108, 99, 255, 0.05), 
+                transparent
+            );
+            animation: scanLine 3s ease-in-out infinite;
+        }
+
+        @keyframes scanLine {
+            0% { transform: translateX(-33%); }
+            100% { transform: translateX(33%); }
+        }
+
+        .short-link-display .link {
+            color: var(--accent);
+            font-weight: 600;
+            word-break: break-all;
+            position: relative;
+            z-index: 1;
+        }
+
+        .copy-btn {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: var(--text);
+            padding: 0.4rem 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 0 30px rgba(108, 99, 255, 0.3);
+        }
+
+        /* ============================================================ */
+        /* SHORTEN FORM INLINE */
+        /* ============================================================ */
+        .shorten-form-inline {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .shorten-form-inline .form-group {
+            flex: 1;
+            min-width: 150px;
+            margin-bottom: 0;
+        }
+
+        .shorten-form-inline .form-group .form-control {
+            padding: 0.7rem 1rem;
+        }
+
+        .shorten-form-inline .btn {
+            padding: 0.7rem 1.8rem;
+            min-width: 120px;
+        }
+
+        /* ============================================================ */
+        /* LOGIN BOX */
+        /* ============================================================ */
+        .login-box {
+            max-width: 450px;
+            margin: 3rem auto;
+        }
+
+        .telegram-icon {
+            font-size: 4.5rem;
+            text-align: center;
+            display: block;
+            margin-bottom: 1rem;
+            animation: floatIcon 4s ease-in-out infinite;
+        }
+
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* ============================================================ */
+        /* FOOTER */
+        /* ============================================================ */
         .footer {
-            text-align: center; padding: 2.5rem 2rem; color: var(--text-muted);
-            border-top: 1px solid var(--glass-border); margin-top: 3rem;
-            background: rgba(13,13,26,0.6); backdrop-filter: blur(10px);
+            text-align: center;
+            padding: 2.5rem 2rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--glass-border);
+            margin-top: 4rem;
+            background: rgba(10, 10, 15, 0.5);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 1;
         }
-        .footer a { color: var(--accent); text-decoration: none; font-weight: 600; transition: all 0.3s; }
-        .footer a:hover { color: var(--text); text-shadow: 0 0 30px rgba(0,212,255,0.2); }
-        .footer .heart { color: var(--secondary); display: inline-block; animation: heartBeat 1.5s ease-in-out infinite; }
-        @keyframes heartBeat { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); } }
 
-        .toast-container {
-            position: fixed; top: 80px; right: 20px; z-index: 99999;
-            display: flex; flex-direction: column; gap: 10px;
-            max-width: 360px; width: 100%;
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            position: relative;
         }
-        .toast {
-            padding: 1rem 1.2rem; border-radius: 14px;
-            background: rgba(13,13,26,0.95); backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border); box-shadow: var(--shadow);
-            display: flex; align-items: center; gap: 0.8rem;
-            animation: slideInRight 0.4s ease; font-family: 'Inter', sans-serif;
-        }
-        .toast.success { border-color: rgba(0,230,118,0.3); }
-        .toast.success i { color: var(--success); }
-        .toast.error { border-color: rgba(255,68,102,0.3); }
-        .toast.error i { color: var(--danger); }
-        .toast.info { border-color: rgba(0,212,255,0.3); }
-        .toast.info i { color: var(--accent); }
-        .toast .toast-icon { font-size: 1.2rem; flex-shrink: 0; }
-        .toast .toast-message { color: var(--text); font-size: 0.9rem; font-weight: 500; flex: 1; }
-        .toast .toast-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.8rem; padding: 0.2rem; }
-        @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes slideOutRight { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(50px); } }
 
+        .footer a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: width 0.3s;
+        }
+
+        .footer a:hover::after {
+            width: 100%;
+        }
+
+        .footer a:hover {
+            color: var(--text);
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+        }
+
+        .footer .heart {
+            color: var(--secondary);
+            display: inline-block;
+            animation: heartBeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* ============================================================ */
+        /* RESPONSIVE */
+        /* ============================================================ */
         @media (max-width: 992px) {
-            .brand-center h1 { font-size: 2.8rem; }
-            .analytics-grid { grid-template-columns: 1fr; }
-            .navbar { padding: 1rem 1.5rem; }
-            .modal-content { padding: 1.5rem; margin: 1rem; }
+            .brand-center h1 {
+                font-size: 2.4rem;
+            }
         }
+
         @media (max-width: 768px) {
-            .navbar { flex-direction: column; padding: 0.8rem 1rem; gap: 0.8rem; }
-            .nav-links { justify-content: center; gap: 0.8rem; width: 100%; flex-wrap: wrap; }
-            .container { padding: 1rem; }
-            .stats-grid { grid-template-columns: 1fr 1fr; }
-            .brand-center h1 { font-size: 2rem; }
-            .shorten-form { flex-direction: column; }
-            .shorten-form .form-group { min-width: auto; width: 100%; }
-            .shorten-form .btn { width: 100%; justify-content: center; }
-            .link-card .link-actions .edit-form { flex-direction: column; width: 100%; }
-            .link-card .link-actions .edit-form input[type="url"] { min-width: auto; width: 100%; }
-            .link-card .link-actions .btn-group { width: 100%; justify-content: center; }
-            .glass-card { padding: 1.2rem; }
-            .logo-wrapper { width: 100%; justify-content: center; }
-            .logo-text .brand { font-size: 1rem; }
-            .analytics-grid .chart-container { height: 200px; }
-            .timezone-selector { flex-direction: column; align-items: stretch; }
-            .user-profile-btn .user-name { max-width: 80px; font-size: 0.8rem; }
-            .dropdown-menu { right: -10px; min-width: 200px; }
-            .profile-avatar { width: 60px; height: 60px; font-size: 1.5rem; }
-            .modal-header h2 { font-size: 1.2rem; }
+            .navbar {
+                flex-direction: column;
+                padding: 1rem 1.5rem;
+            }
+
+            .nav-links {
+                justify-content: center;
+                gap: 0.8rem;
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .brand-center h1 {
+                font-size: 1.8rem;
+            }
+
+            .brand-center h1::after {
+                display: none;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .shorten-form-inline {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .shorten-form-inline .form-group {
+                min-width: auto;
+            }
+
+            .link-card .link-actions form {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .link-card .link-actions input[type="url"] {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .glass-card {
+                padding: 1.5rem;
+            }
+
+            .logo-wrapper {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .logo-text .brand {
+                font-size: 1rem;
+            }
         }
+
         @media (max-width: 480px) {
-            .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
-            .stat-card { padding: 1rem; }
-            .stat-card .number { font-size: 2rem; }
-            .brand-center h1 { font-size: 1.6rem; }
-            .nav-links { gap: 0.5rem; }
-            .nav-links a { font-size: 0.8rem; }
-            .btn { padding: 0.5rem 1rem; font-size: 0.8rem; }
-            .modal-actions .btn { font-size: 0.8rem; padding: 0.5rem 1rem; min-width: 80px; }
-            .features-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
-            .feature-card { padding: 1rem; }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.8rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-card .number {
+                font-size: 2rem;
+            }
+
+            .brand-center h1 {
+                font-size: 1.4rem;
+            }
+
+            .nav-links {
+                gap: 0.5rem;
+            }
+
+            .nav-links a {
+                font-size: 0.8rem;
+            }
+
+            .btn {
+                padding: 0.4rem 1rem;
+                font-size: 0.8rem;
+            }
         }
+
+        /* ============================================================ */
+        /* FADE IN ANIMATION */
+        /* ============================================================ */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        .fade-in-delay-1 { animation-delay: 0.1s; }
+        .fade-in-delay-2 { animation-delay: 0.2s; }
+        .fade-in-delay-3 { animation-delay: 0.3s; }
     </style>
 </head>
 <body>
 
-    <div id="toastContainer" class="toast-container"></div>
+    <!-- ============================================================ -->
+    <!-- ANIMATED PARTICLES CANVAS -->
+    <!-- ============================================================ -->
+    <canvas id="particles-canvas"></canvas>
 
-    <div id="profileModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-user-cog" style="color: var(--primary); margin-right: 0.5rem;"></i> User Details</h2>
-                <button class="modal-close" onclick="closeProfileModal()"><i class="fas fa-times"></i></button>
-            </div>
-            <div id="profileContent"></div>
-        </div>
-    </div>
-
+    <!-- ============================================================ -->
+    <!-- NAVIGATION -->
+    <!-- ============================================================ -->
     <nav class="navbar">
         <a href="/" class="logo-wrapper">
             <div class="logo-icon">🔗</div>
             <div class="logo-text">
                 <span class="brand">This Person Is brand Shortlink</span>
-                <span class="sub">✦ Premium URL Shortener ✦</span>
+                <span class="sub">✦ Smart URL Shortener ✦</span>
             </div>
         </a>
 
@@ -697,46 +1098,30 @@
             </span>
 
             <% if (typeof user !== 'undefined' && user) { %>
-                <div class="user-menu-wrapper">
-                    <button class="user-profile-btn" onclick="toggleDropdown()">
-                        <div class="avatar">
-                            <% if (user.profile_photo && user.profile_photo !== '') { %>
-                                <img src="<%= user.profile_photo %>" alt="Profile">
-                            <% } else { %>
-                                <%= (user.display_name || user.first_name || user.username || 'U').charAt(0).toUpperCase() %>
-                            <% } %>
-                        </div>
-                        <span class="user-name"><%= user.display_name || user.first_name || user.username || 'User' %></span>
-                        <span class="chevron" id="dropdownChevron"><i class="fas fa-chevron-down"></i></span>
-                    </button>
-                    
-                    <div class="dropdown-menu" id="dropdownMenu">
-                        <div class="dropdown-header">
-                            <div class="dd-name"><%= user.display_name || user.first_name || user.username || 'User' %></div>
-                            <div class="dd-email"><%= user.email || 'No email set' %></div>
-                        </div>
-                        <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" onclick="openProfileModal()"><i class="fas fa-user"></i> User Details</button>
-                        <button class="dropdown-item" onclick="window.location.href='/dashboard'"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
-                        <button class="dropdown-item" onclick="window.location.href='/'"><i class="fas fa-home"></i> Home</button>
-                        <div class="dropdown-divider"></div>
-                        <form action="/logout" method="POST" style="display: inline;">
-                            <button type="submit" class="dropdown-item danger"><i class="fas fa-sign-out-alt"></i> Logout</button>
-                        </form>
-                    </div>
+                <div class="user-profile">
+                    <div class="avatar"><%= user.name.charAt(0) %></div>
+                    <span class="name"><%= user.name %></span>
+                    <form action="/logout" method="POST" style="display: inline;">
+                        <button type="submit" class="logout-btn" title="Logout">✕</button>
+                    </form>
                 </div>
             <% } else { %>
-                <a href="/login" class="btn btn-telegram">🔑 Login</a>
+                <a href="/login" class="btn btn-telegram btn-glow">🔑 Login with Telegram</a>
             <% } %>
         </div>
     </nav>
 
+    <!-- ============================================================ -->
+    <!-- MAIN CONTENT -->
+    <!-- ============================================================ -->
     <div class="container">
 
-        <% var queryError = typeof error !== 'undefined' ? error : null; %>
-        <% var querySuccess = typeof success !== 'undefined' ? success : null; %>
-        <% var queryInfo = typeof info !== 'undefined' ? info : null; %>
-        
+        <!-- ===== ALERTS ===== -->
+        <% 
+            const queryError = typeof error !== 'undefined' ? error : null;
+            const querySuccess = typeof success !== 'undefined' ? success : null;
+            const queryInfo = typeof info !== 'undefined' ? info : null;
+        %>
         <% if (queryError) { %>
             <div class="alert alert-danger"><%= queryError %></div>
         <% } %>
@@ -747,195 +1132,98 @@
             <div class="alert alert-info"><%= queryInfo %></div>
         <% } %>
 
+        <!-- ========================================================== -->
+        <!-- PAGE: LOGIN -->
+        <!-- ========================================================== -->
         <% if (page === 'login') { %>
-            <div class="glass-card" style="max-width: 500px; margin: 2rem auto;">
-                <div style="text-align: center; margin-bottom: 1.5rem;">
-                    <span style="font-size: 3rem;">🔐</span>
-                    <h2 style="font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-top: 0.3rem;">
-                        <%= typeof loginMode !== 'undefined' && loginMode === 'signin' ? 'Sign In' : 'Sign Up' %>
-                    </h2>
-                    <p style="color: var(--text-muted);">
-                        <%= typeof loginMode !== 'undefined' && loginMode === 'signin' ? 'Welcome back! Login to your account.' : 'Create your account to get started.' %>
+            <div class="login-box fade-in">
+                <div class="glass-card" style="text-align: center;">
+                    <span class="telegram-icon">📱</span>
+                    <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                        Telegram Login
+                    </h1>
+                    <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                        Login with your Telegram ID to access all features
                     </p>
-                </div>
 
-                <form action="/login" method="POST">
-                    <div class="form-group">
-                        <label for="telegramId">Telegram ID <span style="color: var(--danger);">*</span></label>
-                        <input type="text" class="form-control" id="telegramId" name="telegramId" placeholder="Enter your Telegram ID" required>
+                    <form action="/login" method="POST">
+                        <div class="form-group">
+                            <label for="telegramId">Telegram ID</label>
+                            <input type="text" class="form-control" id="telegramId" name="telegramId"
+                                   placeholder="Enter your Telegram ID (e.g., 123456789)" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="username">Your Name</label>
+                            <input type="text" class="form-control" id="username" name="username"
+                                   placeholder="Enter your full name" required>
+                        </div>
+                        <button type="submit" class="btn btn-telegram btn-glow" style="width: 100%; padding: 0.9rem;">
+                            🔑 Login with Telegram
+                        </button>
+                    </form>
+
+                    <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0, 136, 204, 0.05); border-radius: 14px; border: 1px solid rgba(0, 136, 204, 0.08);">
+                        <p style="color: var(--text-muted); font-size: 0.85rem;">
+                            💡 Don't have a Telegram ID? Get it from
+                            <a href="https://t.me/userinfobot" target="_blank" style="color: var(--accent); text-decoration: none; font-weight: 600;">@userinfobot</a>
+                            on Telegram
+                        </p>
                     </div>
-
-                    <% if (typeof loginMode === 'undefined' || loginMode !== 'signin') { %>
-                        <div class="form-group">
-                            <label for="username">Username <span style="color: var(--danger);">*</span></label>
-                            <input type="text" class="form-control" id="username" name="username" placeholder="Choose a username" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="firstName">First Name <span style="color: var(--danger);">*</span></label>
-                            <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Enter your first name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="lastName">Last Name <span style="color: var(--danger);">*</span></label>
-                            <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter your last name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email Address <span style="color: var(--danger);">*</span></label>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email address" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Password <span style="color: var(--danger);">*</span></label>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Create a password (min 6 characters)" required minlength="6">
-                        </div>
-                    <% } else { %>
-                        <input type="hidden" name="username" value="">
-                        <input type="hidden" name="firstName" value="">
-                        <input type="hidden" name="lastName" value="">
-                        <div class="form-group">
-                            <label for="email">Email Address <span style="color: var(--danger);">*</span></label>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter your registered email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Password <span style="color: var(--danger);">*</span></label>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
-                        </div>
-                    <% } %>
-
-                    <div class="form-group">
-                        <label for="timezone">🌍 Your Timezone</label>
-                        <select class="form-control" id="timezone" name="timezone">
-                            <option value="Asia/Dhaka">🇧🇩 Bangladesh (Asia/Dhaka)</option>
-                            <option value="Asia/Kolkata">🇮🇳 India (Asia/Kolkata)</option>
-                            <option value="America/New_York">🇺🇸 USA (America/New_York)</option>
-                            <option value="Europe/London">🇬🇧 UK (Europe/London)</option>
-                            <option value="Europe/Berlin">🇩🇪 Germany (Europe/Berlin)</option>
-                            <option value="Europe/Paris">🇫🇷 France (Europe/Paris)</option>
-                            <option value="Asia/Tokyo">🇯🇵 Japan (Asia/Tokyo)</option>
-                            <option value="Asia/Shanghai">🇨🇳 China (Asia/Shanghai)</option>
-                            <option value="Australia/Sydney">🇦🇺 Australia (Australia/Sydney)</option>
-                            <option value="America/Toronto">🇨🇦 Canada (America/Toronto)</option>
-                            <option value="America/Sao_Paulo">🇧🇷 Brazil (America/Sao_Paulo)</option>
-                            <option value="Africa/Lagos">🇳🇬 Nigeria (Africa/Lagos)</option>
-                            <option value="Asia/Karachi">🇵🇰 Pakistan (Asia/Karachi)</option>
-                            <option value="Asia/Riyadh">🇸🇦 Saudi Arabia (Asia/Riyadh)</option>
-                            <option value="Asia/Dubai">🇦🇪 UAE (Asia/Dubai)</option>
-                            <option value="Asia/Singapore">🇸🇬 Singapore (Asia/Singapore)</option>
-                            <option value="Europe/Moscow">🇷🇺 Russia (Europe/Moscow)</option>
-                            <option value="Europe/Istanbul">🇹🇷 Turkey (Europe/Istanbul)</option>
-                            <option value="America/Mexico_City">🇲🇽 Mexico (America/Mexico_City)</option>
-                            <option value="America/Argentina/Buenos_Aires">🇦🇷 Argentina (America/Argentina/Buenos_Aires)</option>
-                            <option value="Africa/Cairo">🇪🇬 Egypt (Africa/Cairo)</option>
-                            <option value="Asia/Jakarta">🇮🇩 Indonesia (Asia/Jakarta)</option>
-                            <option value="Asia/Seoul">🇰🇷 South Korea (Asia/Seoul)</option>
-                            <option value="Europe/Rome">🇮🇹 Italy (Europe/Rome)</option>
-                            <option value="Europe/Madrid">🇪🇸 Spain (Europe/Madrid)</option>
-                            <option value="Africa/Johannesburg">🇿🇦 South Africa (Africa/Johannesburg)</option>
-                            <option value="Asia/Kuala_Lumpur">🇲🇾 Malaysia (Asia/Kuala_Lumpur)</option>
-                            <option value="Asia/Manila">🇵🇭 Philippines (Asia/Manila)</option>
-                            <option value="Asia/Ho_Chi_Minh">🇻🇳 Vietnam (Asia/Ho_Chi_Minh)</option>
-                            <option value="Asia/Bangkok">🇹🇭 Thailand (Asia/Bangkok)</option>
-                            <option value="Europe/Amsterdam">🇳🇱 Netherlands (Europe/Amsterdam)</option>
-                            <option value="Europe/Stockholm">🇸🇪 Sweden (Europe/Stockholm)</option>
-                            <option value="Europe/Oslo">🇳🇴 Norway (Europe/Oslo)</option>
-                            <option value="Europe/Copenhagen">🇩🇰 Denmark (Europe/Copenhagen)</option>
-                            <option value="Europe/Helsinki">🇫🇮 Finland (Europe/Helsinki)</option>
-                            <option value="Europe/Warsaw">🇵🇱 Poland (Europe/Warsaw)</option>
-                            <option value="Europe/Kyiv">🇺🇦 Ukraine (Europe/Kyiv)</option>
-                            <option value="Europe/Bucharest">🇷🇴 Romania (Europe/Bucharest)</option>
-                            <option value="Europe/Athens">🇬🇷 Greece (Europe/Athens)</option>
-                            <option value="Europe/Lisbon">🇵🇹 Portugal (Europe/Lisbon)</option>
-                            <option value="Europe/Brussels">🇧🇪 Belgium (Europe/Brussels)</option>
-                            <option value="Europe/Zurich">🇨🇭 Switzerland (Europe/Zurich)</option>
-                            <option value="Europe/Vienna">🇦🇹 Austria (Europe/Vienna)</option>
-                            <option value="Europe/Budapest">🇭🇺 Hungary (Europe/Budapest)</option>
-                            <option value="Europe/Prague">🇨🇿 Czech Republic (Europe/Prague)</option>
-                            <option value="Europe/Dublin">🇮🇪 Ireland (Europe/Dublin)</option>
-                            <option value="Pacific/Auckland">🇳🇿 New Zealand (Pacific/Auckland)</option>
-                            <option value="America/Santiago">🇨🇱 Chile (America/Santiago)</option>
-                            <option value="America/Bogota">🇨🇴 Colombia (America/Bogota)</option>
-                            <option value="America/Lima">🇵🇪 Peru (America/Lima)</option>
-                            <option value="America/Caracas">🇻🇪 Venezuela (America/Caracas)</option>
-                        </select>
-                    </div>
-
-                    <input type="hidden" name="loginMode" value="<%= typeof loginMode !== 'undefined' ? loginMode : 'signup' %>">
-
-                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.9rem; justify-content: center;">
-                        <%= typeof loginMode !== 'undefined' && loginMode === 'signin' ? '🔑 Sign In' : '🚀 Create Account' %>
-                    </button>
-                </form>
-
-                <div style="text-align: center; margin-top: 1.2rem; color: var(--text-muted);">
-                    <% if (typeof loginMode !== 'undefined' && loginMode === 'signin') { %>
-                        Don't have an account? <a href="/login" style="color: var(--primary); text-decoration: none; font-weight: 600;">Sign Up</a>
-                    <% } else { %>
-                        Already have an account? <a href="/login?mode=signin" style="color: var(--primary); text-decoration: none; font-weight: 600;">Sign In</a>
-                    <% } %>
-                </div>
-
-                <div style="margin-top: 1.2rem; padding: 1rem; background: rgba(0, 136, 204, 0.05); border-radius: 12px; border: 1px solid rgba(0, 136, 204, 0.08); text-align: center;">
-                    <p style="color: var(--text-muted); font-size: 0.85rem;">
-                        💡 Get your Telegram ID from <a href="https://t.me/userinfobot" target="_blank" style="color: var(--accent); text-decoration: none; font-weight: 600;">@userinfobot</a>
-                    </p>
                 </div>
             </div>
         <% } %>
 
+        <!-- ========================================================== -->
+        <!-- PAGE: HOME -->
+        <!-- ========================================================== -->
         <% if (page === 'home') { %>
+            <!-- Brand Header -->
             <div class="brand-center fade-in">
                 <h1>This Person Is brand Shortlink</h1>
-                <p>✦ Premium URL Shortener with Real-time Analytics ✦</p>
+                <p>✦ Smart URL Shortener with Real-time Analytics ✦</p>
             </div>
 
-            <div class="glass-card fade-in">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
-                    <h2 style="font-size: 1.8rem; font-weight: 800;">Shorten Your Links</h2>
-                    <span class="unlimited-badge">♾️ Unlimited</span>
-                </div>
-                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Create unlimited short, memorable links that update automatically</p>
+            <!-- Main Shorten Form -->
+            <div class="glass-card fade-in" style="max-width: 800px; margin: 0 auto;">
+                <h1 style="font-size: 2rem; margin-bottom: 0.3rem; font-weight: 800;">
+                    Shorten Your <span style="background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Links</span>
+                </h1>
+                <p style="color: var(--text-muted); font-size: 1rem; margin-bottom: 2rem;">
+                    Create short, memorable links that update automatically
+                </p>
 
                 <% if (typeof user !== 'undefined' && user) { %>
-                    <form action="/shorten" method="POST" id="shortenForm" class="shorten-form">
+                    <form action="/shorten" method="POST" id="shortenForm">
                         <div class="form-group">
-                            <input type="url" class="form-control" id="originalUrl" name="originalUrl" placeholder="Paste your long URL here..." required>
+                            <label for="originalUrl">Original URL</label>
+                            <input type="url" class="form-control" id="originalUrl" name="originalUrl"
+                                   placeholder="https://example.com/very-long-url" required>
                         </div>
-                        <div class="form-group" style="min-width: 150px; flex: 0.5;">
-                            <input type="text" class="form-control" name="customSlug" placeholder="Custom slug (optional)">
+                        <div class="form-group">
+                            <label for="customSlug">Custom Slug (Optional)</label>
+                            <input type="text" class="form-control" id="customSlug" name="customSlug"
+                                   placeholder="my-link">
                         </div>
-                        <div class="form-group" style="min-width: 120px; flex: 0.3;">
-                            <select class="form-control" name="expiresIn">
-                                <option value="">Never</option>
-                                <option value="1d">1 Day</option>
-                                <option value="7d">7 Days</option>
-                                <option value="30d">30 Days</option>
-                                <option value="90d">90 Days</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary" id="shortenBtn">🚀 Shorten</button>
+                        <button type="submit" class="btn btn-primary btn-glow" style="width: 100%; padding: 0.9rem;" id="shortenBtn">
+                            🚀 Shorten Link
+                        </button>
                     </form>
 
                     <% if (typeof shortUrl !== 'undefined' && shortUrl) { %>
                         <div class="short-link-display">
                             <span class="link">🔗 <%= shortUrl %></span>
-                            <button class="copy-btn" onclick="copyToClipboard('<%= shortUrl %>')">📋 Copy Link</button>
+                            <button class="copy-btn" onclick="copyToClipboard('<%= shortUrl %>')">📋 Copy</button>
                         </div>
                     <% } %>
                 <% } else { %>
                     <div style="text-align: center; padding: 2.5rem; background: var(--glass); border-radius: 16px; border: 1px solid var(--glass-border);">
-                        <p style="font-size: 1.2rem; margin-bottom: 1rem;">🔐 Please login to create short links</p>
-                        <a href="/login" class="btn btn-telegram">Login with Telegram</a>
+                        <p style="font-size: 1.2rem; margin-bottom: 1rem;">🔐 Please login with Telegram to create short links</p>
+                        <a href="/login" class="btn btn-telegram btn-glow">Login with Telegram</a>
                     </div>
                 <% } %>
             </div>
 
-            <div class="features-grid">
-                <div class="feature-card"><div class="icon">♾️</div><h3>Unlimited Links</h3><p>Create as many as you want!</p></div>
-                <div class="feature-card"><div class="icon">🔄</div><h3>Updateable</h3><p>Change URL anytime</p></div>
-                <div class="feature-card"><div class="icon">📊</div><h3>Analytics</h3><p>Track every click</p></div>
-                <div class="feature-card"><div class="icon">🔒</div><h3>Password Protect</h3><p>Secure your links</p></div>
-                <div class="feature-card"><div class="icon">📱</div><h3>QR Code</h3><p>Download QR for any link</p></div>
-                <div class="feature-card"><div class="icon">🌐</div><h3>Custom Domains</h3><p>Branded short links</p></div>
-            </div>
-
+            <!-- Live Users -->
             <div class="glass-card fade-in" style="margin-top: 2rem;">
                 <h3 style="font-weight: 700;">👥 Live Users</h3>
                 <p style="color: var(--text-muted); margin-bottom: 0.5rem;">
@@ -944,844 +1232,360 @@
                 <div class="user-list" id="userList">
                     <% if (typeof onlineUserList !== 'undefined' && onlineUserList && onlineUserList.length > 0) { %>
                         <% onlineUserList.forEach(function(u) { %>
-                            <span class="user-badge"><span class="online-dot"></span> <%= u.name %></span>
+                            <span class="user-badge">
+                                <span class="online-dot"></span>
+                                <%= u.name %>
+                            </span>
                         <% }); %>
                     <% } else { %>
                         <span style="color: var(--text-muted);">No users online</span>
                     <% } %>
                 </div>
             </div>
+
+            <!-- Features -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+                <div class="glass-card" style="text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 0.5rem;">🔄</div>
+                    <h3 style="font-weight: 700;">Updateable Links</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Change destination URL anytime, all short links update automatically</p>
+                </div>
+                <div class="glass-card" style="text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 0.5rem;">👀</div>
+                    <h3 style="font-weight: 700;">Click Tracking</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Monitor how many times your links are clicked in real-time</p>
+                </div>
+                <div class="glass-card" style="text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 0.5rem;">📊</div>
+                    <h3 style="font-weight: 700;">Live Analytics</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">See who's using the site with live user tracking</p>
+                </div>
+            </div>
         <% } %>
 
+        <!-- ========================================================== -->
+        <!-- PAGE: DASHBOARD -->
+        <!-- ========================================================== -->
         <% if (page === 'dashboard') { %>
             <div class="fade-in">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
-                    <div>
-                        <h2 style="font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, var(--text), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">📊 Dashboard</h2>
-                        <span class="unlimited-badge" style="margin-top: 0.3rem;">♾️ Unlimited Short Links</span>
-                    </div>
-                    <a href="/" class="btn btn-primary">+ Create New Link</a>
+
+                <!-- Dashboard Header -->
+                <div class="dashboard-header">
+                    <h1>📊 Dashboard</h1>
+                    <a href="/" class="btn btn-primary btn-glow">+ Create New Link</a>
                 </div>
 
+                <!-- Stats -->
                 <div class="stats-grid">
-                    <div class="stat-card"><div class="number"><%= typeof links !== 'undefined' && links ? links.length : 0 %></div><div class="label">Total Links</div></div>
-                    <div class="stat-card"><div class="number"><%= typeof totalClicks !== 'undefined' ? totalClicks : 0 %></div><div class="label">Total Clicks</div></div>
-                    <div class="stat-card"><div class="number"><%= typeof onlineUsers !== 'undefined' ? onlineUsers : 0 %></div><div class="label">Online Users</div></div>
-                    <div class="stat-card"><div class="number">♾️</div><div class="label">Unlimited</div></div>
-                </div>
-
-                <div class="glass-card" style="margin-bottom: 2rem;">
-                    <h3 style="margin-bottom: 1rem; font-weight: 700;">📈 Link Analytics</h3>
-                    <div class="analytics-grid">
-                        <div class="chart-container"><canvas id="analyticsChart"></canvas></div>
-                        <div class="analytics-stats">
-                            <div class="stat-item"><span class="label">📊 Total Clicks</span><span class="value"><%= typeof totalClicks !== 'undefined' ? totalClicks : 0 %></span></div>
-                            <div class="stat-item"><span class="label">📅 Today</span><span class="value success"><%= typeof todayClicks !== 'undefined' ? todayClicks : 0 %></span></div>
-                            <div class="stat-item"><span class="label">📈 This Week</span><span class="value"><%= typeof weekClicks !== 'undefined' ? weekClicks : 0 %></span></div>
-                            <div class="stat-item"><span class="label">📊 This Month</span><span class="value"><%= typeof monthClicks !== 'undefined' ? monthClicks : 0 %></span></div>
-                            <div class="stat-item"><span class="label">🤖 Bot Clicks (Blocked)</span><span class="value danger"><%= typeof botClicks !== 'undefined' ? botClicks : 0 %></span></div>
-                            <div class="stat-item"><span class="label">🟢 Real Clicks</span><span class="value success"><%= typeof realClicks !== 'undefined' ? realClicks : 0 %></span></div>
-                            <div class="stat-item"><span class="label">📊 Click Rate</span><span class="value"><%= typeof clickRate !== 'undefined' ? clickRate : 0 %>%</span></div>
-                        </div>
+                    <div class="stat-card">
+                        <div class="number"><%= typeof links !== 'undefined' && links ? links.length : 0 %></div>
+                        <div class="label">Total Links</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number"><%= typeof totalClicks !== 'undefined' ? totalClicks : 0 %></div>
+                        <div class="label">Total Clicks</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number"><%= typeof onlineUsers !== 'undefined' ? onlineUsers : 0 %></div>
+                        <div class="label">Online Users</div>
                     </div>
                 </div>
 
-                <div class="glass-card" style="margin-bottom: 2rem;">
-                    <h3 style="margin-bottom: 0.5rem; font-weight: 700;">🕐 Your Timezone</h3>
-                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.8rem;">Select your timezone to see link creation times in your local time</p>
-                    <div class="timezone-selector">
-                        <span style="color: var(--text-muted);">🌍 Current Timezone:</span>
-                        <select id="userTimezone" onchange="updateTimezone()">
-                            <option value="Asia/Dhaka">🇧🇩 Bangladesh (Asia/Dhaka)</option>
-                            <option value="Asia/Kolkata">🇮🇳 India (Asia/Kolkata)</option>
-                            <option value="America/New_York">🇺🇸 USA (America/New_York)</option>
-                            <option value="Europe/London">🇬🇧 UK (Europe/London)</option>
-                            <option value="Europe/Berlin">🇩🇪 Germany (Europe/Berlin)</option>
-                            <option value="Europe/Paris">🇫🇷 France (Europe/Paris)</option>
-                            <option value="Asia/Tokyo">🇯🇵 Japan (Asia/Tokyo)</option>
-                            <option value="Asia/Shanghai">🇨🇳 China (Asia/Shanghai)</option>
-                            <option value="Australia/Sydney">🇦🇺 Australia (Australia/Sydney)</option>
-                            <option value="America/Toronto">🇨🇦 Canada (America/Toronto)</option>
-                            <option value="America/Sao_Paulo">🇧🇷 Brazil (America/Sao_Paulo)</option>
-                            <option value="Africa/Lagos">🇳🇬 Nigeria (Africa/Lagos)</option>
-                            <option value="Asia/Karachi">🇵🇰 Pakistan (Asia/Karachi)</option>
-                            <option value="Asia/Riyadh">🇸🇦 Saudi Arabia (Asia/Riyadh)</option>
-                            <option value="Asia/Dubai">🇦🇪 UAE (Asia/Dubai)</option>
-                            <option value="Asia/Singapore">🇸🇬 Singapore (Asia/Singapore)</option>
-                            <option value="Europe/Moscow">🇷🇺 Russia (Europe/Moscow)</option>
-                            <option value="Europe/Istanbul">🇹🇷 Turkey (Europe/Istanbul)</option>
-                            <option value="America/Mexico_City">🇲🇽 Mexico (America/Mexico_City)</option>
-                            <option value="America/Argentina/Buenos_Aires">🇦🇷 Argentina (America/Argentina/Buenos_Aires)</option>
-                            <option value="Africa/Cairo">🇪🇬 Egypt (Africa/Cairo)</option>
-                            <option value="Asia/Jakarta">🇮🇩 Indonesia (Asia/Jakarta)</option>
-                            <option value="Asia/Seoul">🇰🇷 South Korea (Asia/Seoul)</option>
-                            <option value="Europe/Rome">🇮🇹 Italy (Europe/Rome)</option>
-                            <option value="Europe/Madrid">🇪🇸 Spain (Europe/Madrid)</option>
-                            <option value="Africa/Johannesburg">🇿🇦 South Africa (Africa/Johannesburg)</option>
-                            <option value="Asia/Kuala_Lumpur">🇲🇾 Malaysia (Asia/Kuala_Lumpur)</option>
-                            <option value="Asia/Manila">🇵🇭 Philippines (Asia/Manila)</option>
-                            <option value="Asia/Ho_Chi_Minh">🇻🇳 Vietnam (Asia/Ho_Chi_Minh)</option>
-                            <option value="Asia/Bangkok">🇹🇭 Thailand (Asia/Bangkok)</option>
-                            <option value="Europe/Amsterdam">🇳🇱 Netherlands (Europe/Amsterdam)</option>
-                            <option value="Europe/Stockholm">🇸🇪 Sweden (Europe/Stockholm)</option>
-                            <option value="Europe/Oslo">🇳🇴 Norway (Europe/Oslo)</option>
-                            <option value="Europe/Copenhagen">🇩🇰 Denmark (Europe/Copenhagen)</option>
-                            <option value="Europe/Helsinki">🇫🇮 Finland (Europe/Helsinki)</option>
-                            <option value="Europe/Warsaw">🇵🇱 Poland (Europe/Warsaw)</option>
-                            <option value="Europe/Kyiv">🇺🇦 Ukraine (Europe/Kyiv)</option>
-                            <option value="Europe/Bucharest">🇷🇴 Romania (Europe/Bucharest)</option>
-                            <option value="Europe/Athens">🇬🇷 Greece (Europe/Athens)</option>
-                            <option value="Europe/Lisbon">🇵🇹 Portugal (Europe/Lisbon)</option>
-                            <option value="Europe/Brussels">🇧🇪 Belgium (Europe/Brussels)</option>
-                            <option value="Europe/Zurich">🇨🇭 Switzerland (Europe/Zurich)</option>
-                            <option value="Europe/Vienna">🇦🇹 Austria (Europe/Vienna)</option>
-                            <option value="Europe/Budapest">🇭🇺 Hungary (Europe/Budapest)</option>
-                            <option value="Europe/Prague">🇨🇿 Czech Republic (Europe/Prague)</option>
-                            <option value="Europe/Dublin">🇮🇪 Ireland (Europe/Dublin)</option>
-                            <option value="Pacific/Auckland">🇳🇿 New Zealand (Pacific/Auckland)</option>
-                            <option value="America/Santiago">🇨🇱 Chile (America/Santiago)</option>
-                            <option value="America/Bogota">🇨🇴 Colombia (America/Bogota)</option>
-                            <option value="America/Lima">🇵🇪 Peru (America/Lima)</option>
-                            <option value="America/Caracas">🇻🇪 Venezuela (America/Caracas)</option>
-                        </select>
-                        <span class="timezone-display" id="currentTimeDisplay">Loading time...</span>
-                    </div>
-                </div>
-
-                <div class="glass-card" style="margin-bottom: 2rem;">
-                    <h3 style="margin-bottom: 0.5rem; font-weight: 700;">🌍 Visitor Analytics</h3>
-                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">See where your visitors are coming from and what devices they use</p>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 0.5rem;">
-                        <div>
-                            <h4 style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">🏳️ Top Countries</h4>
-                            <div class="country-grid">
-                                <% if (typeof countryStats !== 'undefined' && countryStats && countryStats.length > 0) { %>
-                                    <% var maxCount = countryStats[0] ? countryStats[0].count : 1; %>
-                                    <% countryStats.forEach(function(country) { 
-                                        var percentage = Math.round((country.count / maxCount) * 100);
-                                        var countryInfo = typeof countries !== 'undefined' && countries[country.countryCode] ? countries[country.countryCode] : null;
-                                        var flag = countryInfo ? countryInfo.flag : '🌍';
-                                        var name = countryInfo ? countryInfo.name : (country.country || 'Unknown');
-                                    %>
-                                        <div class="country-item">
-                                            <span class="country-name"><span class="country-flag"><%= flag %></span> <%= name %></span>
-                                            <span style="display: flex; align-items: center; gap: 0.5rem;">
-                                                <span class="country-clicks"><%= country.count %></span>
-                                                <div style="width: 50px; height: 3px; background: var(--glass-border); border-radius: 4px; overflow: hidden;">
-                                                    <div style="height: 100%; width: <%= percentage %>%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 4px;"></div>
-                                                </div>
-                                            </span>
-                                        </div>
-                                    <% }); %>
-                                <% } else { %>
-                                    <p style="color: var(--text-muted); grid-column: 1 / -1; text-align: center; padding: 0.5rem;">No country data yet</p>
-                                <% } %>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <h4 style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">📱 Devices & Browsers</h4>
-                            <div style="display: flex; flex-direction: column; gap: 0.4rem;">
-                                <% if (typeof deviceStats !== 'undefined' && deviceStats && deviceStats.length > 0) { %>
-                                    <% deviceStats.forEach(function(device) { %>
-                                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0.8rem; background: var(--glass); border-radius: 8px; border: 1px solid var(--glass-border);">
-                                            <span class="device-tag">
-                                                <%= device.device === 'Mobile' ? '📱' : device.device === 'Tablet' ? '📲' : '💻' %>
-                                                <%= device.device || 'Unknown' %>
-                                                <span style="color: var(--text-muted); font-size: 0.7rem;">(<%= device.browser || 'Unknown' %> / <%= device.os || 'Unknown' %>)</span>
-                                            </span>
-                                            <span style="color: var(--accent); font-weight: 600;"><%= device.count %></span>
-                                        </div>
-                                    <% }); %>
-                                <% } else { %>
-                                    <p style="color: var(--text-muted); text-align: center; padding: 0.5rem;">No device data yet</p>
-                                <% } %>
-                                
-                                <div style="margin-top: 0.5rem; padding: 0.5rem 0.8rem; background: var(--glass); border-radius: 8px; border: 1px solid var(--glass-border);">
-                                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                                        <span style="color: var(--text-muted);">🤖 Bot Protection</span>
-                                        <span style="color: var(--success); font-weight: 600;">✅ Active</span>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.2rem;">
-                                        <span style="color: var(--text-muted); font-size: 0.8rem;">Bot Clicks Blocked</span>
-                                        <span style="color: var(--danger); font-weight: 600;"><%= typeof botClicks !== 'undefined' ? botClicks : 0 %></span>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.2rem;">
-                                        <span style="color: var(--text-muted); font-size: 0.8rem;">Real Clicks</span>
-                                        <span style="color: var(--success); font-weight: 600;"><%= typeof realClicks !== 'undefined' ? realClicks : 0 %></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                <!-- Quick Create Form -->
                 <div class="glass-card" style="margin-bottom: 2rem;">
                     <h3 style="margin-bottom: 0.5rem; font-weight: 700;">🔗 Create New Short Link</h3>
-                    <form action="/shorten" method="POST" class="shorten-form">
+                    <form action="/shorten" method="POST" class="shorten-form-inline">
                         <div class="form-group">
-                            <input type="url" class="form-control" name="originalUrl" placeholder="Enter your long URL" required>
+                            <input type="url" class="form-control" name="originalUrl"
+                                   placeholder="Enter your long URL" required>
                         </div>
-                        <div class="form-group" style="min-width: 150px; flex: 0.5;">
-                            <input type="text" class="form-control" name="customSlug" placeholder="Custom slug (optional)">
-                        </div>
-                        <div class="form-group" style="min-width: 120px; flex: 0.3;">
-                            <select class="form-control" name="expiresIn">
-                                <option value="">Never</option>
-                                <option value="1d">1 Day</option>
-                                <option value="7d">7 Days</option>
-                                <option value="30d">30 Days</option>
-                                <option value="90d">90 Days</option>
-                            </select>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="customSlug"
+                                   placeholder="Custom slug (optional)">
                         </div>
                         <button type="submit" class="btn btn-primary">🚀 Shorten</button>
                     </form>
                 </div>
 
+                <!-- Links List -->
                 <h2 style="margin-bottom: 1.5rem; font-weight: 700;">My Short Links</h2>
 
                 <% if (typeof links !== 'undefined' && links && links.length > 0) { %>
-                    <% links.forEach(function(link) { 
-                        var linkUrl = link.shortUrl || '';
-                        var linkId = link.id || link._id || '';
-                        var linkCode = link.shortCode || '';
-                        var linkOriginal = link.originalUrl || '';
-                        var linkClicks = link.clicks || 0;
-                        var linkCreated = link.createdAt || '';
-                        var linkTitle = link.title || '';
-                        var isExpired = link.isExpired || false;
-                        var isActive = link.isActive !== undefined ? link.isActive : true;
-                    %>
+                    <% links.forEach(function(link) { %>
                         <div class="link-card">
-                            <div class="link-top">
-                                <div>
-                                    <a href="/<%= linkCode %>" target="_blank" class="link-url">🔗 <%= linkUrl %></a>
-                                    <% if (linkTitle) { %><div class="link-title"><%= linkTitle %></div><% } %>
-                                    <div class="link-original">→ <%= linkOriginal %></div>
-                                </div>
-                                <div style="display: flex; gap: 0.3rem; flex-wrap: wrap;">
-                                    <button class="btn btn-secondary btn-sm copy-link-btn" data-url="<%= linkUrl %>" style="flex-shrink: 0; cursor: pointer;">📋 Copy</button>
-                                    <button class="btn btn-secondary btn-sm" onclick="generateQR('<%= linkCode %>')" style="flex-shrink: 0; cursor: pointer;">📱 QR</button>
-                                </div>
+                            <div>
+                                <a href="/<%= link.shortCode %>" target="_blank" class="link-url">
+                                    🔗 <%= link.shortUrl %>
+                                </a>
                             </div>
+                            <div class="link-original">→ <%= link.originalUrl %></div>
                             <div class="link-meta">
-                                <span>👁️ <%= linkClicks %> clicks</span>
-                                <span>📅 <span class="link-date" data-date="<%= linkCreated %>"><%= linkCreated %></span></span>
-                                <span>🆔 <%= linkCode %></span>
-                                <% if (isExpired) { %><span class="badge badge-expired">⏰ Expired</span><% } %>
-                                <% else if (!isActive) { %><span class="badge badge-inactive">⛔ Inactive</span><% } %>
-                                <% else { %><span class="badge badge-active">✅ Active</span><% } %>
+                                <span>👁️ <%= link.clicks %> clicks</span>
+                                <span>📅 <%= link.createdAt %></span>
+                                <span>🆔 <%= link.shortCode %></span>
                             </div>
                             <div class="link-actions">
-                                <form action="/update-link/<%= linkId %>" method="POST" class="edit-form">
+                                <form action="/update-link/<%= link.id %>" method="POST">
                                     <input type="url" name="newUrl" placeholder="Enter new URL" required>
-                                    <div class="edit-actions">
-                                        <button type="submit" class="btn btn-warning btn-sm">✏️ Update</button>
-                                    </div>
+                                    <button type="submit" class="btn btn-primary" style="padding: 0.3rem 1.2rem;">
+                                        🔄 Update
+                                    </button>
                                 </form>
-                                <div class="btn-group">
-                                    <form action="/toggle-link/<%= linkId %>" method="POST" style="display: inline;">
-                                        <button type="submit" class="btn btn-secondary btn-sm" onclick="return confirm('Toggle this link?')"><%= isActive ? '⏸️' : '▶️' %></button>
-                                    </form>
-                                    <form action="/delete-link/<%= linkId %>" method="POST" style="display: inline;">
-                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this link?')">🗑️ Delete</button>
-                                    </form>
-                                </div>
+                                <form action="/delete-link/<%= link.id %>" method="POST" style="display: inline;">
+                                    <button type="submit" class="btn btn-danger" style="padding: 0.3rem 1.2rem;"
+                                            onclick="return confirm('Are you sure you want to delete this link?')">
+                                        🗑️ Delete
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     <% }); %>
                 <% } else { %>
                     <div class="glass-card" style="text-align: center; padding: 3.5rem;">
                         <p style="color: var(--text-muted); font-size: 1.2rem;">You haven't created any links yet</p>
-                        <p style="color: var(--text-muted); margin-top: 0.5rem;">Use the form above to create your first short link!</p>
+                        <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 0.9rem;">
+                            Use the form above to create your first short link!
+                        </p>
                     </div>
                 <% } %>
+
             </div>
         <% } %>
-    </div>
 
+    </div>
+    <!-- ===== END CONTAINER ===== -->
+
+    <!-- ============================================================ -->
+    <!-- FOOTER -->
+    <!-- ============================================================ -->
     <footer class="footer">
-        <p>🔗 This Person Is brand Shortlink &bull; <span class="heart">❤️</span> &bull; Powered by <a href="https://t.me/thispersonisbrand537" target="_blank" rel="noopener noreferrer">@thispersonisbrand537</a></p>
-        <p style="font-size: 0.75rem; margin-top: 0.5rem; opacity: 0.5;">© 2026 All rights reserved &bull; ♾️ Unlimited Short Links</p>
+        <p>
+            🔗 This Person Is brand Shortlink &bull; 
+            <span class="heart">❤️</span> &bull; 
+            Powered by 
+            <a href="https://t.me/thispersonisbrand537" target="_blank" rel="noopener noreferrer">
+                @thispersonisbrand537
+            </a>
+        </p>
+        <p style="font-size: 0.75rem; margin-top: 0.5rem; opacity: 0.5;">
+            © 2026 All rights reserved
+        </p>
     </footer>
 
+    <!-- ============================================================ -->
+    <!-- SCRIPTS -->
+    <!-- ============================================================ -->
     <script>
-        // ===== DROPDOWN TOGGLE =====
-        function toggleDropdown() {
-            var menu = document.getElementById('dropdownMenu');
-            var chevron = document.getElementById('dropdownChevron');
-            if (menu) menu.classList.toggle('open');
-            if (chevron) chevron.classList.toggle('open');
-        }
+        // ============================================================
+        // ANIMATED PARTICLES
+        // ============================================================
+        (function() {
+            const canvas = document.getElementById('particles-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let mouseX = 0;
+            let mouseY = 0;
 
-        document.addEventListener('click', function(event) {
-            var wrapper = document.querySelector('.user-menu-wrapper');
-            if (wrapper && !wrapper.contains(event.target)) {
-                var menu = document.getElementById('dropdownMenu');
-                var chevron = document.getElementById('dropdownChevron');
-                if (menu) menu.classList.remove('open');
-                if (chevron) chevron.classList.remove('open');
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
             }
-        });
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
 
-        // ===== PROFILE MODAL =====
-        function openProfileModal() {
-            var modal = document.getElementById('profileModal');
-            if (modal) {
-                modal.classList.add('active');
-                document.body.style.overflow = 'hidden';
-                loadProfileData();
-                var menu = document.getElementById('dropdownMenu');
-                var chevron = document.getElementById('dropdownChevron');
-                if (menu) menu.classList.remove('open');
-                if (chevron) chevron.classList.remove('open');
-            }
-        }
-
-        function closeProfileModal() {
-            var modal = document.getElementById('profileModal');
-            if (modal) {
-                modal.classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
-        }
-
-        var profileModal = document.getElementById('profileModal');
-        if (profileModal) {
-            profileModal.addEventListener('click', function(e) {
-                if (e.target === this) closeProfileModal();
-            });
-        }
-
-        // ===== LOAD PROFILE DATA =====
-        async function loadProfileData() {
-            try {
-                var response = await fetch('/api/user-data');
-                var data = await response.json();
-                if (data.error) {
-                    showToast('Error loading profile: ' + data.error, 'error');
-                    return;
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 2 + 0.5;
+                    this.speedX = (Math.random() - 0.5) * 0.5;
+                    this.speedY = (Math.random() - 0.5) * 0.5;
+                    this.opacity = Math.random() * 0.5 + 0.2;
+                    this.color = `rgba(108, 99, 255, ${this.opacity})`;
                 }
-                renderProfile(data);
-            } catch (error) {
-                showToast('Error loading profile data', 'error');
-            }
-        }
 
-        // ===== RENDER PROFILE =====
-        function renderProfile(data) {
-            var container = document.getElementById('profileContent');
-            if (!container) return;
-            
-            var avatarLetter = (data.display_name || data.first_name || data.username || 'U').charAt(0).toUpperCase();
-            var initials = (data.first_name ? data.first_name.charAt(0) : '') + (data.last_name ? data.last_name.charAt(0) : '');
-            var completion = data.completion || 0;
-            
-            container.innerHTML = 
-                '<div class="profile-avatar-section">' +
-                    '<div class="profile-avatar">' +
-                        (data.profile_photo ? '<img src="' + data.profile_photo + '" alt="Profile">' : (initials || avatarLetter)) +
-                        '<div class="avatar-badge"><i class="fas fa-check"></i></div>' +
-                    '</div>' +
-                    '<div class="profile-display-name">' + (data.display_name || data.first_name || data.username || 'User') + '</div>' +
-                    '<div class="profile-username">@' + (data.username || 'username') + '</div>' +
-                '</div>' +
-                '<div class="completion-section">' +
-                    '<div class="completion-header"><span>Profile Completion</span><span>' + completion + '%</span></div>' +
-                    '<div class="completion-bar"><div class="completion-fill" style="width: ' + completion + '%;"></div></div>' +
-                '</div>' +
-                '<div class="profile-field">' +
-                    '<label><i class="fas fa-id-card"></i> Full Name</label>' +
-                    '<div class="field-value editable" id="nameDisplay" onclick="editField(\'name\')">' + (data.first_name || '') + ' ' + (data.last_name || '') + '<span class="edit-icon"><i class="fas fa-pen"></i></span></div>' +
-                    '<div class="field-value" id="nameEdit" style="display: none;">' +
-                        '<input type="text" id="editFirstName" value="' + (data.first_name || '') + '" placeholder="First Name">' +
-                        '<input type="text" id="editLastName" value="' + (data.last_name || '') + '" placeholder="Last Name" style="margin-top: 0.3rem;">' +
-                        '<div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">' +
-                            '<button class="btn btn-primary btn-sm" onclick="saveName()">Save</button>' +
-                            '<button class="btn btn-secondary btn-sm" onclick="cancelEdit(\'name\')">Cancel</button>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
-                '<div class="profile-field">' +
-                    '<label><i class="fas fa-user"></i> Display Name</label>' +
-                    '<div class="field-value editable" id="displayNameDisplay" onclick="editField(\'displayName\')">' + (data.display_name || data.first_name || data.username || 'User') + '<span class="edit-icon"><i class="fas fa-pen"></i></span></div>' +
-                    '<div class="field-value" id="displayNameEdit" style="display: none;">' +
-                        '<input type="text" id="editDisplayName" value="' + (data.display_name || '') + '" placeholder="Display Name">' +
-                        '<div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">' +
-                            '<button class="btn btn-primary btn-sm" onclick="saveDisplayName()">Save</button>' +
-                            '<button class="btn btn-secondary btn-sm" onclick="cancelEdit(\'displayName\')">Cancel</button>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
-                '<div class="profile-field">' +
-                    '<label><i class="fas fa-at"></i> Email</label>' +
-                    '<div class="field-value editable" id="emailDisplay" onclick="editField(\'email\')">' + (data.email || 'Not set') + '<span class="edit-icon"><i class="fas fa-pen"></i></span></div>' +
-                    '<div class="field-value" id="emailEdit" style="display: none;">' +
-                        '<input type="email" id="editEmail" value="' + (data.email || '') + '" placeholder="Enter your email">' +
-                        '<div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">' +
-                            '<button class="btn btn-primary btn-sm" onclick="saveEmail()">Save</button>' +
-                            '<button class="btn btn-secondary btn-sm" onclick="cancelEdit(\'email\')">Cancel</button>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
-                '<div class="profile-field">' +
-                    '<label><i class="fab fa-telegram"></i> Telegram ID</label>' +
-                    '<div class="field-value">' + (data.telegram_id || 'N/A') + '</div>' +
-                '</div>' +
-                '<div class="profile-field">' +
-                    '<label><i class="fas fa-calendar-plus"></i> Joined</label>' +
-                    '<div class="field-value">' + (data.created_at ? new Date(data.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A') + '</div>' +
-                '</div>' +
-                '<div class="profile-field">' +
-                    '<label><i class="fas fa-clock"></i> Last Login</label>' +
-                    '<div class="field-value">' + (data.last_login ? new Date(data.last_login).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A') + '</div>' +
-                '</div>' +
-                '<div class="profile-field">' +
-                    '<label><i class="fas fa-circle"></i> Account Status</label>' +
-                    '<div class="field-value" style="text-transform: capitalize;">' + (data.account_status || 'active') + '</div>' +
-                '</div>' +
-                '<div class="profile-field">' +
-                    '<label><i class="fas fa-link"></i> Total Links</label>' +
-                    '<div class="field-value">' + (data.totalLinks || 0) + '</div>' +
-                '</div>' +
-                '<div class="profile-field">' +
-                    '<label><i class="fas fa-mouse-pointer"></i> Total Clicks</label>' +
-                    '<div class="field-value">' + (data.totalClicks || 0) + '</div>' +
-                '</div>' +
-                '<div class="profile-field">' +
-                    '<label><i class="fas fa-globe"></i> Timezone</label>' +
-                    '<div class="field-value">' + (data.timezone || 'Asia/Dhaka') + '</div>' +
-                '</div>' +
-                '<div class="modal-actions">' +
-                    '<button class="btn btn-secondary" onclick="closeProfileModal()"><i class="fas fa-times"></i> Close</button>' +
-                '</div>';
-        }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
 
-        // ===== EDIT FUNCTIONS =====
-        function editField(field) {
-            if (field === 'name') {
-                var nameDisplay = document.getElementById('nameDisplay');
-                var nameEdit = document.getElementById('nameEdit');
-                if (nameDisplay) nameDisplay.style.display = 'none';
-                if (nameEdit) nameEdit.style.display = 'block';
-            } else if (field === 'displayName') {
-                var displayNameDisplay = document.getElementById('displayNameDisplay');
-                var displayNameEdit = document.getElementById('displayNameEdit');
-                if (displayNameDisplay) displayNameDisplay.style.display = 'none';
-                if (displayNameEdit) displayNameEdit.style.display = 'block';
-            } else if (field === 'email') {
-                var emailDisplay = document.getElementById('emailDisplay');
-                var emailEdit = document.getElementById('emailEdit');
-                if (emailDisplay) emailDisplay.style.display = 'none';
-                if (emailEdit) emailEdit.style.display = 'block';
-            }
-        }
-
-        function cancelEdit(field) {
-            if (field === 'name') {
-                var nameDisplay = document.getElementById('nameDisplay');
-                var nameEdit = document.getElementById('nameEdit');
-                if (nameDisplay) nameDisplay.style.display = 'block';
-                if (nameEdit) nameEdit.style.display = 'none';
-            } else if (field === 'displayName') {
-                var displayNameDisplay = document.getElementById('displayNameDisplay');
-                var displayNameEdit = document.getElementById('displayNameEdit');
-                if (displayNameDisplay) displayNameDisplay.style.display = 'block';
-                if (displayNameEdit) displayNameEdit.style.display = 'none';
-            } else if (field === 'email') {
-                var emailDisplay = document.getElementById('emailDisplay');
-                var emailEdit = document.getElementById('emailEdit');
-                if (emailDisplay) emailDisplay.style.display = 'block';
-                if (emailEdit) emailEdit.style.display = 'none';
-            }
-        }
-
-        // ===== SAVE FUNCTIONS =====
-        async function saveName() {
-            var firstNameInput = document.getElementById('editFirstName');
-            var lastNameInput = document.getElementById('editLastName');
-            if (!firstNameInput || !lastNameInput) return;
-            
-            var firstName = firstNameInput.value.trim();
-            var lastName = lastNameInput.value.trim();
-            
-            if (!firstName) {
-                showToast('First name is required', 'error');
-                return;
-            }
-
-            try {
-                var response = await fetch('/api/update-profile', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ first_name: firstName, last_name: lastName })
-                });
-
-                var data = await response.json();
-                
-                if (data.success) {
-                    showToast('Profile updated successfully!', 'success');
-                    loadProfileData();
-                    var userNameEl = document.querySelector('.user-profile-btn .user-name');
-                    var avatarEl = document.querySelector('.user-profile-btn .avatar');
-                    var ddNameEl = document.querySelector('.dropdown-menu .dd-name');
-                    if (userNameEl) userNameEl.textContent = data.user.display_name || data.user.first_name;
-                    if (avatarEl) avatarEl.textContent = data.user.display_name.charAt(0).toUpperCase();
-                    if (ddNameEl) ddNameEl.textContent = data.user.display_name || data.user.first_name;
-                } else {
-                    showToast(data.error || 'Failed to update profile', 'error');
-                }
-            } catch (error) {
-                showToast('Failed to update profile', 'error');
-            }
-        }
-
-        async function saveDisplayName() {
-            var displayNameInput = document.getElementById('editDisplayName');
-            if (!displayNameInput) return;
-            
-            var displayName = displayNameInput.value.trim();
-            
-            if (!displayName) {
-                showToast('Display name is required', 'error');
-                return;
-            }
-
-            try {
-                var response = await fetch('/api/update-profile', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ display_name: displayName })
-                });
-
-                var data = await response.json();
-                
-                if (data.success) {
-                    showToast('Profile updated successfully!', 'success');
-                    loadProfileData();
-                    var userNameEl = document.querySelector('.user-profile-btn .user-name');
-                    var avatarEl = document.querySelector('.user-profile-btn .avatar');
-                    var ddNameEl = document.querySelector('.dropdown-menu .dd-name');
-                    if (userNameEl) userNameEl.textContent = data.user.display_name;
-                    if (avatarEl) avatarEl.textContent = data.user.display_name.charAt(0).toUpperCase();
-                    if (ddNameEl) ddNameEl.textContent = data.user.display_name;
-                } else {
-                    showToast(data.error || 'Failed to update profile', 'error');
-                }
-            } catch (error) {
-                showToast('Failed to update profile', 'error');
-            }
-        }
-
-        async function saveEmail() {
-            var emailInput = document.getElementById('editEmail');
-            if (!emailInput) return;
-            
-            var email = emailInput.value.trim();
-            
-            if (!email) {
-                showToast('Email is required', 'error');
-                return;
-            }
-
-            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                showToast('Please enter a valid email address', 'error');
-                return;
-            }
-
-            try {
-                var response = await fetch('/api/update-profile', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: email })
-                });
-
-                var data = await response.json();
-                
-                if (data.success) {
-                    showToast('Email updated successfully!', 'success');
-                    loadProfileData();
-                    var ddEmailEl = document.querySelector('.dropdown-menu .dd-email');
-                    if (ddEmailEl) ddEmailEl.textContent = data.user.email || 'No email set';
-                } else {
-                    showToast(data.error || 'Failed to update email', 'error');
-                }
-            } catch (error) {
-                showToast('Failed to update email', 'error');
-            }
-        }
-
-        // ===== TIMEZONE =====
-        async function updateTimezone() {
-            var select = document.getElementById('userTimezone');
-            if (!select) return;
-            
-            var timezone = select.value;
-            if (!timezone) return;
-
-            try {
-                var response = await fetch('/api/update-timezone', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ timezone: timezone })
-                });
-
-                var data = await response.json();
-                
-                if (data.success) {
-                    showToast('Timezone updated successfully!', 'success');
-                    updateCurrentTime();
-                } else {
-                    showToast(data.error || 'Failed to update timezone', 'error');
-                }
-            } catch (error) {
-                showToast('Failed to update timezone', 'error');
-            }
-        }
-
-        function updateCurrentTime() {
-            var select = document.getElementById('userTimezone');
-            if (!select) return;
-            
-            var timezone = select.value || 'Asia/Dhaka';
-            var display = document.getElementById('currentTimeDisplay');
-            
-            if (display) {
-                try {
-                    var now = new Date();
-                    var options = {
-                        timeZone: timezone,
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit',
-                        hour12: true
-                    };
-                    display.textContent = now.toLocaleString('en-US', options);
-                } catch (e) {
-                    display.textContent = 'Loading time...';
-                }
-            }
-        }
-
-        function convertLinkDates() {
-            var select = document.getElementById('userTimezone');
-            if (!select) return;
-            
-            var timezone = select.value || 'Asia/Dhaka';
-            
-            document.querySelectorAll('.link-date').forEach(function(el) {
-                var dateStr = el.getAttribute('data-date');
-                if (dateStr) {
-                    try {
-                        var date = new Date(dateStr);
-                        var options = {
-                            timeZone: timezone,
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        };
-                        el.textContent = date.toLocaleString('en-US', options);
-                    } catch (e) {}
-                }
-            });
-        }
-
-        // ===== DOM READY =====
-        document.addEventListener('DOMContentLoaded', function() {
-            var select = document.getElementById('userTimezone');
-            if (select) {
-                var userTimezone = '<%= typeof user !== "undefined" && user.timezone ? user.timezone : "Asia/Dhaka" %>';
-                if (userTimezone) select.value = userTimezone;
-                updateCurrentTime();
-                convertLinkDates();
-                select.addEventListener('change', function() {
-                    setTimeout(convertLinkDates, 500);
-                });
-            }
-            
-            document.querySelectorAll('.copy-link-btn').forEach(function(btn) {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    var url = this.getAttribute('data-url');
-                    copyToClipboard(url);
-                });
-            });
-            
-            var form = document.getElementById('shortenForm');
-            var btn = document.getElementById('shortenBtn');
-            if (form && btn) {
-                form.addEventListener('submit', function() {
-                    var original = btn.innerHTML;
-                    btn.innerHTML = '⏳ Processing...';
-                    btn.disabled = true;
-                    btn.style.opacity = '0.7';
-                    setTimeout(function() {
-                        btn.innerHTML = original;
-                        btn.disabled = false;
-                        btn.style.opacity = '1';
-                    }, 3000);
-                });
-            }
-            
-            var ctx = document.getElementById('analyticsChart');
-            if (ctx) {
-                var weekData = <%= typeof weekData !== 'undefined' && weekData ? JSON.stringify(weekData) : '[0,0,0,0,0,0,0]' %>;
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                        datasets: [{
-                            label: 'Clicks',
-                            data: weekData,
-                            borderColor: '#6C63FF',
-                            backgroundColor: 'rgba(108, 99, 255, 0.08)',
-                            borderWidth: 3,
-                            pointBackgroundColor: '#6C63FF',
-                            pointBorderColor: '#6C63FF',
-                            pointBorderWidth: 2,
-                            pointRadius: 5,
-                            tension: 0.4,
-                            fill: true
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { labels: { color: '#B0B0C8', font: { family: 'Inter', size: 12 } } }
-                        },
-                        scales: {
-                            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#B0B0C8', font: { family: 'Inter', size: 11 } } },
-                            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#B0B0C8', font: { family: 'Inter', size: 11 }, stepSize: 1 }, beginAtZero: true }
-                        },
-                        animation: { duration: 2000, easing: 'easeInOutQuart' }
+                    const dx = mouseX - this.x;
+                    const dy = mouseY - this.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 150) {
+                        const force = (150 - dist) / 150 * 0.02;
+                        this.x -= dx * force;
+                        this.y -= dy * force;
                     }
+
+                    if (this.x > canvas.width) this.x = 0;
+                    if (this.x < 0) this.x = canvas.width;
+                    if (this.y > canvas.height) this.y = 0;
+                    if (this.y < 0) this.y = canvas.height;
+                }
+
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                }
+            }
+
+            function initParticles() {
+                const count = Math.min(100, Math.floor((canvas.width * canvas.height) / 10000));
+                particles = [];
+                for (let i = 0; i < count; i++) {
+                    particles.push(new Particle());
+                }
+            }
+            initParticles();
+
+            function drawConnections() {
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 120) {
+                            ctx.beginPath();
+                            ctx.strokeStyle = `rgba(108, 99, 255, ${0.08 * (1 - dist / 120)})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
                 });
+                drawConnections();
+                requestAnimationFrame(animateParticles);
             }
-        });
+            animateParticles();
 
-        setInterval(updateCurrentTime, 1000);
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
 
-        // ===== TOAST =====
-        function showToast(message, type, duration) {
-            type = type || 'info';
-            duration = duration || 3000;
-            var container = document.getElementById('toastContainer');
-            if (!container) return;
-            
-            var icons = { success: 'fas fa-check-circle', error: 'fas fa-exclamation-circle', info: 'fas fa-info-circle' };
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                initParticles();
+            });
+        })();
 
-            var toast = document.createElement('div');
-            toast.className = 'toast ' + type;
-            toast.innerHTML = 
-                '<span class="toast-icon"><i class="' + (icons[type] || icons.info) + '"></i></span>' +
-                '<span class="toast-message">' + message + '</span>' +
-                '<button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>';
-
-            container.appendChild(toast);
-
-            setTimeout(function() {
-                toast.style.animation = 'slideOutRight 0.4s ease forwards';
-                setTimeout(function() {
-                    if (toast.parentElement) toast.remove();
-                }, 400);
-            }, duration);
-        }
-
-        // ===== COPY =====
+        // ============================================================
+        // COPY TO CLIPBOARD
+        // ============================================================
         function copyToClipboard(text) {
-            var cleanText = String(text).trim();
-            if (!cleanText || cleanText === '') {
-                showToast('❌ Error: Nothing to copy', 'error');
-                return;
-            }
-            
             if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(cleanText).then(function() {
-                    showToast('✅ Link copied to clipboard!', 'success');
-                }).catch(function() {
-                    fallbackCopy(cleanText);
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('✅ Link copied to clipboard!');
+                }).catch(() => {
+                    fallbackCopy(text);
                 });
             } else {
-                fallbackCopy(cleanText);
+                fallbackCopy(text);
             }
         }
 
         function fallbackCopy(text) {
-            try {
-                var textarea = document.createElement('textarea');
-                textarea.value = text;
-                textarea.style.position = 'fixed';
-                textarea.style.opacity = '0';
-                textarea.style.width = '1px';
-                textarea.style.height = '1px';
-                document.body.appendChild(textarea);
-                textarea.select();
-                var success = document.execCommand('copy');
-                document.body.removeChild(textarea);
-                if (success) {
-                    showToast('✅ Link copied to clipboard!', 'success');
-                } else {
-                    showToast('❌ Failed to copy. Please copy manually.', 'error');
-                }
-            } catch (err) {
-                showToast('❌ Failed to copy. Please copy manually.', 'error');
-            }
+            const input = document.createElement('input');
+            input.value = text;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+            showToast('✅ Link copied to clipboard!');
         }
 
-        // ===== QR CODE =====
-        async function generateQR(shortCode) {
-            try {
-                var response = await fetch('/qr/' + shortCode);
-                var data = await response.json();
-                if (data.qr) {
-                    var win = window.open('', '_blank');
-                    if (win) {
-                        win.document.write(
-                            '<html><head><title>QR Code</title></head>' +
-                            '<body style="background:#0D0D1A;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;font-family:Inter,sans-serif;flex-direction:column;">' +
-                            '<div style="background:white;padding:20px;border-radius:12px;">' +
-                            '<img src="' + data.qr + '" style="max-width:300px;width:100%;">' +
-                            '</div>' +
-                            '<p style="color:#B0B0C8;margin-top:20px;font-size:14px;">Scan to visit: ' + data.url + '</p>' +
-                            '<button onclick="window.close()" style="margin-top:10px;padding:8px 20px;background:#6C63FF;border:none;border-radius:8px;color:white;cursor:pointer;">Close</button>' +
-                            '</body></html>'
-                        );
-                    }
-                }
-            } catch (error) {
-                showToast('❌ Failed to generate QR code', 'error');
-            }
+        // ============================================================
+        // TOAST NOTIFICATION
+        // ============================================================
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            Object.assign(toast.style, {
+                position: 'fixed',
+                bottom: '30px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                background: 'rgba(10,10,15,0.9)',
+                backdropFilter: 'blur(20px)',
+                color: '#fff',
+                padding: '1rem 2rem',
+                borderRadius: '14px',
+                border: '1px solid rgba(255,255,255,0.08)',
+                boxShadow: '0 20px 40px -12px rgba(0,0,0,0.8), 0 0 30px rgba(108,99,255,0.1)',
+                zIndex: '9999',
+                fontFamily: 'Inter, sans-serif',
+                fontWeight: '500',
+                animation: 'fadeIn 0.4s ease',
+                maxWidth: '90%',
+                textAlign: 'center'
+            });
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.4s';
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
         }
 
-        // ===== LIVE USER COUNT =====
-        setInterval(async function() {
+        // ============================================================
+        // UPDATE LIVE USER COUNT
+        // ============================================================
+        setInterval(async () => {
             try {
-                var response = await fetch('/api/online-users');
-                var data = await response.json();
-                var countEl = document.getElementById('liveUserCount');
-                if (countEl) countEl.textContent = (data.count || 0) + ' Online';
-                var listEl = document.getElementById('userList');
+                const response = await fetch('/api/online-users');
+                const data = await response.json();
+
+                const countEl = document.getElementById('liveUserCount');
+                if (countEl) {
+                    countEl.textContent = (data.count || 0) + ' Online';
+                }
+
+                const listEl = document.getElementById('userList');
                 if (listEl && data.users) {
                     if (data.users.length > 0) {
-                        var html = '';
-                        for (var i = 0; i < data.users.length; i++) {
-                            html += '<span class="user-badge"><span class="online-dot"></span> ' + data.users[i].name + '</span>';
-                        }
-                        listEl.innerHTML = html;
+                        listEl.innerHTML = data.users.map(u =>
+                            `<span class="user-badge"><span class="online-dot"></span>${u.name}</span>`
+                        ).join('');
                     } else {
                         listEl.innerHTML = '<span style="color: var(--text-muted);">No users online</span>';
                     }
                 }
             } catch (e) {}
         }, 10000);
+
+        // ============================================================
+        // SCANNING ANIMATION ON FORM SUBMIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('shortenForm');
+            const btn = document.getElementById('shortenBtn');
+            
+            if (form && btn) {
+                form.addEventListener('submit', function() {
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '🔮 Processing...';
+                    btn.disabled = true;
+                    btn.style.opacity = '0.7';
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        btn.style.opacity = '1';
+                    }, 3000);
+                });
+            }
+        });
     </script>
 
 </body>
