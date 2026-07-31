@@ -203,24 +203,25 @@ app.use(session({
     cookie: { maxAge: 1000 * 60 * 60 * 24 * 7, secure: false, httpOnly: true }
 }));
 
-// ============ Make Data Available - FIX: No 'name' column ============
+// ============ Make Data Available ============
 app.use(function(req, res, next) {
     res.locals.BASE_URL = BASE_URL;
     res.locals.user = req.session.user || null;
     res.locals.page = req.path === '/' ? 'home' : req.path.slice(1);
     res.locals.countries = COUNTRIES;
     
-    // ===== FIX: Use display_name instead of name =====
-    db.all('SELECT id, display_name, username FROM users WHERE isOnline = 1', function(err, users) {
+    // ===== FIX: Get online users with correct data =====
+    db.all('SELECT id, name, display_name, username FROM users WHERE isOnline = 1', function(err, users) {
         if (err) {
             console.error('❌ Online users error:', err);
             res.locals.onlineUsers = 0;
             res.locals.onlineUserList = [];
         } else {
+            // Format user names for display
             const formattedUsers = (users || []).map(function(u) {
                 return {
                     id: u.id,
-                    name: u.display_name || u.username || 'User'
+                    name: u.display_name || u.name || u.username || 'User'
                 };
             });
             res.locals.onlineUsers = formattedUsers.length;
@@ -236,8 +237,7 @@ function generateShortCode() {
 }
 
 function getOnlineUsers(callback) {
-    // ===== FIX: Use display_name instead of name =====
-    db.all('SELECT id, display_name, username FROM users WHERE isOnline = 1', function(err, users) {
+    db.all('SELECT id, name, display_name, username FROM users WHERE isOnline = 1', function(err, users) {
         if (err) {
             console.error('❌ Online users error:', err);
             return callback(0, []);
@@ -245,7 +245,7 @@ function getOnlineUsers(callback) {
         const formattedUsers = (users || []).map(function(u) {
             return {
                 id: u.id,
-                name: u.display_name || u.username || 'User'
+                name: u.display_name || u.name || u.username || 'User'
             };
         });
         callback(formattedUsers.length, formattedUsers);
@@ -347,6 +347,7 @@ app.post('/login', function(req, res) {
         }
 
         if (user) {
+            // ===== FIX: Set isOnline = 1 when user logs in =====
             db.run(`UPDATE users SET 
                     username = ?, 
                     first_name = ?, 
@@ -384,6 +385,7 @@ app.post('/login', function(req, res) {
                     });
                 });
         } else {
+            // ===== FIX: Set isOnline = 1 when new user registers =====
             db.run(`INSERT INTO users 
                     (telegram_id, username, first_name, last_name, display_name, email, isOnline, isValidated, last_login) 
                     VALUES (?, ?, ?, ?, ?, ?, 1, 1, CURRENT_TIMESTAMP)`,
@@ -518,7 +520,7 @@ app.post('/api/update-profile', function(req, res) {
 });
 
 // ============================================================
-// LOGOUT
+// LOGOUT - FIX: Set isOnline = 0
 // ============================================================
 app.post('/logout', function(req, res) {
     if (req.session.user) {
@@ -534,13 +536,14 @@ app.post('/logout', function(req, res) {
 });
 
 // ============================================================
-// DASHBOARD
+// DASHBOARD - FIX: Update online status
 // ============================================================
 app.get('/dashboard', function(req, res) {
     if (!req.session.user) {
         return res.redirect('/login');
     }
 
+    // ===== FIX: Update online status when user visits dashboard =====
     db.run('UPDATE users SET isOnline = 1, last_login = CURRENT_TIMESTAMP WHERE id = ?', [req.session.user.id]);
 
     db.get('SELECT * FROM users WHERE id = ?', [req.session.user.id], function(err, userData) {
@@ -847,14 +850,13 @@ app.get('/qr/:shortCode', function(req, res) {
 // ============================================================
 
 app.get('/api/online-users', function(req, res) {
-    // ===== FIX: Use display_name instead of name =====
-    db.all('SELECT id, display_name, username FROM users WHERE isOnline = 1', function(err, users) {
+    db.all('SELECT id, name, display_name, username FROM users WHERE isOnline = 1', function(err, users) {
         if (err) {
             return res.json({ count: 0, users: [] });
         }
         const formattedUsers = (users || []).map(function(u) {
             return {
-                name: u.display_name || u.username || 'User'
+                name: u.display_name || u.name || u.username || 'User'
             };
         });
         res.json({
