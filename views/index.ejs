@@ -641,20 +641,25 @@
 
     <div class="container">
 
-        <% var queryError = typeof error !== 'undefined' ? error : null; %>
-        <% var querySuccess = typeof success !== 'undefined' ? success : null; %>
-        <% var queryInfo = typeof info !== 'undefined' ? info : null; %>
+        <% 
+            var queryError = typeof error !== 'undefined' ? error : null;
+            var querySuccess = typeof success !== 'undefined' ? success : null;
+            var queryInfo = typeof info !== 'undefined' ? info : null;
+        %>
         
         <% if (queryError) { %>
             <div class="alert alert-danger"><%= queryError %></div>
         <% } %>
+        
         <% if (querySuccess) { %>
             <div class="alert alert-success"><%= querySuccess %></div>
         <% } %>
+        
         <% if (queryInfo) { %>
             <div class="alert alert-info"><%= queryInfo %></div>
         <% } %>
 
+        <!-- ===== LOGIN PAGE ===== -->
         <% if (page === 'login') { %>
             <div class="glass-card" style="max-width: 500px; margin: 2rem auto;">
                 <div style="text-align: center; margin-bottom: 1.5rem;">
@@ -756,6 +761,7 @@
             </div>
         <% } %>
 
+        <!-- ===== HOME PAGE ===== -->
         <% if (page === 'home') { %>
             <div class="brand-center fade-in">
                 <h1>This Person Is brand Shortlink</h1>
@@ -829,6 +835,7 @@
             </div>
         <% } %>
 
+        <!-- ===== DASHBOARD PAGE ===== -->
         <% if (page === 'dashboard') { %>
             <div class="fade-in">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
@@ -840,10 +847,22 @@
                 </div>
 
                 <div class="stats-grid">
-                    <div class="stat-card"><div class="number"><%= typeof links !== 'undefined' && links ? links.length : 0 %></div><div class="label">Total Links</div></div>
-                    <div class="stat-card"><div class="number"><%= typeof totalClicks !== 'undefined' ? totalClicks : 0 %></div><div class="label">Total Clicks</div></div>
-                    <div class="stat-card"><div class="number"><%= typeof onlineUsers !== 'undefined' ? onlineUsers : 0 %></div><div class="label">Online Users</div></div>
-                    <div class="stat-card"><div class="number">♾️</div><div class="label">Unlimited</div></div>
+                    <div class="stat-card">
+                        <div class="number"><%= typeof links !== 'undefined' && links ? links.length : 0 %></div>
+                        <div class="label">Total Links</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number"><%= typeof totalClicks !== 'undefined' ? totalClicks : 0 %></div>
+                        <div class="label">Total Clicks</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number"><%= typeof onlineUsers !== 'undefined' ? onlineUsers : 0 %></div>
+                        <div class="label">Online Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">♾️</div>
+                        <div class="label">Unlimited</div>
+                    </div>
                 </div>
 
                 <div class="glass-card" style="margin-bottom: 2rem;">
