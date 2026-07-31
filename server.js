@@ -1,4 +1,4 @@
-// server.js - Complete Working Version (NO ERRORS)
+// server.js - Complete Cyberpunk URL Shortener (FIXED)
 const express = require('express');
 const session = require('express-session');
 const sqlite3 = require('sqlite3').verbose();
@@ -12,8 +12,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const BASE_URL = (process.env.BASE_URL || 'https://thispersonisbrandshortner.click').replace(/\/+$/, '');
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
+const SKIP_VALIDATION = process.env.SKIP_VALIDATION === 'true' || !TELEGRAM_BOT_TOKEN;
 
 console.log('🔗 BASE_URL:', BASE_URL);
+console.log('📦 TELEGRAM_BOT_TOKEN:', TELEGRAM_BOT_TOKEN ? '✅ Set' : '❌ Not Set');
+console.log('🔓 SKIP_VALIDATION:', SKIP_VALIDATION ? '✅ Yes' : '❌ No');
 
 // ============ Setup ============
 app.set('view engine', 'ejs');
@@ -96,7 +99,7 @@ db.serialize(function() {
     db.run(`CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         telegram_id TEXT UNIQUE,
-        username TEXT UNIQUE,
+        username TEXT,
         first_name TEXT,
         last_name TEXT,
         display_name TEXT,
@@ -106,7 +109,7 @@ db.serialize(function() {
         last_login DATETIME DEFAULT CURRENT_TIMESTAMP,
         account_status TEXT DEFAULT 'active',
         isOnline INTEGER DEFAULT 0,
-        isValidated INTEGER DEFAULT 1,
+        isValidated INTEGER DEFAULT 0,
         totalLinks INTEGER DEFAULT 0,
         totalClicks INTEGER DEFAULT 0,
         timezone TEXT DEFAULT 'Asia/Dhaka'
@@ -160,36 +163,14 @@ app.use(session({
     cookie: { maxAge: 1000 * 60 * 60 * 24 * 7, secure: false, httpOnly: true }
 }));
 
-// ============ Make Data Available - FIXED ============
+// ============ Make Data Available ============
 app.use(function(req, res, next) {
-    // Set default values for all templates
     res.locals.BASE_URL = BASE_URL;
     res.locals.user = req.session.user || null;
     res.locals.page = req.path === '/' ? 'home' : req.path.slice(1);
     res.locals.countries = COUNTRIES;
     res.locals.onlineUsers = 0;
     res.locals.onlineUserList = [];
-    res.locals.error = null;
-    res.locals.success = null;
-    res.locals.info = null;
-    res.locals.shortUrl = null;
-    res.locals.links = [];
-    res.locals.totalClicks = 0;
-    res.locals.todayClicks = 0;
-    res.locals.weekClicks = 0;
-    res.locals.monthClicks = 0;
-    res.locals.botClicks = 0;
-    res.locals.realClicks = 0;
-    res.locals.clickRate = 100;
-    res.locals.topLink = null;
-    res.locals.weekData = [0,0,0,0,0,0,0];
-    res.locals.countryStats = [];
-    res.locals.cityStats = [];
-    res.locals.deviceStats = [];
-    res.locals.browserStats = [];
-    res.locals.osStats = [];
-    res.locals.userData = {};
-    res.locals.timezones = {};
     
     db.all('SELECT id, display_name, username FROM users WHERE isOnline = 1', function(err, users) {
         if (!err && users && users.length > 0) {
@@ -296,93 +277,84 @@ function detectDeviceInfo(userAgent) {
 app.get('/', function(req, res) {
     try {
         res.render('index', { 
-            page: 'home'
+            page: 'home',
+            error: null,
+            success: null,
+            info: null,
+            shortUrl: null
         });
     } catch (err) {
         console.error('Home route error:', err);
-        res.send('Server error. Please try again.');
+        res.status(500).send('Server error. Please try again.');
     }
 });
 
-// Login Page
+// Login
 app.get('/login', function(req, res) {
     if (req.session.user) {
         return res.redirect('/dashboard');
     }
     try {
         res.render('index', { 
-            page: 'login'
+            page: 'login',
+            error: null,
+            success: null,
+            info: null
         });
     } catch (err) {
         console.error('Login route error:', err);
-        res.send('Server error. Please try again.');
+        res.status(500).send('Server error. Please try again.');
     }
 });
 
-// ============================================================
-// LOGIN WITH TELEGRAM ID
-// ============================================================
 app.post('/login', function(req, res) {
     var telegramId = req.body.telegramId;
     var username = req.body.username;
     var firstName = req.body.firstName || username;
     var lastName = req.body.lastName || '';
-    var email = req.body.email || '';
+    var email = req.body.email || null;
     var timezone = req.body.timezone || 'Asia/Dhaka';
     
-    if (!telegramId || !username || !firstName || !lastName) {
+    if (!telegramId || !username) {
         return res.render('index', {
             page: 'login',
-            error: 'Please provide Telegram ID, Username, First Name and Last Name'
+            error: 'Please provide both Telegram ID and Name',
+            success: null,
+            info: null
         });
     }
 
     var cleanTelegramId = telegramId.trim().replace(/[^0-9]/g, '');
+    
     if (!cleanTelegramId) {
         return res.render('index', {
             page: 'login',
-            error: 'Please enter a valid numeric Telegram ID'
+            error: 'Please enter a valid numeric Telegram ID',
+            success: null,
+            info: null
         });
     }
 
     db.get('SELECT * FROM users WHERE telegram_id = ?', [cleanTelegramId], function(err, user) {
         if (err) {
-            return res.render('index', {
-                page: 'login',
-                error: 'Database error. Please try again.'
-            });
+            return res.render('index', { page: 'login', error: 'Database error.', success: null, info: null });
         }
 
         if (user) {
-            db.run(`UPDATE users SET 
-                    username = ?, 
-                    first_name = ?, 
-                    last_name = ?, 
-                    display_name = ?,
-                    email = COALESCE(?, email),
-                    timezone = ?,
-                    last_login = CURRENT_TIMESTAMP, 
-                    isOnline = 1 
-                    WHERE telegram_id = ?`,
-                [username, firstName, lastName, firstName + ' ' + lastName, email, timezone, cleanTelegramId],
+            db.run('UPDATE users SET username = ?, first_name = ?, last_name = ?, display_name = ?, email = COALESCE(?, email), timezone = ?, last_login = CURRENT_TIMESTAMP, isOnline = 1, isValidated = 1 WHERE telegram_id = ?',
+                [username, firstName, lastName, firstName + ' ' + lastName, email, timezone, cleanTelegramId], 
                 function(err) {
                     if (err) {
-                        return res.render('index', {
-                            page: 'login',
-                            error: 'Update failed. Please try again.'
-                        });
+                        return res.render('index', { page: 'login', error: 'Update failed.', success: null, info: null });
                     }
-
+                    
                     db.get('SELECT * FROM users WHERE telegram_id = ?', [cleanTelegramId], function(err, updatedUser) {
                         if (err || !updatedUser) {
-                            return res.render('index', {
-                                page: 'login',
-                                error: 'User not found.'
-                            });
+                            return res.render('index', { page: 'login', error: 'User not found.', success: null, info: null });
                         }
-
-                        req.session.user = {
-                            id: updatedUser.id,
+                        
+                        req.session.user = { 
+                            id: updatedUser.id, 
                             telegram_id: updatedUser.telegram_id,
                             username: updatedUser.username,
                             first_name: updatedUser.first_name,
@@ -392,36 +364,27 @@ app.post('/login', function(req, res) {
                             profile_photo: updatedUser.profile_photo,
                             timezone: updatedUser.timezone || 'Asia/Dhaka'
                         };
-
                         req.session.save(function() {
                             res.redirect('/dashboard');
                         });
                     });
                 });
         } else {
-            db.run(`INSERT INTO users 
-                    (telegram_id, username, first_name, last_name, display_name, email, timezone, isOnline, last_login) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, 1, CURRENT_TIMESTAMP)`,
-                [cleanTelegramId, username, firstName, lastName, firstName + ' ' + lastName, email, timezone],
+            db.run('INSERT INTO users (telegram_id, username, first_name, last_name, display_name, email, timezone, isOnline, isValidated, last_login) VALUES (?, ?, ?, ?, ?, ?, ?, 1, 1, CURRENT_TIMESTAMP)',
+                [cleanTelegramId, username, firstName, lastName, firstName + ' ' + lastName, email, timezone], 
                 function(err) {
                     if (err) {
                         console.error('Registration error:', err);
-                        return res.render('index', {
-                            page: 'login',
-                            error: 'Registration failed. Please try again.'
-                        });
+                        return res.render('index', { page: 'login', error: 'Registration failed.', success: null, info: null });
                     }
-
+                    
                     db.get('SELECT * FROM users WHERE telegram_id = ?', [cleanTelegramId], function(err, newUser) {
                         if (err || !newUser) {
-                            return res.render('index', {
-                                page: 'login',
-                                error: 'Registration failed. Please try again.'
-                            });
+                            return res.render('index', { page: 'login', error: 'User creation failed.', success: null, info: null });
                         }
-
-                        req.session.user = {
-                            id: newUser.id,
+                        
+                        req.session.user = { 
+                            id: newUser.id, 
                             telegram_id: newUser.telegram_id,
                             username: newUser.username,
                             first_name: newUser.first_name,
@@ -431,7 +394,6 @@ app.post('/login', function(req, res) {
                             profile_photo: newUser.profile_photo,
                             timezone: newUser.timezone || 'Asia/Dhaka'
                         };
-
                         req.session.save(function() {
                             res.redirect('/dashboard');
                         });
@@ -441,8 +403,58 @@ app.post('/login', function(req, res) {
     });
 });
 
+// Logout
+app.post('/logout', function(req, res) {
+    if (req.session.user) {
+        db.run('UPDATE users SET isOnline = 0 WHERE id = ?', [req.session.user.id]);
+    }
+    req.session.destroy(function() {
+        res.redirect('/');
+    });
+});
+
 // ============================================================
-// UPDATE USER PROFILE
+// USER DATA API
+// ============================================================
+app.get('/api/user-data', function(req, res) {
+    if (!req.session.user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    db.get('SELECT * FROM users WHERE id = ?', [req.session.user.id], function(err, user) {
+        if (err || !user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        var fields = ['email', 'first_name', 'last_name', 'display_name', 'profile_photo'];
+        var filled = 0;
+        for (var i = 0; i < fields.length; i++) {
+            if (user[fields[i]] && user[fields[i]] !== '') filled++;
+        }
+        var completion = Math.round((filled / fields.length) * 100);
+
+        res.json({
+            id: user.id,
+            telegram_id: user.telegram_id,
+            username: user.username,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            display_name: user.display_name,
+            email: user.email,
+            profile_photo: user.profile_photo,
+            created_at: user.created_at,
+            last_login: user.last_login,
+            account_status: user.account_status,
+            totalLinks: user.totalLinks || 0,
+            totalClicks: user.totalClicks || 0,
+            timezone: user.timezone || 'Asia/Dhaka',
+            completion: completion
+        });
+    });
+});
+
+// ============================================================
+// UPDATE PROFILE
 // ============================================================
 app.post('/api/update-profile', function(req, res) {
     if (!req.session.user) {
@@ -531,58 +543,6 @@ app.post('/api/update-timezone', function(req, res) {
 });
 
 // ============================================================
-// USER DATA API
-// ============================================================
-app.get('/api/user-data', function(req, res) {
-    if (!req.session.user) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    db.get('SELECT * FROM users WHERE id = ?', [req.session.user.id], function(err, user) {
-        if (err || !user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        var fields = ['email', 'first_name', 'last_name', 'display_name', 'profile_photo'];
-        var filled = 0;
-        for (var i = 0; i < fields.length; i++) {
-            if (user[fields[i]] && user[fields[i]] !== '') filled++;
-        }
-        var completion = Math.round((filled / fields.length) * 100);
-
-        res.json({
-            id: user.id,
-            telegram_id: user.telegram_id,
-            username: user.username,
-            first_name: user.first_name,
-            last_name: user.last_name,
-            display_name: user.display_name,
-            email: user.email,
-            profile_photo: user.profile_photo,
-            created_at: user.created_at,
-            last_login: user.last_login,
-            account_status: user.account_status,
-            totalLinks: user.totalLinks || 0,
-            totalClicks: user.totalClicks || 0,
-            timezone: user.timezone || 'Asia/Dhaka',
-            completion: completion
-        });
-    });
-});
-
-// ============================================================
-// LOGOUT
-// ============================================================
-app.post('/logout', function(req, res) {
-    if (req.session.user) {
-        db.run('UPDATE users SET isOnline = 0 WHERE id = ?', [req.session.user.id]);
-    }
-    req.session.destroy(function() {
-        res.redirect('/');
-    });
-});
-
-// ============================================================
 // DASHBOARD
 // ============================================================
 app.get('/dashboard', function(req, res) {
@@ -624,81 +584,43 @@ app.get('/dashboard', function(req, res) {
                 [links ? links.length : 0, totalClicks, req.session.user.id]);
 
             getOnlineUsers(function(count, users) {
-                db.all(`SELECT country, countryCode, COUNT(*) as count 
-                        FROM click_logs 
-                        WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
-                        AND isBot = 0 
-                        AND country IS NOT NULL 
-                        AND country != '' 
-                        GROUP BY countryCode 
-                        ORDER BY count DESC 
-                        LIMIT 10`,
+                db.all('SELECT country, countryCode, COUNT(*) as count FROM click_logs WHERE linkId IN (SELECT id FROM links WHERE userId = ?) AND isBot = 0 AND country IS NOT NULL AND country != "" GROUP BY countryCode ORDER BY count DESC LIMIT 10',
                     [req.session.user.id], function(err, countryStats) {
                         
                         if (err) countryStats = [];
 
-                        db.all(`SELECT device, browser, os, COUNT(*) as count 
-                                FROM click_logs 
-                                WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
-                                AND isBot = 0 
-                                AND device IS NOT NULL 
-                                GROUP BY device, browser, os 
-                                ORDER BY count DESC`,
-                            [req.session.user.id], function(err, deviceStats) {
-                                
-                                if (err) deviceStats = [];
-
-                                db.get(`SELECT COUNT(*) as count FROM click_logs 
-                                        WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
-                                        AND isBot = 1`,
-                                    [req.session.user.id], function(err, botResult) {
-                                        var botClicks = botResult ? botResult.count : 0;
-
-                                        db.get(`SELECT COUNT(*) as count FROM click_logs 
-                                                WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
-                                                AND isBot = 0`,
-                                            [req.session.user.id], function(err, realResult) {
-                                                var realClicks = realResult ? realResult.count : 0;
-                                                var total = realClicks + botClicks;
-                                                var clickRate = total > 0 ? Math.round((realClicks / total) * 100) : 100;
-
-                                                var weekData = [0,0,0,0,0,0,0];
-
-                                                try {
-                                                    res.render('index', {
-                                                        page: 'dashboard',
-                                                        user: req.session.user,
-                                                        userData: userData,
-                                                        links: linksWithUrl,
-                                                        totalClicks: totalClicks,
-                                                        onlineUsers: count,
-                                                        onlineUserList: users,
-                                                        countries: COUNTRIES,
-                                                        error: null,
-                                                        success: null,
-                                                        info: null,
-                                                        shortUrl: null,
-                                                        todayClicks: 0,
-                                                        weekClicks: 0,
-                                                        monthClicks: 0,
-                                                        botClicks: botClicks,
-                                                        realClicks: realClicks,
-                                                        clickRate: clickRate,
-                                                        topLink: null,
-                                                        weekData: weekData,
-                                                        countryStats: countryStats || [],
-                                                        cityStats: [],
-                                                        deviceStats: deviceStats || [],
-                                                        browserStats: [],
-                                                        osStats: []
-                                                    });
-                                                } catch (renderErr) {
-                                                    console.error('Dashboard render error:', renderErr);
-                                                    res.send('Dashboard loading error. Please try again.');
-                                                }
-                                            });
-                                    });
+                        try {
+                            res.render('index', {
+                                page: 'dashboard',
+                                user: req.session.user,
+                                userData: userData,
+                                links: linksWithUrl,
+                                totalClicks: totalClicks,
+                                onlineUsers: count,
+                                onlineUserList: users,
+                                countries: COUNTRIES,
+                                error: null,
+                                success: null,
+                                info: null,
+                                shortUrl: null,
+                                todayClicks: 0,
+                                weekClicks: 0,
+                                monthClicks: 0,
+                                botClicks: 0,
+                                realClicks: 0,
+                                clickRate: 100,
+                                topLink: null,
+                                weekData: [0,0,0,0,0,0,0],
+                                countryStats: countryStats || [],
+                                cityStats: [],
+                                deviceStats: [],
+                                browserStats: [],
+                                osStats: []
                             });
+                        } catch (renderErr) {
+                            console.error('Dashboard render error:', renderErr);
+                            res.status(500).send('Dashboard loading error. Please try again.');
+                        }
                     });
             });
         });
@@ -900,7 +822,7 @@ app.get('/qr/:shortCode', function(req, res) {
             QRCode.toDataURL(url, {
                 width: 300,
                 margin: 2,
-                color: { dark: '#6C63FF', light: '#FFFFFF' }
+                color: { dark: '#00F0FF', light: '#FFFFFF' }
             }, function(err, qrImage) {
                 if (err) {
                     return res.status(500).json({ error: 'QR generation failed' });
@@ -952,5 +874,6 @@ app.use(function(err, req, res, next) {
 app.listen(PORT, '0.0.0.0', function() {
     console.log('🚀 Server running on port ' + PORT);
     console.log('🔗 BASE_URL: ' + BASE_URL);
+    console.log('⚡ Cyberpunk Mode: ON');
     console.log('✅ Ready to use!');
 });
