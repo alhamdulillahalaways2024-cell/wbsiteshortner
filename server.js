@@ -1,4 +1,4 @@
-// server.js - Complete Premium URL Shortener (FIXED - NO ERRORS)
+// server.js - Complete Premium URL Shortener (No Password)
 const express = require('express');
 const session = require('express-session');
 const sqlite3 = require('sqlite3').verbose();
@@ -7,11 +7,6 @@ const path = require('path');
 const fs = require('fs');
 const axios = require('axios');
 const QRCode = require('qrcode');
-
-// ===== SIMPLE HASHING =====
-function hashPassword(password) {
-    return crypto.createHash('sha256').update(password + 'shortlink_salt_2024').digest('hex');
-}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -95,18 +90,17 @@ const COUNTRIES = {
 };
 
 // ============================================================
-// CREATE TABLES
+// CREATE TABLES (NO PASSWORD)
 // ============================================================
 db.serialize(function() {
     db.run(`CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        telegram_id TEXT,
+        telegram_id TEXT UNIQUE,
         username TEXT UNIQUE,
         first_name TEXT,
         last_name TEXT,
         display_name TEXT,
-        email TEXT UNIQUE,
-        password TEXT,
+        email TEXT,
         profile_photo TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         last_login DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -174,7 +168,6 @@ app.use(function(req, res, next) {
     res.locals.countries = COUNTRIES;
     res.locals.onlineUsers = 0;
     res.locals.onlineUserList = [];
-    res.locals.loginMode = req.query.mode === 'signin' ? 'signin' : 'signup';
     res.locals.error = null;
     res.locals.success = null;
     res.locals.info = null;
@@ -323,8 +316,7 @@ app.get('/login', function(req, res) {
             page: 'login',
             error: null,
             success: null,
-            info: null,
-            loginMode: req.query.mode === 'signin' ? 'signin' : 'signup'
+            info: null
         });
     } catch (err) {
         console.error('Login route error:', err);
@@ -333,7 +325,7 @@ app.get('/login', function(req, res) {
 });
 
 // ============================================================
-// SIGN UP / SIGN IN
+// LOGIN WITH TELEGRAM ID (NO PASSWORD)
 // ============================================================
 app.post('/login', function(req, res) {
     var telegramId = req.body.telegramId;
@@ -341,93 +333,14 @@ app.post('/login', function(req, res) {
     var firstName = req.body.firstName || username;
     var lastName = req.body.lastName || '';
     var email = req.body.email || '';
-    var password = req.body.password || '';
     var timezone = req.body.timezone || 'Asia/Dhaka';
-    var loginMode = req.body.loginMode || 'signup';
     
-    // ===== SIGN IN MODE =====
-    if (loginMode === 'signin') {
-        if (!email || !password) {
-            return res.render('index', {
-                page: 'login',
-                error: 'Please provide both email and password',
-                success: null,
-                info: null,
-                loginMode: 'signin'
-            });
-        }
-
-        db.get('SELECT * FROM users WHERE email = ?', [email], function(err, user) {
-            if (err || !user) {
-                return res.render('index', {
-                    page: 'login',
-                    error: 'Invalid email or password',
-                    success: null,
-                    info: null,
-                    loginMode: 'signin'
-                });
-            }
-
-            var hashedInput = hashPassword(password);
-            if (hashedInput !== user.password) {
-                return res.render('index', {
-                    page: 'login',
-                    error: 'Invalid email or password',
-                    success: null,
-                    info: null,
-                    loginMode: 'signin'
-                });
-            }
-
-            db.run('UPDATE users SET isOnline = 1, last_login = CURRENT_TIMESTAMP WHERE id = ?', [user.id], function(err) {
-                if (err) {
-                    return res.render('index', {
-                        page: 'login',
-                        error: 'Login failed. Please try again.',
-                        success: null,
-                        info: null,
-                        loginMode: 'signin'
-                    });
-                }
-
-                req.session.user = {
-                    id: user.id,
-                    telegram_id: user.telegram_id,
-                    username: user.username,
-                    first_name: user.first_name,
-                    last_name: user.last_name,
-                    display_name: user.display_name,
-                    email: user.email,
-                    profile_photo: user.profile_photo,
-                    timezone: user.timezone || 'Asia/Dhaka'
-                };
-
-                req.session.save(function() {
-                    res.redirect('/dashboard');
-                });
-            });
-        });
-        return;
-    }
-
-    // ===== SIGN UP MODE =====
-    if (!telegramId || !username || !firstName || !lastName || !email || !password) {
+    if (!telegramId || !username || !firstName || !lastName) {
         return res.render('index', {
             page: 'login',
-            error: 'All fields are required for sign up',
+            error: 'Please provide Telegram ID, Username, First Name and Last Name',
             success: null,
-            info: null,
-            loginMode: 'signup'
-        });
-    }
-
-    if (password.length < 6) {
-        return res.render('index', {
-            page: 'login',
-            error: 'Password must be at least 6 characters',
-            success: null,
-            info: null,
-            loginMode: 'signup'
+            info: null
         });
     }
 
@@ -437,59 +350,77 @@ app.post('/login', function(req, res) {
             page: 'login',
             error: 'Please enter a valid numeric Telegram ID',
             success: null,
-            info: null,
-            loginMode: 'signup'
+            info: null
         });
     }
 
-    db.get('SELECT * FROM users WHERE email = ?', [email], function(err, existingEmail) {
+    // Check if user exists by telegram_id
+    db.get('SELECT * FROM users WHERE telegram_id = ?', [cleanTelegramId], function(err, user) {
         if (err) {
             return res.render('index', {
                 page: 'login',
                 error: 'Database error. Please try again.',
                 success: null,
-                info: null,
-                loginMode: 'signup'
+                info: null
             });
         }
 
-        if (existingEmail) {
-            return res.render('index', {
-                page: 'login',
-                error: 'Email already registered. Please sign in.',
-                success: null,
-                info: null,
-                loginMode: 'signup'
-            });
-        }
+        if (user) {
+            // Update existing user
+            db.run(`UPDATE users SET 
+                    username = ?, 
+                    first_name = ?, 
+                    last_name = ?, 
+                    display_name = ?,
+                    email = COALESCE(?, email),
+                    timezone = ?,
+                    last_login = CURRENT_TIMESTAMP, 
+                    isOnline = 1 
+                    WHERE telegram_id = ?`,
+                [username, firstName, lastName, firstName + ' ' + lastName, email, timezone, cleanTelegramId],
+                function(err) {
+                    if (err) {
+                        return res.render('index', {
+                            page: 'login',
+                            error: 'Update failed. Please try again.',
+                            success: null,
+                            info: null
+                        });
+                    }
 
-        db.get('SELECT * FROM users WHERE username = ?', [username], function(err, existingUser) {
-            if (err) {
-                return res.render('index', {
-                    page: 'login',
-                    error: 'Database error. Please try again.',
-                    success: null,
-                    info: null,
-                    loginMode: 'signup'
+                    db.get('SELECT * FROM users WHERE telegram_id = ?', [cleanTelegramId], function(err, updatedUser) {
+                        if (err || !updatedUser) {
+                            return res.render('index', {
+                                page: 'login',
+                                error: 'User not found.',
+                                success: null,
+                                info: null
+                            });
+                        }
+
+                        req.session.user = {
+                            id: updatedUser.id,
+                            telegram_id: updatedUser.telegram_id,
+                            username: updatedUser.username,
+                            first_name: updatedUser.first_name,
+                            last_name: updatedUser.last_name,
+                            display_name: updatedUser.display_name,
+                            email: updatedUser.email,
+                            profile_photo: updatedUser.profile_photo,
+                            timezone: updatedUser.timezone || 'Asia/Dhaka'
+                        };
+
+                        req.session.save(function() {
+                            res.redirect('/dashboard');
+                        });
+                    });
                 });
-            }
-
-            if (existingUser) {
-                return res.render('index', {
-                    page: 'login',
-                    error: 'Username already taken. Please choose another.',
-                    success: null,
-                    info: null,
-                    loginMode: 'signup'
-                });
-            }
-
-            var hashedPassword = hashPassword(password);
-
+        } else {
+            // Create new user
             db.run(`INSERT INTO users 
-                    (telegram_id, username, first_name, last_name, display_name, email, password, timezone, isOnline, isValidated, last_login) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, 1, CURRENT_TIMESTAMP)`,
-                [cleanTelegramId, username, firstName, lastName, firstName + ' ' + lastName, email, hashedPassword, timezone],
+                    (telegram_id, username, first_name, last_name, display_name, email, timezone, isOnline, last_login) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, 1, CURRENT_TIMESTAMP)`,
+                [cleanTelegramId, username, firstName, lastName, firstName + ' ' + lastName, email, timezone],
                 function(err) {
                     if (err) {
                         console.error('Registration error:', err);
@@ -497,19 +428,17 @@ app.post('/login', function(req, res) {
                             page: 'login',
                             error: 'Registration failed. Please try again.',
                             success: null,
-                            info: null,
-                            loginMode: 'signup'
+                            info: null
                         });
                     }
 
-                    db.get('SELECT * FROM users WHERE email = ?', [email], function(err, newUser) {
+                    db.get('SELECT * FROM users WHERE telegram_id = ?', [cleanTelegramId], function(err, newUser) {
                         if (err || !newUser) {
                             return res.render('index', {
                                 page: 'login',
                                 error: 'Registration failed. Please try again.',
                                 success: null,
-                                info: null,
-                                loginMode: 'signup'
+                                info: null
                             });
                         }
 
@@ -530,7 +459,7 @@ app.post('/login', function(req, res) {
                         });
                     });
                 });
-        });
+        }
     });
 });
 
