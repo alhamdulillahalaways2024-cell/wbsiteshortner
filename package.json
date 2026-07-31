@@ -1,7 +1,7 @@
 {
   "name": "shortlink-pro",
   "version": "1.0.0",
-  "description": "This Person Is brand Shortlink",
+  "description": "This Person Is brand Shortlink - Premium URL Shortener",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -14,7 +14,7 @@
     "ejs": "^3.1.9",
     "axios": "^1.6.0",
     "qrcode": "^1.5.3",
-    "moment-timezone": "^0.5.43"
+    "bcryptjs": "^2.4.3"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
