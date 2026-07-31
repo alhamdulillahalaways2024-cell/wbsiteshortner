@@ -1,4 +1,4 @@
-// server.js - Complete Premium URL Shortener with Email/Password Auth
+// server.js - Complete Premium URL Shortener (FIXED)
 const express = require('express');
 const session = require('express-session');
 const sqlite3 = require('sqlite3').verbose();
@@ -7,7 +7,15 @@ const path = require('path');
 const fs = require('fs');
 const axios = require('axios');
 const QRCode = require('qrcode');
-const bcrypt = require('bcryptjs');
+
+// ===== USE SIMPLE HASHING INSTEAD OF BCRYPT (to avoid installation issues) =====
+function hashPassword(password) {
+    return crypto.createHash('sha256').update(password + 'shortlink_salt_2024').digest('hex');
+}
+
+function comparePassword(password, hashed) {
+    return hashPassword(password) === hashed;
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -92,7 +100,7 @@ const COUNTRIES = {
 };
 
 // ============================================================
-// CREATE TABLES - UPDATED WITH EMAIL/PASSWORD
+// CREATE TABLES - WITH PASSWORD COLUMN
 // ============================================================
 db.serialize(function() {
     // Users table with email and password
@@ -175,7 +183,6 @@ app.use(function(req, res, next) {
     res.locals.onlineUsers = 0;
     res.locals.onlineUserList = [];
     
-    // Check if login mode is set (signup or signin)
     if (req.query.mode === 'signin') {
         res.locals.loginMode = 'signin';
     } else {
@@ -319,7 +326,7 @@ app.get('/login', function(req, res) {
 });
 
 // ============================================================
-// SIGN UP / SIGN IN WITH EMAIL & PASSWORD
+// SIGN UP / SIGN IN
 // ============================================================
 app.post('/login', function(req, res) {
     var telegramId = req.body.telegramId;
@@ -333,7 +340,6 @@ app.post('/login', function(req, res) {
     
     // ===== SIGN IN MODE =====
     if (loginMode === 'signin') {
-        // Sign in with email + password
         if (!email || !password) {
             return res.render('index', {
                 page: 'login',
@@ -344,7 +350,6 @@ app.post('/login', function(req, res) {
             });
         }
 
-        // Find user by email
         db.get('SELECT * FROM users WHERE email = ?', [email], function(err, user) {
             if (err || !user) {
                 return res.render('index', {
@@ -356,45 +361,43 @@ app.post('/login', function(req, res) {
                 });
             }
 
-            // Verify password
-            bcrypt.compare(password, user.password, function(err, isMatch) {
-                if (err || !isMatch) {
+            // Compare password using simple hash
+            var hashedInput = hashPassword(password);
+            if (hashedInput !== user.password) {
+                return res.render('index', {
+                    page: 'login',
+                    error: 'Invalid email or password',
+                    success: null,
+                    info: null,
+                    loginMode: 'signin'
+                });
+            }
+
+            db.run('UPDATE users SET isOnline = 1, last_login = CURRENT_TIMESTAMP WHERE id = ?', [user.id], function(err) {
+                if (err) {
                     return res.render('index', {
                         page: 'login',
-                        error: 'Invalid email or password',
+                        error: 'Login failed. Please try again.',
                         success: null,
                         info: null,
                         loginMode: 'signin'
                     });
                 }
 
-                // Update login status
-                db.run('UPDATE users SET isOnline = 1, last_login = CURRENT_TIMESTAMP WHERE id = ?', [user.id], function(err) {
-                    if (err) {
-                        return res.render('index', {
-                            page: 'login',
-                            error: 'Login failed. Please try again.',
-                            success: null,
-                            info: null,
-                            loginMode: 'signin'
-                        });
-                    }
+                req.session.user = {
+                    id: user.id,
+                    telegram_id: user.telegram_id,
+                    username: user.username,
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    display_name: user.display_name,
+                    email: user.email,
+                    profile_photo: user.profile_photo,
+                    timezone: user.timezone || 'Asia/Dhaka'
+                };
 
-                    req.session.user = {
-                        id: user.id,
-                        telegram_id: user.telegram_id,
-                        username: user.username,
-                        first_name: user.first_name,
-                        last_name: user.last_name,
-                        display_name: user.display_name,
-                        email: user.email,
-                        profile_photo: user.profile_photo,
-                        timezone: user.timezone || 'Asia/Dhaka'
-                    };
-
-                    req.session.save(function() {
-                        res.redirect('/dashboard');
-                    });
+                req.session.save(function() {
+                    res.redirect('/dashboard');
                 });
             });
         });
@@ -402,7 +405,6 @@ app.post('/login', function(req, res) {
     }
 
     // ===== SIGN UP MODE =====
-    // Validate required fields
     if (!telegramId || !username || !firstName || !lastName || !email || !password) {
         return res.render('index', {
             page: 'login',
@@ -434,7 +436,7 @@ app.post('/login', function(req, res) {
         });
     }
 
-    // Check if email already exists
+    // Check if email exists
     db.get('SELECT * FROM users WHERE email = ?', [email], function(err, existingEmail) {
         if (err) {
             return res.render('index', {
@@ -456,7 +458,7 @@ app.post('/login', function(req, res) {
             });
         }
 
-        // Check if username already exists
+        // Check if username exists
         db.get('SELECT * FROM users WHERE username = ?', [username], function(err, existingUser) {
             if (err) {
                 return res.render('index', {
@@ -479,25 +481,27 @@ app.post('/login', function(req, res) {
             }
 
             // Hash password
-            bcrypt.hash(password, 10, function(err, hashedPassword) {
-                if (err) {
-                    return res.render('index', {
-                        page: 'login',
-                        error: 'Registration failed. Please try again.',
-                        success: null,
-                        info: null,
-                        loginMode: 'signup'
-                    });
-                }
+            var hashedPassword = hashPassword(password);
 
-                // Create new user
-                db.run(`INSERT INTO users 
-                        (telegram_id, username, first_name, last_name, display_name, email, password, timezone, isOnline, isValidated, last_login) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, 1, CURRENT_TIMESTAMP)`,
-                    [cleanTelegramId, username, firstName, lastName, firstName + ' ' + lastName, email, hashedPassword, timezone],
-                    function(err) {
-                        if (err) {
-                            console.error('Registration error:', err);
+            // Create new user
+            db.run(`INSERT INTO users 
+                    (telegram_id, username, first_name, last_name, display_name, email, password, timezone, isOnline, isValidated, last_login) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, 1, CURRENT_TIMESTAMP)`,
+                [cleanTelegramId, username, firstName, lastName, firstName + ' ' + lastName, email, hashedPassword, timezone],
+                function(err) {
+                    if (err) {
+                        console.error('Registration error:', err);
+                        return res.render('index', {
+                            page: 'login',
+                            error: 'Registration failed. Please try again.',
+                            success: null,
+                            info: null,
+                            loginMode: 'signup'
+                        });
+                    }
+
+                    db.get('SELECT * FROM users WHERE email = ?', [email], function(err, newUser) {
+                        if (err || !newUser) {
                             return res.render('index', {
                                 page: 'login',
                                 error: 'Registration failed. Please try again.',
@@ -507,36 +511,23 @@ app.post('/login', function(req, res) {
                             });
                         }
 
-                        // Get new user
-                        db.get('SELECT * FROM users WHERE email = ?', [email], function(err, newUser) {
-                            if (err || !newUser) {
-                                return res.render('index', {
-                                    page: 'login',
-                                    error: 'Registration failed. Please try again.',
-                                    success: null,
-                                    info: null,
-                                    loginMode: 'signup'
-                                });
-                            }
+                        req.session.user = {
+                            id: newUser.id,
+                            telegram_id: newUser.telegram_id,
+                            username: newUser.username,
+                            first_name: newUser.first_name,
+                            last_name: newUser.last_name,
+                            display_name: newUser.display_name,
+                            email: newUser.email,
+                            profile_photo: newUser.profile_photo,
+                            timezone: newUser.timezone || 'Asia/Dhaka'
+                        };
 
-                            req.session.user = {
-                                id: newUser.id,
-                                telegram_id: newUser.telegram_id,
-                                username: newUser.username,
-                                first_name: newUser.first_name,
-                                last_name: newUser.last_name,
-                                display_name: newUser.display_name,
-                                email: newUser.email,
-                                profile_photo: newUser.profile_photo,
-                                timezone: newUser.timezone || 'Asia/Dhaka'
-                            };
-
-                            req.session.save(function() {
-                                res.redirect('/dashboard');
-                            });
+                        req.session.save(function() {
+                            res.redirect('/dashboard');
                         });
                     });
-            });
+                });
         });
     });
 });
@@ -724,7 +715,6 @@ app.get('/dashboard', function(req, res) {
                 [links ? links.length : 0, totalClicks, req.session.user.id]);
 
             getOnlineUsers(function(count, users) {
-                // Get country stats
                 db.all(`SELECT country, countryCode, COUNT(*) as count 
                         FROM click_logs 
                         WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
@@ -738,7 +728,6 @@ app.get('/dashboard', function(req, res) {
                         
                         if (err) countryStats = [];
 
-                        // Get device stats
                         db.all(`SELECT device, browser, os, COUNT(*) as count 
                                 FROM click_logs 
                                 WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
@@ -750,7 +739,6 @@ app.get('/dashboard', function(req, res) {
                                 
                                 if (err) deviceStats = [];
 
-                                // Get bot stats
                                 db.get(`SELECT COUNT(*) as count FROM click_logs 
                                         WHERE linkId IN (SELECT id FROM links WHERE userId = ?) 
                                         AND isBot = 1`,
@@ -765,7 +753,6 @@ app.get('/dashboard', function(req, res) {
                                                 var total = realClicks + botClicks;
                                                 var clickRate = total > 0 ? Math.round((realClicks / total) * 100) : 100;
 
-                                                // Get weekly data
                                                 var weekData = [0,0,0,0,0,0,0];
                                                 var weekDays = [];
                                                 for (var d = 6; d >= 0; d--) {
