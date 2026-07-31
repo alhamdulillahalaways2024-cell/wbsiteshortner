@@ -43,7 +43,7 @@
     
     <style>
         /* ============================================================ */
-        /* PREMIUM DESIGN SYSTEM */
+        /* PREMIUM CYBERPUNK DESIGN SYSTEM */
         /* ============================================================ */
         :root {
             --primary: #6C63FF;
@@ -374,7 +374,7 @@
 
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.6); }
+            50% { opacity: 0.4; transform: scale(0.7); }
         }
 
         /* ============================================================ */
@@ -1553,7 +1553,7 @@
         /* LOGIN BOX */
         /* ============================================================ */
         .login-box {
-            max-width: 450px;
+            max-width: 500px;
             margin: 3rem auto;
         }
 
@@ -1646,6 +1646,10 @@
             .modal-content {
                 padding: 1.5rem;
                 margin: 1rem;
+            }
+            .login-box {
+                max-width: 95%;
+                margin: 2rem auto;
             }
         }
 
@@ -2017,9 +2021,9 @@
 
         <!-- ===== ALERTS ===== -->
         <% 
-            var queryError = typeof error !== 'undefined' ? error : null;
-            var querySuccess = typeof success !== 'undefined' ? success : null;
-            var queryInfo = typeof info !== 'undefined' ? info : null;
+            const queryError = typeof error !== 'undefined' ? error : null;
+            const querySuccess = typeof success !== 'undefined' ? success : null;
+            const queryInfo = typeof info !== 'undefined' ? info : null;
         %>
         <% if (queryError) { %>
             <div class="alert alert-danger"><%= queryError %></div>
@@ -2072,7 +2076,7 @@
                                    placeholder="your@email.com">
                         </div>
                         <div class="form-group">
-                            <label for="timezone">🌍 Your Timezone</label>
+                            <label for="timezone">Your Timezone</label>
                             <select class="form-control" id="timezone" name="timezone">
                                 <option value="Asia/Dhaka">🇧🇩 Bangladesh (Asia/Dhaka)</option>
                                 <option value="Asia/Kolkata">🇮🇳 India (Asia/Kolkata)</option>
@@ -2194,7 +2198,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="password">🔒 Password Protection (Optional)</label>
+                            <label for="password">Password Protection (Optional)</label>
                             <input type="password" class="form-control" id="password" name="password"
                                    placeholder="Set a password for this link">
                         </div>
@@ -2336,7 +2340,7 @@
                                 <span class="value"><%= typeof monthClicks !== 'undefined' ? monthClicks : 0 %></span>
                             </div>
                             <div class="stat-item">
-                                <span class="label">🤖 Bot Clicks</span>
+                                <span class="label">🤖 Bot Clicks (Blocked)</span>
                                 <span class="value danger"><%= typeof botClicks !== 'undefined' ? botClicks : 0 %></span>
                             </div>
                             <div class="stat-item">
@@ -2424,7 +2428,7 @@
                 <div class="glass-card" style="margin-bottom: 2rem;">
                     <h3 style="margin-bottom: 0.5rem; font-weight: 700;">🌍 Visitor Analytics</h3>
                     <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
-                        See where your visitors are coming from and what devices they use
+                        See where your visitors are coming from, what devices they use, and bot protection status
                     </p>
                     
                     <div class="stats-grid-2col">
@@ -2433,12 +2437,12 @@
                             <h4 style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.5rem;">🏳️ Top Countries</h4>
                             <div class="country-grid">
                                 <% if (typeof countryStats !== 'undefined' && countryStats && countryStats.length > 0) { %>
-                                    <% var maxCount = countryStats[0] ? countryStats[0].count : 1; %>
+                                    <% const maxCount = countryStats[0] ? countryStats[0].count : 1; %>
                                     <% countryStats.forEach(function(country) { 
-                                        var percentage = Math.round((country.count / maxCount) * 100);
-                                        var countryInfo = typeof countries !== 'undefined' && countries[country.countryCode] ? countries[country.countryCode] : null;
-                                        var flag = countryInfo ? countryInfo.flag : '🌍';
-                                        var name = countryInfo ? countryInfo.name : (country.country || 'Unknown');
+                                        const percentage = Math.round((country.count / maxCount) * 100);
+                                        const countryInfo = typeof countries !== 'undefined' && countries[country.countryCode] ? countries[country.countryCode] : null;
+                                        const flag = countryInfo ? countryInfo.flag : '🌍';
+                                        const name = countryInfo ? countryInfo.name : (country.country || 'Unknown');
                                     %>
                                         <div class="country-item">
                                             <span class="country-name">
@@ -2461,9 +2465,9 @@
                             </div>
                         </div>
                         
-                        <!-- Devices -->
+                        <!-- Devices & Bot Protection -->
                         <div>
-                            <h4 style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.5rem;">📱 Devices & Browsers</h4>
+                            <h4 style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.5rem;">📱 Devices & Bot Protection</h4>
                             <div style="display: flex; flex-direction: column; gap: 0.4rem;">
                                 <% if (typeof deviceStats !== 'undefined' && deviceStats && deviceStats.length > 0) { %>
                                     <% deviceStats.forEach(function(device) { %>
@@ -2483,6 +2487,22 @@
                                         No device data yet
                                     </p>
                                 <% } %>
+                                
+                                <!-- Bot Protection Status -->
+                                <div style="margin-top: 0.5rem; padding: 0.5rem 0.8rem; background: var(--glass); border-radius: 8px; border: 1px solid var(--glass-border);">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="color: var(--text-muted); font-size: 0.8rem;">🤖 Bot Protection</span>
+                                        <span style="color: var(--success); font-weight: 600; font-size: 0.8rem;">✅ Active</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.2rem;">
+                                        <span style="color: var(--text-muted); font-size: 0.75rem;">Bot Clicks Blocked</span>
+                                        <span style="color: var(--danger); font-weight: 600; font-size: 0.8rem;"><%= typeof botClicks !== 'undefined' ? botClicks : 0 %></span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.2rem;">
+                                        <span style="color: var(--text-muted); font-size: 0.75rem;">Real Clicks</span>
+                                        <span style="color: var(--success); font-weight: 600; font-size: 0.8rem;"><%= typeof realClicks !== 'undefined' ? realClicks : 0 %></span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2520,15 +2540,15 @@
 
                 <% if (typeof links !== 'undefined' && links && links.length > 0) { %>
                     <% links.forEach(function(link) { 
-                        var linkUrl = link.shortUrl || '';
-                        var linkId = link.id || link._id || '';
-                        var linkCode = link.shortCode || '';
-                        var linkOriginal = link.originalUrl || '';
-                        var linkClicks = link.clicks || 0;
-                        var linkCreated = link.createdAt || '';
-                        var linkTitle = link.title || '';
-                        var isExpired = link.isExpired || false;
-                        var isActive = link.isActive !== undefined ? link.isActive : true;
+                        const linkUrl = link.shortUrl || '';
+                        const linkId = link.id || link._id || '';
+                        const linkCode = link.shortCode || '';
+                        const linkOriginal = link.originalUrl || '';
+                        const linkClicks = link.clicks || 0;
+                        const linkCreated = link.createdAt || '';
+                        const linkTitle = link.title || '';
+                        const isExpired = link.isExpired || false;
+                        const isActive = link.isActive !== undefined ? link.isActive : true;
                     %>
                         <div class="link-card">
                             <div class="link-top">
@@ -2629,12 +2649,11 @@
         // ANIMATED PARTICLES
         // ============================================================
         (function() {
-            var canvas = document.getElementById('particles-canvas');
-            if (!canvas) return;
-            var ctx = canvas.getContext('2d');
-            var particles = [];
-            var mouseX = 0;
-            var mouseY = 0;
+            const canvas = document.getElementById('particles-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let mouseX = 0;
+            let mouseY = 0;
 
             function resizeCanvas() {
                 canvas.width = window.innerWidth;
@@ -2643,60 +2662,62 @@
             resizeCanvas();
             window.addEventListener('resize', resizeCanvas);
 
-            function Particle() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
-                this.speedX = (Math.random() - 0.5) * 0.5;
-                this.speedY = (Math.random() - 0.5) * 0.5;
-                this.opacity = Math.random() * 0.5 + 0.2;
-                this.color = 'rgba(108, 99, 255, ' + this.opacity + ')';
-            }
-
-            Particle.prototype.update = function() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-
-                var dx = mouseX - this.x;
-                var dy = mouseY - this.y;
-                var dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 150) {
-                    var force = (150 - dist) / 150 * 0.02;
-                    this.x -= dx * force;
-                    this.y -= dy * force;
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 2 + 0.5;
+                    this.speedX = (Math.random() - 0.5) * 0.5;
+                    this.speedY = (Math.random() - 0.5) * 0.5;
+                    this.opacity = Math.random() * 0.5 + 0.2;
+                    this.color = `rgba(108, 99, 255, ${this.opacity})`;
                 }
 
-                if (this.x > canvas.width) this.x = 0;
-                if (this.x < 0) this.x = canvas.width;
-                if (this.y > canvas.height) this.y = 0;
-                if (this.y < 0) this.y = canvas.height;
-            };
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
 
-            Particle.prototype.draw = function() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
-                ctx.fill();
-            };
+                    const dx = mouseX - this.x;
+                    const dy = mouseY - this.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 150) {
+                        const force = (150 - dist) / 150 * 0.02;
+                        this.x -= dx * force;
+                        this.y -= dy * force;
+                    }
+
+                    if (this.x > canvas.width) this.x = 0;
+                    if (this.x < 0) this.x = canvas.width;
+                    if (this.y > canvas.height) this.y = 0;
+                    if (this.y < 0) this.y = canvas.height;
+                }
+
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                }
+            }
 
             function initParticles() {
-                var count = Math.min(100, Math.floor((canvas.width * canvas.height) / 10000));
+                const count = Math.min(100, Math.floor((canvas.width * canvas.height) / 10000));
                 particles = [];
-                for (var i = 0; i < count; i++) {
+                for (let i = 0; i < count; i++) {
                     particles.push(new Particle());
                 }
             }
             initParticles();
 
             function drawConnections() {
-                for (var i = 0; i < particles.length; i++) {
-                    for (var j = i + 1; j < particles.length; j++) {
-                        var dx = particles[i].x - particles[j].x;
-                        var dy = particles[i].y - particles[j].y;
-                        var dist = Math.sqrt(dx * dx + dy * dy);
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
                         if (dist < 120) {
                             ctx.beginPath();
-                            ctx.strokeStyle = 'rgba(108, 99, 255, ' + (0.08 * (1 - dist / 120)) + ')';
+                            ctx.strokeStyle = `rgba(108, 99, 255, ${0.08 * (1 - dist / 120)})`;
                             ctx.lineWidth = 0.5;
                             ctx.moveTo(particles[i].x, particles[i].y);
                             ctx.lineTo(particles[j].x, particles[j].y);
@@ -2708,21 +2729,21 @@
 
             function animateParticles() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                for (var i = 0; i < particles.length; i++) {
-                    particles[i].update();
-                    particles[i].draw();
-                }
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
                 drawConnections();
                 requestAnimationFrame(animateParticles);
             }
             animateParticles();
 
-            document.addEventListener('mousemove', function(e) {
+            document.addEventListener('mousemove', (e) => {
                 mouseX = e.clientX;
                 mouseY = e.clientY;
             });
 
-            window.addEventListener('resize', function() {
+            window.addEventListener('resize', () => {
                 resizeCanvas();
                 initParticles();
             });
@@ -2732,17 +2753,17 @@
         // DROPDOWN TOGGLE
         // ============================================================
         function toggleDropdown() {
-            var menu = document.getElementById('dropdownMenu');
-            var chevron = document.getElementById('dropdownChevron');
-            if (menu) menu.classList.toggle('open');
-            if (chevron) chevron.classList.toggle('open');
+            const menu = document.getElementById('dropdownMenu');
+            const chevron = document.getElementById('dropdownChevron');
+            menu.classList.toggle('open');
+            chevron.classList.toggle('open');
         }
 
         document.addEventListener('click', function(event) {
-            var wrapper = document.querySelector('.user-menu-wrapper');
+            const wrapper = document.querySelector('.user-menu-wrapper');
             if (wrapper && !wrapper.contains(event.target)) {
-                var menu = document.getElementById('dropdownMenu');
-                var chevron = document.getElementById('dropdownChevron');
+                const menu = document.getElementById('dropdownMenu');
+                const chevron = document.getElementById('dropdownChevron');
                 if (menu) menu.classList.remove('open');
                 if (chevron) chevron.classList.remove('open');
             }
@@ -2752,42 +2773,35 @@
         // PROFILE MODAL
         // ============================================================
         function openProfileModal() {
-            var modal = document.getElementById('profileModal');
-            if (modal) {
-                modal.classList.add('active');
-                document.body.style.overflow = 'hidden';
-                loadProfileData();
-                var menu = document.getElementById('dropdownMenu');
-                var chevron = document.getElementById('dropdownChevron');
-                if (menu) menu.classList.remove('open');
-                if (chevron) chevron.classList.remove('open');
-            }
+            const modal = document.getElementById('profileModal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            loadProfileData();
+            const menu = document.getElementById('dropdownMenu');
+            const chevron = document.getElementById('dropdownChevron');
+            if (menu) menu.classList.remove('open');
+            if (chevron) chevron.classList.remove('open');
         }
 
         function closeProfileModal() {
-            var modal = document.getElementById('profileModal');
-            if (modal) {
-                modal.classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
+            const modal = document.getElementById('profileModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
         }
 
-        var profileModal = document.getElementById('profileModal');
-        if (profileModal) {
-            profileModal.addEventListener('click', function(e) {
-                if (e.target === this) {
-                    closeProfileModal();
-                }
-            });
-        }
+        document.getElementById('profileModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeProfileModal();
+            }
+        });
 
         // ============================================================
         // LOAD PROFILE DATA
         // ============================================================
         async function loadProfileData() {
             try {
-                var response = await fetch('/api/user-data');
-                var data = await response.json();
+                const response = await fetch('/api/user-data');
+                const data = await response.json();
                 
                 if (data.error) {
                     showToast('Error loading profile: ' + data.error, 'error');
@@ -2804,91 +2818,122 @@
         // RENDER PROFILE
         // ============================================================
         function renderProfile(data) {
-            var container = document.getElementById('profileContent');
-            if (!container) return;
+            const container = document.getElementById('profileContent');
             
-            var avatarLetter = (data.display_name || data.first_name || data.username || 'U').charAt(0).toUpperCase();
-            var initials = (data.first_name ? data.first_name.charAt(0) : '') + (data.last_name ? data.last_name.charAt(0) : '');
-            var completion = data.completion || 0;
+            const avatarLetter = (data.display_name || data.first_name || data.username || 'U').charAt(0).toUpperCase();
+            const initials = (data.first_name ? data.first_name.charAt(0) : '') + (data.last_name ? data.last_name.charAt(0) : '');
             
-            container.innerHTML = 
-                '<div class="profile-avatar-section">' +
-                    '<div class="profile-avatar">' +
-                        (data.profile_photo ? '<img src="' + data.profile_photo + '" alt="Profile">' : (initials || avatarLetter)) +
-                        '<div class="avatar-badge"><i class="fas fa-check"></i></div>' +
-                    '</div>' +
-                    '<div class="profile-display-name">' + (data.display_name || data.first_name || data.username || 'User') + '</div>' +
-                    '<div class="profile-username">@' + (data.username || 'username') + '</div>' +
-                '</div>' +
-                '<div class="completion-section">' +
-                    '<div class="completion-header"><span>Profile Completion</span><span>' + completion + '%</span></div>' +
-                    '<div class="completion-bar"><div class="completion-fill" style="width: ' + completion + '%;"></div></div>' +
-                '</div>' +
-                '<div class="profile-field">' +
-                    '<label><i class="fas fa-id-card" style="color: var(--primary); margin-right: 0.3rem;"></i> Full Name</label>' +
-                    '<div class="field-value editable" id="nameDisplay" onclick="editField(\'name\')">' + (data.first_name || '') + ' ' + (data.last_name || '') + '<span class="edit-icon"><i class="fas fa-pen"></i></span></div>' +
-                    '<div class="field-value" id="nameEdit" style="display: none;">' +
-                        '<input type="text" id="editFirstName" value="' + (data.first_name || '') + '" placeholder="First Name">' +
-                        '<input type="text" id="editLastName" value="' + (data.last_name || '') + '" placeholder="Last Name" style="margin-top: 0.3rem;">' +
-                        '<div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">' +
-                            '<button class="btn btn-primary btn-sm" onclick="saveName()">Save</button>' +
-                            '<button class="btn btn-secondary btn-sm" onclick="cancelEdit(\'name\')">Cancel</button>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
-                '<div class="profile-field">' +
-                    '<label><i class="fas fa-user" style="color: var(--primary); margin-right: 0.3rem;"></i> Display Name</label>' +
-                    '<div class="field-value editable" id="displayNameDisplay" onclick="editField(\'displayName\')">' + (data.display_name || data.first_name || data.username || 'User') + '<span class="edit-icon"><i class="fas fa-pen"></i></span></div>' +
-                    '<div class="field-value" id="displayNameEdit" style="display: none;">' +
-                        '<input type="text" id="editDisplayName" value="' + (data.display_name || '') + '" placeholder="Display Name">' +
-                        '<div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">' +
-                            '<button class="btn btn-primary btn-sm" onclick="saveDisplayName()">Save</button>' +
-                            '<button class="btn btn-secondary btn-sm" onclick="cancelEdit(\'displayName\')">Cancel</button>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
-                '<div class="profile-field">' +
-                    '<label><i class="fas fa-at" style="color: var(--primary); margin-right: 0.3rem;"></i> Email</label>' +
-                    '<div class="field-value editable" id="emailDisplay" onclick="editField(\'email\')">' + (data.email || 'Not set') + '<span class="edit-icon"><i class="fas fa-pen"></i></span></div>' +
-                    '<div class="field-value" id="emailEdit" style="display: none;">' +
-                        '<input type="email" id="editEmail" value="' + (data.email || '') + '" placeholder="Enter your email">' +
-                        '<div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">' +
-                            '<button class="btn btn-primary btn-sm" onclick="saveEmail()">Save</button>' +
-                            '<button class="btn btn-secondary btn-sm" onclick="cancelEdit(\'email\')">Cancel</button>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
-                '<div class="profile-field">' +
-                    '<label><i class="fab fa-telegram" style="color: var(--telegram); margin-right: 0.3rem;"></i> Telegram ID</label>' +
-                    '<div class="field-value">' + (data.telegram_id || 'N/A') + '</div>' +
-                '</div>' +
-                '<div class="profile-field">' +
-                    '<label><i class="fas fa-calendar-plus" style="color: var(--accent); margin-right: 0.3rem;"></i> Joined</label>' +
-                    '<div class="field-value">' + (data.created_at ? new Date(data.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A') + '</div>' +
-                '</div>' +
-                '<div class="profile-field">' +
-                    '<label><i class="fas fa-clock" style="color: var(--secondary); margin-right: 0.3rem;"></i> Last Login</label>' +
-                    '<div class="field-value">' + (data.last_login ? new Date(data.last_login).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A') + '</div>' +
-                '</div>' +
-                '<div class="profile-field">' +
-                    '<label><i class="fas fa-circle" style="color: ' + (data.account_status === 'active' ? 'var(--success)' : 'var(--danger)') + '; margin-right: 0.3rem;"></i> Account Status</label>' +
-                    '<div class="field-value" style="text-transform: capitalize;">' + (data.account_status || 'active') + '</div>' +
-                '</div>' +
-                '<div class="profile-field">' +
-                    '<label><i class="fas fa-link" style="color: var(--warning); margin-right: 0.3rem;"></i> Total Links</label>' +
-                    '<div class="field-value">' + (data.totalLinks || 0) + '</div>' +
-                '</div>' +
-                '<div class="profile-field">' +
-                    '<label><i class="fas fa-mouse-pointer" style="color: var(--success); margin-right: 0.3rem;"></i> Total Clicks</label>' +
-                    '<div class="field-value">' + (data.totalClicks || 0) + '</div>' +
-                '</div>' +
-                '<div class="profile-field">' +
-                    '<label><i class="fas fa-globe" style="color: var(--accent); margin-right: 0.3rem;"></i> Timezone</label>' +
-                    '<div class="field-value">' + (data.timezone || 'Asia/Dhaka') + '</div>' +
-                '</div>' +
-                '<div class="modal-actions">' +
-                    '<button class="btn btn-secondary" onclick="closeProfileModal()"><i class="fas fa-times"></i> Close</button>' +
-                '</div>';
+            const completion = data.completion || 0;
+            
+            container.innerHTML = `
+                <div class="profile-avatar-section">
+                    <div class="profile-avatar">
+                        ${data.profile_photo ? `<img src="${data.profile_photo}" alt="Profile">` : initials || avatarLetter}
+                        <div class="avatar-badge">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    </div>
+                    <div class="profile-display-name">${data.display_name || data.first_name || data.username || 'User'}</div>
+                    <div class="profile-username">@${data.username || 'username'}</div>
+                </div>
+
+                <div class="completion-section">
+                    <div class="completion-header">
+                        <span>Profile Completion</span>
+                        <span>${completion}%</span>
+                    </div>
+                    <div class="completion-bar">
+                        <div class="completion-fill" style="width: ${completion}%;"></div>
+                    </div>
+                </div>
+
+                <div class="profile-field">
+                    <label><i class="fas fa-id-card" style="color: var(--primary); margin-right: 0.3rem;"></i> Full Name</label>
+                    <div class="field-value editable" id="nameDisplay" onclick="editField('name')">
+                        ${data.first_name || ''} ${data.last_name || ''}
+                        <span class="edit-icon"><i class="fas fa-pen"></i></span>
+                    </div>
+                    <div class="field-value" id="nameEdit" style="display: none;">
+                        <input type="text" id="editFirstName" value="${data.first_name || ''}" placeholder="First Name">
+                        <input type="text" id="editLastName" value="${data.last_name || ''}" placeholder="Last Name" style="margin-top: 0.3rem;">
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">
+                            <button class="btn btn-primary btn-sm" onclick="saveName()">Save</button>
+                            <button class="btn btn-secondary btn-sm" onclick="cancelEdit('name')">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-field">
+                    <label><i class="fas fa-user" style="color: var(--primary); margin-right: 0.3rem;"></i> Display Name</label>
+                    <div class="field-value editable" id="displayNameDisplay" onclick="editField('displayName')">
+                        ${data.display_name || data.first_name || data.username || 'User'}
+                        <span class="edit-icon"><i class="fas fa-pen"></i></span>
+                    </div>
+                    <div class="field-value" id="displayNameEdit" style="display: none;">
+                        <input type="text" id="editDisplayName" value="${data.display_name || ''}" placeholder="Display Name">
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">
+                            <button class="btn btn-primary btn-sm" onclick="saveDisplayName()">Save</button>
+                            <button class="btn btn-secondary btn-sm" onclick="cancelEdit('displayName')">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-field">
+                    <label><i class="fas fa-at" style="color: var(--primary); margin-right: 0.3rem;"></i> Email</label>
+                    <div class="field-value editable" id="emailDisplay" onclick="editField('email')">
+                        ${data.email || 'Not set'}
+                        <span class="edit-icon"><i class="fas fa-pen"></i></span>
+                    </div>
+                    <div class="field-value" id="emailEdit" style="display: none;">
+                        <input type="email" id="editEmail" value="${data.email || ''}" placeholder="Enter your email">
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">
+                            <button class="btn btn-primary btn-sm" onclick="saveEmail()">Save</button>
+                            <button class="btn btn-secondary btn-sm" onclick="cancelEdit('email')">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-field">
+                    <label><i class="fab fa-telegram" style="color: var(--telegram); margin-right: 0.3rem;"></i> Telegram ID</label>
+                    <div class="field-value">${data.telegram_id || 'N/A'}</div>
+                </div>
+
+                <div class="profile-field">
+                    <label><i class="fas fa-calendar-plus" style="color: var(--accent); margin-right: 0.3rem;"></i> Joined</label>
+                    <div class="field-value">${data.created_at ? new Date(data.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</div>
+                </div>
+
+                <div class="profile-field">
+                    <label><i class="fas fa-clock" style="color: var(--secondary); margin-right: 0.3rem;"></i> Last Login</label>
+                    <div class="field-value">${data.last_login ? new Date(data.last_login).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}</div>
+                </div>
+
+                <div class="profile-field">
+                    <label><i class="fas fa-circle" style="color: ${data.account_status === 'active' ? 'var(--success)' : 'var(--danger)'}; margin-right: 0.3rem;"></i> Account Status</label>
+                    <div class="field-value" style="text-transform: capitalize;">${data.account_status || 'active'}</div>
+                </div>
+
+                <div class="profile-field">
+                    <label><i class="fas fa-link" style="color: var(--warning); margin-right: 0.3rem;"></i> Total Links</label>
+                    <div class="field-value">${data.totalLinks || 0}</div>
+                </div>
+
+                <div class="profile-field">
+                    <label><i class="fas fa-mouse-pointer" style="color: var(--success); margin-right: 0.3rem;"></i> Total Clicks</label>
+                    <div class="field-value">${data.totalClicks || 0}</div>
+                </div>
+
+                <div class="profile-field">
+                    <label><i class="fas fa-globe" style="color: var(--accent); margin-right: 0.3rem;"></i> Timezone</label>
+                    <div class="field-value">${data.timezone || 'Asia/Dhaka'}</div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="closeProfileModal()">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            `;
         }
 
         // ============================================================
@@ -2896,39 +2941,27 @@
         // ============================================================
         function editField(field) {
             if (field === 'name') {
-                var nameDisplay = document.getElementById('nameDisplay');
-                var nameEdit = document.getElementById('nameEdit');
-                if (nameDisplay) nameDisplay.style.display = 'none';
-                if (nameEdit) nameEdit.style.display = 'block';
+                document.getElementById('nameDisplay').style.display = 'none';
+                document.getElementById('nameEdit').style.display = 'block';
             } else if (field === 'displayName') {
-                var displayNameDisplay = document.getElementById('displayNameDisplay');
-                var displayNameEdit = document.getElementById('displayNameEdit');
-                if (displayNameDisplay) displayNameDisplay.style.display = 'none';
-                if (displayNameEdit) displayNameEdit.style.display = 'block';
+                document.getElementById('displayNameDisplay').style.display = 'none';
+                document.getElementById('displayNameEdit').style.display = 'block';
             } else if (field === 'email') {
-                var emailDisplay = document.getElementById('emailDisplay');
-                var emailEdit = document.getElementById('emailEdit');
-                if (emailDisplay) emailDisplay.style.display = 'none';
-                if (emailEdit) emailEdit.style.display = 'block';
+                document.getElementById('emailDisplay').style.display = 'none';
+                document.getElementById('emailEdit').style.display = 'block';
             }
         }
 
         function cancelEdit(field) {
             if (field === 'name') {
-                var nameDisplay = document.getElementById('nameDisplay');
-                var nameEdit = document.getElementById('nameEdit');
-                if (nameDisplay) nameDisplay.style.display = 'block';
-                if (nameEdit) nameEdit.style.display = 'none';
+                document.getElementById('nameDisplay').style.display = 'block';
+                document.getElementById('nameEdit').style.display = 'none';
             } else if (field === 'displayName') {
-                var displayNameDisplay = document.getElementById('displayNameDisplay');
-                var displayNameEdit = document.getElementById('displayNameEdit');
-                if (displayNameDisplay) displayNameDisplay.style.display = 'block';
-                if (displayNameEdit) displayNameEdit.style.display = 'none';
+                document.getElementById('displayNameDisplay').style.display = 'block';
+                document.getElementById('displayNameEdit').style.display = 'none';
             } else if (field === 'email') {
-                var emailDisplay = document.getElementById('emailDisplay');
-                var emailEdit = document.getElementById('emailEdit');
-                if (emailDisplay) emailDisplay.style.display = 'block';
-                if (emailEdit) emailEdit.style.display = 'none';
+                document.getElementById('emailDisplay').style.display = 'block';
+                document.getElementById('emailEdit').style.display = 'none';
             }
         }
 
@@ -2936,12 +2969,8 @@
         // SAVE FUNCTIONS
         // ============================================================
         async function saveName() {
-            var firstNameInput = document.getElementById('editFirstName');
-            var lastNameInput = document.getElementById('editLastName');
-            if (!firstNameInput || !lastNameInput) return;
-            
-            var firstName = firstNameInput.value.trim();
-            var lastName = lastNameInput.value.trim();
+            const firstName = document.getElementById('editFirstName').value.trim();
+            const lastName = document.getElementById('editLastName').value.trim();
             
             if (!firstName) {
                 showToast('First name is required', 'error');
@@ -2949,23 +2978,20 @@
             }
 
             try {
-                var response = await fetch('/api/update-profile', {
+                const response = await fetch('/api/update-profile', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ first_name: firstName, last_name: lastName })
                 });
 
-                var data = await response.json();
+                const data = await response.json();
                 
                 if (data.success) {
                     showToast('Profile updated successfully!', 'success');
                     loadProfileData();
-                    var userNameEl = document.querySelector('.user-profile-btn .user-name');
-                    var avatarEl = document.querySelector('.user-profile-btn .avatar');
-                    var ddNameEl = document.querySelector('.dropdown-menu .dd-name');
-                    if (userNameEl) userNameEl.textContent = data.user.display_name || data.user.first_name;
-                    if (avatarEl) avatarEl.textContent = data.user.display_name.charAt(0).toUpperCase();
-                    if (ddNameEl) ddNameEl.textContent = data.user.display_name || data.user.first_name;
+                    document.querySelector('.user-profile-btn .user-name').textContent = data.user.display_name || data.user.first_name;
+                    document.querySelector('.user-profile-btn .avatar').textContent = data.user.display_name.charAt(0).toUpperCase();
+                    document.querySelector('.dropdown-menu .dd-name').textContent = data.user.display_name || data.user.first_name;
                 } else {
                     showToast(data.error || 'Failed to update profile', 'error');
                 }
@@ -2975,10 +3001,7 @@
         }
 
         async function saveDisplayName() {
-            var displayNameInput = document.getElementById('editDisplayName');
-            if (!displayNameInput) return;
-            
-            var displayName = displayNameInput.value.trim();
+            const displayName = document.getElementById('editDisplayName').value.trim();
             
             if (!displayName) {
                 showToast('Display name is required', 'error');
@@ -2986,23 +3009,20 @@
             }
 
             try {
-                var response = await fetch('/api/update-profile', {
+                const response = await fetch('/api/update-profile', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ display_name: displayName })
                 });
 
-                var data = await response.json();
+                const data = await response.json();
                 
                 if (data.success) {
                     showToast('Profile updated successfully!', 'success');
                     loadProfileData();
-                    var userNameEl = document.querySelector('.user-profile-btn .user-name');
-                    var avatarEl = document.querySelector('.user-profile-btn .avatar');
-                    var ddNameEl = document.querySelector('.dropdown-menu .dd-name');
-                    if (userNameEl) userNameEl.textContent = data.user.display_name;
-                    if (avatarEl) avatarEl.textContent = data.user.display_name.charAt(0).toUpperCase();
-                    if (ddNameEl) ddNameEl.textContent = data.user.display_name;
+                    document.querySelector('.user-profile-btn .user-name').textContent = data.user.display_name;
+                    document.querySelector('.user-profile-btn .avatar').textContent = data.user.display_name.charAt(0).toUpperCase();
+                    document.querySelector('.dropdown-menu .dd-name').textContent = data.user.display_name;
                 } else {
                     showToast(data.error || 'Failed to update profile', 'error');
                 }
@@ -3012,36 +3032,32 @@
         }
 
         async function saveEmail() {
-            var emailInput = document.getElementById('editEmail');
-            if (!emailInput) return;
-            
-            var email = emailInput.value.trim();
+            const email = document.getElementById('editEmail').value.trim();
             
             if (!email) {
                 showToast('Email is required', 'error');
                 return;
             }
 
-            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 showToast('Please enter a valid email address', 'error');
                 return;
             }
 
             try {
-                var response = await fetch('/api/update-profile', {
+                const response = await fetch('/api/update-profile', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: email })
                 });
 
-                var data = await response.json();
+                const data = await response.json();
                 
                 if (data.success) {
                     showToast('Email updated successfully!', 'success');
                     loadProfileData();
-                    var ddEmailEl = document.querySelector('.dropdown-menu .dd-email');
-                    if (ddEmailEl) ddEmailEl.textContent = data.user.email || 'No email set';
+                    document.querySelector('.dropdown-menu .dd-email').textContent = data.user.email || 'No email set';
                 } else {
                     showToast(data.error || 'Failed to update email', 'error');
                 }
@@ -3054,20 +3070,19 @@
         // UPDATE TIMEZONE
         // ============================================================
         async function updateTimezone() {
-            var select = document.getElementById('userTimezone');
-            if (!select) return;
+            const select = document.getElementById('userTimezone');
+            const timezone = select.value;
             
-            var timezone = select.value;
             if (!timezone) return;
 
             try {
-                var response = await fetch('/api/update-timezone', {
+                const response = await fetch('/api/update-timezone', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ timezone: timezone })
                 });
 
-                var data = await response.json();
+                const data = await response.json();
                 
                 if (data.success) {
                     showToast('Timezone updated successfully!', 'success');
@@ -3084,47 +3099,42 @@
         // UPDATE CURRENT TIME
         // ============================================================
         function updateCurrentTime() {
-            var select = document.getElementById('userTimezone');
-            if (!select) return;
-            
-            var timezone = select.value || 'Asia/Dhaka';
-            var display = document.getElementById('currentTimeDisplay');
+            const select = document.getElementById('userTimezone');
+            const timezone = select.value || 'Asia/Dhaka';
+            const display = document.getElementById('currentTimeDisplay');
             
             if (display) {
-                try {
-                    var now = new Date();
-                    var options = {
-                        timeZone: timezone,
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit',
-                        hour12: true
-                    };
-                    display.textContent = now.toLocaleString('en-US', options);
-                } catch (e) {
-                    display.textContent = 'Loading time...';
-                }
+                const now = new Date();
+                const options = {
+                    timeZone: timezone,
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: true
+                };
+                display.textContent = now.toLocaleString('en-US', options);
             }
         }
+
+        // Update time every second
+        setInterval(updateCurrentTime, 1000);
 
         // ============================================================
         // CONVERT LINK DATES TO USER TIMEZONE
         // ============================================================
         function convertLinkDates() {
-            var select = document.getElementById('userTimezone');
-            if (!select) return;
-            
-            var timezone = select.value || 'Asia/Dhaka';
+            const select = document.getElementById('userTimezone');
+            const timezone = select.value || 'Asia/Dhaka';
             
             document.querySelectorAll('.link-date').forEach(function(el) {
-                var dateStr = el.getAttribute('data-date');
+                const dateStr = el.getAttribute('data-date');
                 if (dateStr) {
                     try {
-                        var date = new Date(dateStr);
-                        var options = {
+                        const date = new Date(dateStr);
+                        const options = {
                             timeZone: timezone,
                             year: 'numeric',
                             month: 'short',
@@ -3140,13 +3150,12 @@
             });
         }
 
-        // ============================================================
-        // DOM CONTENT LOADED
-        // ============================================================
+        // Convert link dates when timezone changes
         document.addEventListener('DOMContentLoaded', function() {
-            var select = document.getElementById('userTimezone');
+            const select = document.getElementById('userTimezone');
             if (select) {
-                var userTimezone = '<%= typeof user !== "undefined" && user.timezone ? user.timezone : "Asia/Dhaka" %>';
+                // Set default value from user data
+                const userTimezone = '<%= typeof user !== "undefined" && user.timezone ? user.timezone : "Asia/Dhaka" %>';
                 if (userTimezone) {
                     select.value = userTimezone;
                 }
@@ -3157,39 +3166,178 @@
                     setTimeout(convertLinkDates, 500);
                 });
             }
+        });
+
+        // ============================================================
+        // TOAST NOTIFICATIONS
+        // ============================================================
+        function showToast(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('toastContainer');
+            const icons = {
+                success: 'fas fa-check-circle',
+                error: 'fas fa-exclamation-circle',
+                info: 'fas fa-info-circle'
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span class="toast-icon"><i class="${icons[type] || icons.info}"></i></span>
+                <span class="toast-message">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.4s ease forwards';
+                setTimeout(() => {
+                    if (toast.parentElement) {
+                        toast.remove();
+                    }
+                }, 400);
+            }, duration);
+        }
+
+        // ============================================================
+        // COPY TO CLIPBOARD
+        // ============================================================
+        function copyToClipboard(text) {
+            const cleanText = String(text).trim();
             
-            // Copy button listeners
+            if (!cleanText || cleanText === '') {
+                showToast('❌ Error: Nothing to copy', 'error');
+                return;
+            }
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(cleanText).then(() => {
+                    showToast('✅ Link copied to clipboard!', 'success');
+                }).catch(() => {
+                    fallbackCopy(cleanText);
+                });
+            } else {
+                fallbackCopy(cleanText);
+            }
+        }
+
+        function fallbackCopy(text) {
+            try {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                textarea.style.width = '1px';
+                textarea.style.height = '1px';
+                document.body.appendChild(textarea);
+                textarea.select();
+                const success = document.execCommand('copy');
+                document.body.removeChild(textarea);
+                if (success) {
+                    showToast('✅ Link copied to clipboard!', 'success');
+                } else {
+                    showToast('❌ Failed to copy. Please copy manually.', 'error');
+                }
+            } catch (err) {
+                showToast('❌ Failed to copy. Please copy manually.', 'error');
+            }
+        }
+
+        // ============================================================
+        // QR CODE GENERATOR
+        // ============================================================
+        async function generateQR(shortCode) {
+            try {
+                const response = await fetch(`/qr/${shortCode}`);
+                const data = await response.json();
+                
+                if (data.qr) {
+                    const win = window.open('', '_blank');
+                    win.document.write(`
+                        <html>
+                        <head><title>QR Code</title></head>
+                        <body style="background:#0A0A0F;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;font-family:Arial;flex-direction:column;">
+                            <div style="background:white;padding:20px;border-radius:12px;">
+                                <img src="${data.qr}" style="max-width:300px;width:100%;">
+                            </div>
+                            <p style="color:#B0B0C8;margin-top:20px;font-size:14px;">Scan to visit: ${data.url}</p>
+                            <button onclick="window.close()" style="margin-top:10px;padding:8px 20px;background:#6C63FF;border:none;border-radius:8px;color:white;cursor:pointer;">Close</button>
+                        </body>
+                        </html>
+                    `);
+                }
+            } catch (error) {
+                showToast('❌ Failed to generate QR code', 'error');
+            }
+        }
+
+        // ============================================================
+        // COPY BUTTON EVENT LISTENERS
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.copy-link-btn').forEach(function(btn) {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    var url = this.getAttribute('data-url');
+                    const url = this.getAttribute('data-url');
                     copyToClipboard(url);
                 });
             });
-            
-            // Shorten form
-            var form = document.getElementById('shortenForm');
-            var btn = document.getElementById('shortenBtn');
+        });
+
+        // ============================================================
+        // UPDATE LIVE USER COUNT
+        // ============================================================
+        setInterval(async () => {
+            try {
+                const response = await fetch('/api/online-users');
+                const data = await response.json();
+                const countEl = document.getElementById('liveUserCount');
+                if (countEl) {
+                    countEl.textContent = (data.count || 0) + ' Online';
+                }
+                const listEl = document.getElementById('userList');
+                if (listEl && data.users) {
+                    if (data.users.length > 0) {
+                        listEl.innerHTML = data.users.map(u =>
+                            `<span class="user-badge"><span class="online-dot"></span>${u.name}</span>`
+                        ).join('');
+                    } else {
+                        listEl.innerHTML = '<span style="color: var(--text-muted);">No users online</span>';
+                    }
+                }
+            } catch (e) {}
+        }, 10000);
+
+        // ============================================================
+        // FORM SUBMIT ANIMATION
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('shortenForm');
+            const btn = document.getElementById('shortenBtn');
             if (form && btn) {
                 form.addEventListener('submit', function() {
-                    var original = btn.innerHTML;
-                    btn.innerHTML = 'Processing...';
+                    const original = btn.innerHTML;
+                    btn.innerHTML = '🔮 Processing...';
                     btn.disabled = true;
                     btn.style.opacity = '0.7';
-                    setTimeout(function() {
+                    setTimeout(() => {
                         btn.innerHTML = original;
                         btn.disabled = false;
                         btn.style.opacity = '1';
                     }, 3000);
                 });
             }
-            
-            // Analytics Chart
-            var ctx = document.getElementById('analyticsChart');
+        });
+
+        // ============================================================
+        // ANALYTICS CHART
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('analyticsChart');
             if (ctx) {
-                var weekData = <%= typeof weekData !== 'undefined' && weekData ? JSON.stringify(weekData) : '[0,0,0,0,0,0,0]' %>;
+                const weekData = <%= typeof weekData !== 'undefined' && weekData ? JSON.stringify(weekData) : '[0,0,0,0,0,0,0]' %>;
                 
-                new Chart(ctx, {
+                const chart = new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -3214,161 +3362,49 @@
                             legend: {
                                 labels: {
                                     color: '#B0B0C8',
-                                    font: { family: 'Inter', size: 12 }
+                                    font: {
+                                        family: 'Inter',
+                                        size: 12
+                                    }
                                 }
                             }
                         },
                         scales: {
                             x: {
-                                grid: { color: 'rgba(255,255,255,0.05)' },
-                                ticks: { color: '#B0B0C8', font: { family: 'Inter', size: 11 } }
+                                grid: {
+                                    color: 'rgba(255,255,255,0.05)'
+                                },
+                                ticks: {
+                                    color: '#B0B0C8',
+                                    font: {
+                                        family: 'Inter',
+                                        size: 11
+                                    }
+                                }
                             },
                             y: {
-                                grid: { color: 'rgba(255,255,255,0.05)' },
-                                ticks: { color: '#B0B0C8', font: { family: 'Inter', size: 11 }, stepSize: 1 },
+                                grid: {
+                                    color: 'rgba(255,255,255,0.05)'
+                                },
+                                ticks: {
+                                    color: '#B0B0C8',
+                                    font: {
+                                        family: 'Inter',
+                                        size: 11
+                                    },
+                                    stepSize: 1
+                                },
                                 beginAtZero: true
                             }
                         },
-                        animation: { duration: 2000, easing: 'easeInOutQuart' }
+                        animation: {
+                            duration: 2000,
+                            easing: 'easeInOutQuart'
+                        }
                     }
                 });
             }
         });
-
-        // Update time every second
-        setInterval(updateCurrentTime, 1000);
-
-        // ============================================================
-        // TOAST NOTIFICATIONS
-        // ============================================================
-        function showToast(message, type, duration) {
-            type = type || 'info';
-            duration = duration || 3000;
-            var container = document.getElementById('toastContainer');
-            if (!container) return;
-            
-            var icons = {
-                success: 'fas fa-check-circle',
-                error: 'fas fa-exclamation-circle',
-                info: 'fas fa-info-circle'
-            };
-
-            var toast = document.createElement('div');
-            toast.className = 'toast ' + type;
-            toast.innerHTML = 
-                '<span class="toast-icon"><i class="' + (icons[type] || icons.info) + '"></i></span>' +
-                '<span class="toast-message">' + message + '</span>' +
-                '<button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>';
-
-            container.appendChild(toast);
-
-            setTimeout(function() {
-                toast.style.animation = 'slideOutRight 0.4s ease forwards';
-                setTimeout(function() {
-                    if (toast.parentElement) {
-                        toast.remove();
-                    }
-                }, 400);
-            }, duration);
-        }
-
-        // ============================================================
-        // COPY TO CLIPBOARD
-        // ============================================================
-        function copyToClipboard(text) {
-            var cleanText = String(text).trim();
-            
-            if (!cleanText || cleanText === '') {
-                showToast('❌ Error: Nothing to copy', 'error');
-                return;
-            }
-            
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(cleanText).then(function() {
-                    showToast('✅ Link copied to clipboard!', 'success');
-                }).catch(function() {
-                    fallbackCopy(cleanText);
-                });
-            } else {
-                fallbackCopy(cleanText);
-            }
-        }
-
-        function fallbackCopy(text) {
-            try {
-                var textarea = document.createElement('textarea');
-                textarea.value = text;
-                textarea.style.position = 'fixed';
-                textarea.style.opacity = '0';
-                textarea.style.width = '1px';
-                textarea.style.height = '1px';
-                document.body.appendChild(textarea);
-                textarea.select();
-                var success = document.execCommand('copy');
-                document.body.removeChild(textarea);
-                if (success) {
-                    showToast('✅ Link copied to clipboard!', 'success');
-                } else {
-                    showToast('❌ Failed to copy. Please copy manually.', 'error');
-                }
-            } catch (err) {
-                showToast('❌ Failed to copy. Please copy manually.', 'error');
-            }
-        }
-
-        // ============================================================
-        // QR CODE GENERATOR
-        // ============================================================
-        async function generateQR(shortCode) {
-            try {
-                var response = await fetch('/qr/' + shortCode);
-                var data = await response.json();
-                
-                if (data.qr) {
-                    var win = window.open('', '_blank');
-                    if (win) {
-                        win.document.write(
-                            '<html><head><title>QR Code</title></head>' +
-                            '<body style="background:#0A0A0F;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;font-family:Inter,sans-serif;flex-direction:column;">' +
-                            '<div style="background:white;padding:20px;border-radius:12px;">' +
-                            '<img src="' + data.qr + '" style="max-width:300px;width:100%;">' +
-                            '</div>' +
-                            '<p style="color:#B0B0C8;margin-top:20px;font-size:14px;">Scan to visit: ' + data.url + '</p>' +
-                            '<button onclick="window.close()" style="margin-top:10px;padding:8px 20px;background:#6C63FF;border:none;border-radius:8px;color:white;cursor:pointer;">Close</button>' +
-                            '</body></html>'
-                        );
-                    }
-                }
-            } catch (error) {
-                showToast('❌ Failed to generate QR code', 'error');
-            }
-        }
-
-        // ============================================================
-        // UPDATE LIVE USER COUNT
-        // ============================================================
-        setInterval(async function() {
-            try {
-                var response = await fetch('/api/online-users');
-                var data = await response.json();
-                var countEl = document.getElementById('liveUserCount');
-                if (countEl) {
-                    countEl.textContent = (data.count || 0) + ' Online';
-                }
-                var listEl = document.getElementById('userList');
-                if (listEl && data.users) {
-                    if (data.users.length > 0) {
-                        var html = '';
-                        for (var i = 0; i < data.users.length; i++) {
-                            html += '<span class="user-badge"><span class="online-dot"></span>' + data.users[i].name + '</span>';
-                        }
-                        listEl.innerHTML = html;
-                    } else {
-                        listEl.innerHTML = '<span style="color: var(--text-muted);">No users online</span>';
-                    }
-                }
-            } catch (e) {}
-        }, 10000);
     </script>
 
 </body>
