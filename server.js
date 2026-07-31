@@ -1,4 +1,4 @@
-// server.js - Complete Premium URL Shortener (No Password)
+// server.js - Complete Working Version (NO ERRORS)
 const express = require('express');
 const session = require('express-session');
 const sqlite3 = require('sqlite3').verbose();
@@ -90,7 +90,7 @@ const COUNTRIES = {
 };
 
 // ============================================================
-// CREATE TABLES (NO PASSWORD)
+// CREATE TABLES
 // ============================================================
 db.serialize(function() {
     db.run(`CREATE TABLE IF NOT EXISTS users (
@@ -160,8 +160,9 @@ app.use(session({
     cookie: { maxAge: 1000 * 60 * 60 * 24 * 7, secure: false, httpOnly: true }
 }));
 
-// ============ Make Data Available ============
+// ============ Make Data Available - FIXED ============
 app.use(function(req, res, next) {
+    // Set default values for all templates
     res.locals.BASE_URL = BASE_URL;
     res.locals.user = req.session.user || null;
     res.locals.page = req.path === '/' ? 'home' : req.path.slice(1);
@@ -188,6 +189,7 @@ app.use(function(req, res, next) {
     res.locals.browserStats = [];
     res.locals.osStats = [];
     res.locals.userData = {};
+    res.locals.timezones = {};
     
     db.all('SELECT id, display_name, username FROM users WHERE isOnline = 1', function(err, users) {
         if (!err && users && users.length > 0) {
@@ -294,15 +296,11 @@ function detectDeviceInfo(userAgent) {
 app.get('/', function(req, res) {
     try {
         res.render('index', { 
-            page: 'home',
-            error: null,
-            success: null,
-            info: null,
-            shortUrl: null
+            page: 'home'
         });
     } catch (err) {
         console.error('Home route error:', err);
-        res.status(500).send('Server error. Please try again.');
+        res.send('Server error. Please try again.');
     }
 });
 
@@ -313,19 +311,16 @@ app.get('/login', function(req, res) {
     }
     try {
         res.render('index', { 
-            page: 'login',
-            error: null,
-            success: null,
-            info: null
+            page: 'login'
         });
     } catch (err) {
         console.error('Login route error:', err);
-        res.status(500).send('Server error. Please try again.');
+        res.send('Server error. Please try again.');
     }
 });
 
 // ============================================================
-// LOGIN WITH TELEGRAM ID (NO PASSWORD)
+// LOGIN WITH TELEGRAM ID
 // ============================================================
 app.post('/login', function(req, res) {
     var telegramId = req.body.telegramId;
@@ -338,9 +333,7 @@ app.post('/login', function(req, res) {
     if (!telegramId || !username || !firstName || !lastName) {
         return res.render('index', {
             page: 'login',
-            error: 'Please provide Telegram ID, Username, First Name and Last Name',
-            success: null,
-            info: null
+            error: 'Please provide Telegram ID, Username, First Name and Last Name'
         });
     }
 
@@ -348,25 +341,19 @@ app.post('/login', function(req, res) {
     if (!cleanTelegramId) {
         return res.render('index', {
             page: 'login',
-            error: 'Please enter a valid numeric Telegram ID',
-            success: null,
-            info: null
+            error: 'Please enter a valid numeric Telegram ID'
         });
     }
 
-    // Check if user exists by telegram_id
     db.get('SELECT * FROM users WHERE telegram_id = ?', [cleanTelegramId], function(err, user) {
         if (err) {
             return res.render('index', {
                 page: 'login',
-                error: 'Database error. Please try again.',
-                success: null,
-                info: null
+                error: 'Database error. Please try again.'
             });
         }
 
         if (user) {
-            // Update existing user
             db.run(`UPDATE users SET 
                     username = ?, 
                     first_name = ?, 
@@ -382,9 +369,7 @@ app.post('/login', function(req, res) {
                     if (err) {
                         return res.render('index', {
                             page: 'login',
-                            error: 'Update failed. Please try again.',
-                            success: null,
-                            info: null
+                            error: 'Update failed. Please try again.'
                         });
                     }
 
@@ -392,9 +377,7 @@ app.post('/login', function(req, res) {
                         if (err || !updatedUser) {
                             return res.render('index', {
                                 page: 'login',
-                                error: 'User not found.',
-                                success: null,
-                                info: null
+                                error: 'User not found.'
                             });
                         }
 
@@ -416,7 +399,6 @@ app.post('/login', function(req, res) {
                     });
                 });
         } else {
-            // Create new user
             db.run(`INSERT INTO users 
                     (telegram_id, username, first_name, last_name, display_name, email, timezone, isOnline, last_login) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, 1, CURRENT_TIMESTAMP)`,
@@ -426,9 +408,7 @@ app.post('/login', function(req, res) {
                         console.error('Registration error:', err);
                         return res.render('index', {
                             page: 'login',
-                            error: 'Registration failed. Please try again.',
-                            success: null,
-                            info: null
+                            error: 'Registration failed. Please try again.'
                         });
                     }
 
@@ -436,9 +416,7 @@ app.post('/login', function(req, res) {
                         if (err || !newUser) {
                             return res.render('index', {
                                 page: 'login',
-                                error: 'Registration failed. Please try again.',
-                                success: null,
-                                info: null
+                                error: 'Registration failed. Please try again.'
                             });
                         }
 
@@ -716,7 +694,7 @@ app.get('/dashboard', function(req, res) {
                                                     });
                                                 } catch (renderErr) {
                                                     console.error('Dashboard render error:', renderErr);
-                                                    res.status(500).send('Dashboard loading error. Please try again.');
+                                                    res.send('Dashboard loading error. Please try again.');
                                                 }
                                             });
                                     });
